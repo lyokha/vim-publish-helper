@@ -194,6 +194,6 @@ A. Change History~
 0.2
     - dropped perl dependency in vimhl.hs
     - vimhl.hs is no longer executable script (make it executable or compile)
-    - socs added
+    - docs added
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
