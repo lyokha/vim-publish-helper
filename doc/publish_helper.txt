@@ -1,0 +1,199 @@
+*publish_helper.txt*  For Vim version 7.3 and above  Last change: 2014 January 2
+
+                       ------------------------------
+                        Publish Helper (HTML and TeX)
+                       ------------------------------
+
+                                version 0.2
+
+Author: Alexey Radkov
+
+==============================================================================
+                                 *publish_helper* *publish_helper-contents*
+1. Contents~
+
+    1. Contents ..............................: |publish_helper-contents|
+    2. About .................................: |publish_helper-about|
+    3. Basic commands ........................: |publish_helper-basic-commands|
+        3.1 MakeHtmlCodeHighlight ............: |publish_helper-cmd-html|
+        3.2 MakeHtmlTexHighlight .............: |publish_helper-cmd-tex|
+    4. vimhl.hs and pandoc ...................: |publish_helper-pandoc|
+    5. Miscellaneous commands ................: |publish_helper-misc-commands|
+        5.1 GetFgColorUnderCursor ............: |publish_helper-cmd-fgcolor|
+        5.2 GetBgColorUnderCursor ............: |publish_helper-cmd-bgcolor|
+    6. Configuration .........................: |publish_helper-configure|
+    7. Thanks to .............................: |publish_helper-thanks|
+    8. Issues ................................: |publish_helper-issues|
+    A. Change History ........................: |publish_helper-changes|
+
+==============================================================================
+                                 *publish_helper-about*
+2. About~
+
+Vim plugin publish_helper provides two basic commands MakeHtmlCodeHighlight
+and MakeTexCodeHighlight to produce HTML or TeX code respectively from the
+contents of the current buffer or a part of the current buffer (in Visual
+mode). The generated code opens up in a new window and contains color tags
+that cite colors from the original buffer according to the current vim color
+scheme or a color scheme declared by variable g:PhColorscheme.
+
+The distribution of the plugin is shipped with a haskell program vimhl.hs that
+may act as a filter for a great format conversion tool pandoc enabling it to
+make use of vim's internal syntax highlighting engine when converting formats
+to HTML or TeX.
+
+==============================================================================
+                                 *publish_helper-basic-commands*
+3. Basic commands~
+
+------------------------------------------------------------------------------
+                                 *publish_helper-cmd-html*
+3.1 MakeHtmlCodeHighlight~
+
+Produces HTML code from the contents of the current buffer or a selected part
+of it. Uses plugin TOhtml internally with temporarily set variable
+g:html_use_css = 0 thus embedding color tags inside the generated HTML code.
+Wraps the generated HTML code inside <pre><tt> and </tt></pre> tags. Copy it
+in a clipboard and then insert it in any HTML document: an article in your
+blog, HTML bookk etc. The code highlights will look the same as in your vim
+session!
+
+------------------------------------------------------------------------------
+                                 *publish_helper-cmd-tex*
+3.2 MakeTexCodeHighlight~
+
+Basically this command is a twin of the previous one, only it produces a TeX
+code that is compatible with pandoc generated TeX documents. As such the
+generated TeX code contains color tags corresponding to the vim color scheme
+used and is wrapped inside tags
+>
+    \begin{Shaded}
+    \begin{Highlighting}[]
+<
+and
+>
+    \end{Highlighting}
+    \end{Shaded}
+<
+The command may accept an optional argument that defines how the generated
+code will be enumerated in the resulting document. If this argument is missing
+then no enumeration will be generated. Otherwise if it is a positive integer
+then the number of the first line of the generated code will be equal to its
+value, if it is a negative integer then the number of the first line will be
+equal to the number of the first line in the original buffer.
+
+==============================================================================
+                                 *publish_helper-pandoc*
+4. vimhl.hs and pandoc~
+
+This is probably the most interesting feature of the plugin. Both commands
+MakeHtmlCodeHighlight and MakeTexCodeHighlight can be used as drivers to the
+vim syntax highlighting engine from pandoc. This is achieved via pandoc's
+filter feature available from pandoc version 1.12. This distribution is
+shipped with a haskell program vimhl.hs which is supposed to be such a filter.
+Normally one may want to compile it
+>
+    ghc --make vimh
+>
+and move produced binary executable file vimhl in some directory listed in the
+environment variable $PATH. Alterantively one may make original file vimhl.hs
+executable
+>
+    chmod +x vimhl.hs
+<
+and move it somewhere in the $PATH as well. The first method is preferable.
+After that pandoc gets capable to produce HTML or TeX code with authentic vim
+syntax highlights! Let's make an example. Say you want to convert an HTML
+article from your cool IT blog with multiple examples of C++ codes into PDF
+format via pandoc HTML-to-TeX conversion engine. Normally you open the
+article, find tags <pre> starting the codes and add there the attribute
+class="cpp"
+>
+    <pre class="cpp">
+>
+After that you run pandoc to create TeX code from the original HTML article
+>
+    pandoc -f html -t latex -o article.tex article.html
+>
+As far as pandoc finds attribute class="cpp" inside tags <pre> ... </pre> it
+generates its own code highlights based on the editor Kate's engine. Now you
+can add another attribute hl="vim" inside tags <pre>
+>
+    <pre class="cpp" hl="vim">
+>
+and run pandoc with the filter vimhl (or vimhl.hs if you did not compile
+vimhl)
+>
+    pandoc -f html -t latex -F vimhl -o article.tex article.html
+>
+If you then generate the PDF document from the article.tex the codes will be
+highlighted exactly as they were highlighted inside vim! As soon as command
+MakeTexCodeHighlight accepts the optional argument which defines that
+generated code must be enumerated you can put usual pandoc options inside tags
+<pre> to turn code enumeration on
+>
+    <pre class="cpp numberLines" hl="vim" startFrom="100">
+>
+
+==============================================================================
+                                 *publish_helper-misc-commands*
+5. Miscellaneous commands~
+
+There are two additional commands GetFgColorUnderCursor and
+GetBgColorUnderCursor. They have nothing to do with the code highlighting task
+and were added for debugging purposes only. You can map them like
+>
+    nmap <silent> ,vc :GetFgColorUnderCursor<CR>
+    nmap <silent> ,vb :GetBgColorUnderCursor<CR>
+<
+and find foreground or background colors under cursor with a simple keystroke.
+
+------------------------------------------------------------------------------
+                                 *publish_helper-cmd-fgcolor*
+5.1 GetFgColorUnderCursor~
+
+Get foreground color under cursor.
+
+------------------------------------------------------------------------------
+                                 *publish_helper-cmd-bgcolor*
+5.2 GetBgColorUnderCursor~
+
+Get background color under cursor.
+
+==============================================================================
+                                 *publish_helper-configure*
+6. Configuration~
+
+You can specify dedicated color scheme for syntax highlights by
+MakeHtmlCodeHighlight and MakeTexCodeHighlight in variable g:PhColorscheme.
+For example
+>
+    let g:PhColorscheme = 'lucius'
+<
+If the variable is not defined then the current color scheme will be used.
+
+==============================================================================
+                                 *publish_helper-thanks*
+7. Thanks to~
+
+Christian Brabandt for plugin Colorizer and Xterm2rgb translation functions.
+
+==============================================================================
+                                 *publish_helper-issues*
+8. Issues~
+
+- MakeTexCodeHighlight does not work properly with control characters in code.
+
+==============================================================================
+                                 *publish_helper-changes*
+A. Change History~
+
+0.1
+    - Initial release
+
+0.2
+    - dropped perl dependency in vimhl.hs
+    - vimhl.hs is no longer executable script (make it executable or compile)
+    - socs added
+
+vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
