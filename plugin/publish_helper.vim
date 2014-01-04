@@ -216,8 +216,8 @@ fun! <SID>make_latex_code_highlight(fst_line, last_line, ...)
     let save_paste = &paste
     new +set\ nowrap\ paste
     let numbers = ''
-    if a:0 > 1
-        let numbers = "numbers=left,firstnumber=".(a:2 < 0 ? a:fst_line : a:2)
+    if a:0
+        let numbers = "numbers=left,firstnumber=".(a:1 < 0 ? a:fst_line : a:1)
     endif
     call append(0, ['\begin{Shaded}', '\begin{Highlighting}['.numbers.']'])
     normal dd
@@ -234,12 +234,6 @@ fun! <SID>make_latex_code_highlight(fst_line, last_line, ...)
         let part = escape(hl['content'], '\{}_$%')
         let part = substitute(part, '\\\\', '\\textbackslash{}', 'g')
         let fg = hl['fg']
-        " small hack to paint syntax group links that could have been lost
-        " after switching colorscheme in black instead white
-        if exists('g:PhColorscheme') && g:PhColorscheme != colors &&
-                    \ a:0 && a:1 && fg == 'FFFFFF'
-            let fg = '000000'
-        endif
         if fg != 'NONE' && part !~ '^\s*$'
             let part = '\textcolor[HTML]{'.fg.'}{'.part.'}'
         endif
@@ -262,7 +256,7 @@ endfun
 command -range=% MakeHtmlCodeHighlight silent call
             \ <SID>make_html_code_highlight(1, <line1>, <line2>)
 command -range=% -nargs=? MakeTexCodeHighlight silent call
-            \ <SID>make_latex_code_highlight(<line1>, <line2>, 1, <f-args>)
+            \ <SID>make_latex_code_highlight(<line1>, <line2>, <f-args>)
 
 command GetFgColorUnderCursor echo <SID>get_color_under_cursor(0)
 command GetBgColorUnderCursor echo <SID>get_color_under_cursor(1)
