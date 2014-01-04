@@ -23,10 +23,10 @@ Basic commands
 
 Produces HTML code from the contents of the current buffer or a selected part
 of it. Uses plugin TOhtml internally with temporarily set variable
-g:html\_use\_css = 0 thus embedding color tags inside the generated HTML code.
-Wraps the generated HTML code inside &lt;pre&gt;&lt;tt&gt; and
-&lt;/tt&gt;&lt;/pre&gt; tags. Copy it in a clipboard and then insert it in any
-HTML document: an article in your blog, HTML bookk etc. The code highlights will
+*g:html\_use\_css = 0* thus embedding color tags inside the generated HTML code.
+Wraps the generated HTML code inside *&lt;pre&gt;&lt;tt&gt;* and
+*&lt;/tt&gt;&lt;/pre&gt;* tags. Copy it in a clipboard and then insert in any
+HTML document: an article in your blog, HTML book etc. The code highlights will
 look the same as in your vim session!
 
 ### MakeTexCodeHighlight
@@ -81,8 +81,8 @@ After that pandoc gets capable to produce HTML or TeX code with authentic vim
 syntax highlights! Let's make an example. Say you want to convert an HTML
 article from your cool IT blog with multiple examples of C++ codes into PDF
 format via pandoc HTML-to-TeX conversion engine. Normally you open the
-article, find tags &lt;pre&gt; starting the codes and add there the attribute
-class="cpp"
+article, find tags *&lt;pre&gt;* starting the codes and add there the attribute
+*class="cpp"*
 
 ```html
 <pre class="cpp">
@@ -95,9 +95,9 @@ pandoc -f html -t latex -o article.tex article.html
 ```
 
 As far as pandoc finds attribute class="cpp" inside tags
-&lt;pre&gt; ... &lt;/pre&gt; it generates its own code highlights based on the
-editor Kate's engine. Now you can add another attribute hl="vim" inside tags
-&lt;pre&gt;
+*&lt;pre&gt; ... &lt;/pre&gt;* it generates its own code highlights based on the
+editor Kate's engine. Now you can add another attribute *hl="vim"* inside tags
+*&lt;pre&gt;*
 
 ```html
 <pre class="cpp" hl="vim">
@@ -114,11 +114,14 @@ If you then generate the PDF document from the article.tex the codes will be
 highlighted exactly as they were highlighted inside vim! As soon as command
 MakeTexCodeHighlight accepts the optional argument which defines that
 generated code must be enumerated you can put usual pandoc options inside tags
-&lt;pre&gt; to turn code enumeration on
+*&lt;pre&gt;* to turn code enumeration on
 
 ```html
 <pre class="cpp numberLines" hl="vim" startFrom="100">
 ```
+
+Be aware that when running vimhl.hs may create temporary files *\_vimhl\_buffer*
+and *\_vimhl\_result* that will be deleted after finishing the job.
 
 Miscellaneous commands
 ----------------------
