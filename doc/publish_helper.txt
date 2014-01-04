@@ -306,5 +306,6 @@ A. Change History~
 0.4
     - fixed white-instead-black foreground issue
     - added example of how to use Shaded and Highlighting environments in docs
+    - other small fixes
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
