@@ -130,7 +130,7 @@ $HOME/.vim/ consumes many resources and unnecessarily slows pandoc down. To
 fight this you can create a new file *.vimrc.pandoc* in your home directory with
 very minimal settings. When vimhl.hs finds this file it runs vim with options
 *--noplugin -u $HOME/.vimrc.pandoc*. As soon as plugins are turned off
-.vimrc.pandoc must source at least plugins publish_helper and TOhtml (for
+.vimrc.pandoc must source at least plugins publish\_helper and TOhtml (for
 producing HTML documents). Here is an example of good .vimrc.pandoc contents:
 
 ```vim
