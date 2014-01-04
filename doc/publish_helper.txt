@@ -1,10 +1,10 @@
-*publish_helper.txt*  For Vim version 7.3 and above  Last change: 2014 January 2
+*publish_helper.txt*  For Vim version 7.3 and above  Last change: 2014 January 4
 
                        ------------------------------
                         Publish Helper (HTML and TeX)
                        ------------------------------
 
-                                version 0.2
+                                version 0.3
 
 Author: Alexey Radkov
 
@@ -18,6 +18,10 @@ Author: Alexey Radkov
         3.1 MakeHtmlCodeHighlight ............: |publish_helper-cmd-html|
         3.2 MakeHtmlTexHighlight .............: |publish_helper-cmd-tex|
     4. vimhl.hs and pandoc ...................: |publish_helper-pandoc|
+        4.1 Basic usage ......................: |publish_helper-pandoc-basic|
+        4.2 Using with dedicated .vimrc file .: |publish_helper-pandoc-vimrc|
+        4.3 Options to choose color scheme ...: |publish_helper-pandoc-colors|
+        4.4 Remarks ..........................: |publish_helper-pandoc-notes|
     5. Miscellaneous commands ................: |publish_helper-misc-commands|
         5.1 GetFgColorUnderCursor ............: |publish_helper-cmd-fgcolor|
         5.2 GetBgColorUnderCursor ............: |publish_helper-cmd-bgcolor|
@@ -27,7 +31,7 @@ Author: Alexey Radkov
     A. Change History ........................: |publish_helper-changes|
 
 ==============================================================================
-                                 *publish_helper-about*
+                                           *publish_helper-about*
 2. About~
 
 Vim plugin publish_helper provides two basic commands MakeHtmlCodeHighlight
@@ -43,11 +47,11 @@ make use of vim's internal syntax highlighting engine when converting formats
 to HTML or TeX.
 
 ==============================================================================
-                                 *publish_helper-basic-commands*
+                                           *publish_helper-basic-commands*
 3. Basic commands~
 
 ------------------------------------------------------------------------------
-                                 *publish_helper-cmd-html*
+                                           *publish_helper-cmd-html*
 3.1 MakeHtmlCodeHighlight~
 
 Produces HTML code from the contents of the current buffer or a selected part
@@ -58,7 +62,7 @@ in a clipboard and then insert in any HTML document: an article in your blog,
 HTML book etc. The code highlights will look the same as in your vim session!
 
 ------------------------------------------------------------------------------
-                                 *publish_helper-cmd-tex*
+                                           *publish_helper-cmd-tex*
 3.2 MakeTexCodeHighlight~
 
 Basically this command is a twin of the previous one, only it produces a TeX
@@ -82,15 +86,20 @@ value, if it is a negative integer then the number of the first line will be
 equal to the number of the first line in the original buffer.
 
 ==============================================================================
-                                 *publish_helper-pandoc*
+                                           *publish_helper-pandoc*
 4. vimhl.hs and pandoc~
 
 This is probably the most interesting feature of the plugin. Both commands
 MakeHtmlCodeHighlight and MakeTexCodeHighlight can be used as drivers to the
 vim syntax highlighting engine from pandoc. This is achieved via pandoc's
-filter feature available from pandoc version 1.12. This distribution is
-shipped with a haskell program vimhl.hs which is supposed to be such a filter.
-Normally one may want to compile it
+filter feature available from pandoc version 1.12.
+
+------------------------------------------------------------------------------
+                                           *publish_helper-pandoc-basic*
+4.1 Basic usage~
+
+This distribution is shipped with a haskell program vimhl.hs which is supposed
+to be such a filter. Normally one may want to compile it
 >
     ghc --make vimh
 >
@@ -133,11 +142,72 @@ generated code must be enumerated you can put usual pandoc options inside tags
 >
     <pre class="cpp numberLines" hl="vim" startFrom="100">
 >
-Be aware that when running vimhl.hs may create temporary files _vimhl_buffer
-and _vimhl_result that will be deleted after finishing the job.
+------------------------------------------------------------------------------
+                                           *publish_helper-pandoc-vimrc*
+4.2 Using with dedicated .vimrc file~
+
+Running vim with normal $HOME/.vimrc and all the scripts in the directory
+$HOME/.vim/ consumes many resources and unnecessarily slows pandoc down. To
+fight this you can create a new file .vimrc.pandoc in your home directory with
+very minimal settings. When vimhl.hs finds this file it runs vim with options
+--noplugin -u $HOME/.vimrc.pandoc. As soon as plugins are turned off
+.vimrc.pandoc must source at least plugins publish_helper and TOhtml (for
+producing HTML documents). Here is an example of good .vimrc.pandoc contents:
+>
+    syntax on
+
+    filetype on
+    filetype indent on
+    filetype plugin on
+    filetype plugin indent on
+
+    let g:lucius_style = 'light'
+    let g:lucius_contrast = 'high'
+    let g:lucius_contrast_bg = 'high'
+
+    colorscheme lucius
+
+    runtime plugin/TOhtml.vim
+    runtime plugin/publish_helper.vim
+<
+You may need to source other plugins, for example TagHighlight which makes
+possible to highlight tags generated by ctags.
+
+------------------------------------------------------------------------------
+                                           *publish_helper-pandoc-colors*
+4.3 Options to choose color scheme~
+
+Here is the algorithm of choosing color scheme in priority order:
+
+- If tag <pre> contains attribute colorscheme="<value>" then <value> is
+  chosen, else
+
+- If file $HOME/.vimrc.pandoc contains line colorscheme <value> then <value>
+  is chosen (this is preferable option as vim will work fastest), else
+
+- If file $HOME/.vimrc contains line let g:PhColorscheme = "<value>" then
+  <value> is chosen, else
+
+- If file $HOME/.vimrc contains line colorscheme <value> then <value>
+  is chosen, else
+
+- System vim color scheme is chosen
+
+The second case, i.e. when colorscheme is defined in file $HOME/.vimrc.pandoc,
+is preferable as vim will consume less resources and work fastest.
+
+------------------------------------------------------------------------------
+                                           *publish_helper-pandoc-notes*
+4.4 Remarks~
+
+- Be aware that when running vimhl.hs may create temporary files _vimhl_buffer
+  and _vimhl_result that will be deleted after finishing the job.
+
+- Tag class may contain a list of values. To make vimhl.hs work properly the
+  file type must be the first value in the list.
 
 ==============================================================================
-                                 *publish_helper-misc-commands*
+                                           *publish_helper-misc-commands*
 5. Miscellaneous commands~
 
 There are two additional commands GetFgColorUnderCursor and
@@ -150,19 +220,19 @@ and were added for debugging purposes only. You can map them like
 and find foreground or background colors under cursor with a simple keystroke.
 
 ------------------------------------------------------------------------------
-                                 *publish_helper-cmd-fgcolor*
+                                           *publish_helper-cmd-fgcolor*
 5.1 GetFgColorUnderCursor~
 
 Get foreground color under cursor.
 
 ------------------------------------------------------------------------------
-                                 *publish_helper-cmd-bgcolor*
+                                           *publish_helper-cmd-bgcolor*
 5.2 GetBgColorUnderCursor~
 
 Get background color under cursor.
 
 ==============================================================================
-                                 *publish_helper-configure*
+                                           *publish_helper-configure*
 6. Configuration~
 
 You can specify dedicated color scheme for syntax highlights by
@@ -174,27 +244,35 @@ For example
 If the variable is not defined then the current color scheme will be used.
 
 ==============================================================================
-                                 *publish_helper-thanks*
+                                           *publish_helper-thanks*
 7. Thanks to~
 
 Christian Brabandt for plugin Colorizer and Xterm2rgb translation functions.
 
 ==============================================================================
-                                 *publish_helper-issues*
+                                           *publish_helper-issues*
 8. Issues~
 
 - MakeTexCodeHighlight does not work properly with control characters in code.
 
 ==============================================================================
-                                 *publish_helper-changes*
+                                           *publish_helper-changes*
 A. Change History~
 
 0.1
-    - Initial release
+    - initial release
 
 0.2
     - dropped perl dependency in vimhl.hs
     - vimhl.hs is no longer executable script (make it executable or compile)
     - docs added
+
+0.3
+    - vimhl.hs: added possibility to load a dedicated file $HOME/.vimrc.pandoc
+      instead normal $HOME/.vimrc when running pandoc: this will extremely
+      speed up pandoc; see docs for details
+    - vimhl.hs: added another option to choose color scheme when running
+      pandoc: attribute colorscheme; however using file $HOME/.vimrc.pandoc is
+      more preferable
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
