@@ -45,7 +45,7 @@ vimHl (Just format) cb@(CodeBlock (id, classes@(ft:_), namevals) contents)
              - it won't load its usual environment and the syntax engine! -}
             hin <- openFile "/dev/tty" ReadMode
             (_, Just hout, _, handle) <- createProcess (shell $
-                "vim -Ne " ++ vimrc ++ colorscheme ++ "-c 'set ft=" ++ ft ++
+                "vim -Nen " ++ vimrc ++ colorscheme ++ "-c 'set ft=" ++ ft ++
                 " | " ++ vimhlcmd ++ "' " ++ "-c 'w! " ++ tempfile ++
                 "' -c 'qa!' " ++ tempbuf)
                 {std_in = UseHandle hin, std_out = CreatePipe}
