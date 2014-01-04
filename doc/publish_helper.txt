@@ -183,7 +183,7 @@ Here is the algorithm of choosing color scheme in priority order:
   chosen, else
 
 - If file $HOME/.vimrc.pandoc contains line colorscheme <value> then <value>
-  is chosen (this is preferable option as vim will work fastest), else
+  is chosen, else
 
 - If file $HOME/.vimrc contains line let g:PhColorscheme = "<value>" then
   <value> is chosen, else
