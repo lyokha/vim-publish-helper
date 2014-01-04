@@ -1,6 +1,6 @@
 " File: publish_helper.vim
 " Author: Alexey Radkov
-" Version: 0.3
+" Version: 0.4
 " Description: two commands for publishing highlighted code in HTML or TeX
 "              (optionally from pandoc as highlighting engine from filter
 "              vimhl.hs)
@@ -121,7 +121,11 @@ fun! <SID>get_color_under_cursor(bg)
         return 'none'
     endif
     let layer = a:bg ? "bg" : "fg"
-    return <SID>Xterm2rgb256(synIDattr(synIDtrans(synId), layer))
+    let attr = synIDattr(synIDtrans(synId), layer)
+    if empty(attr) || attr == -1
+        let attr = synIDattr(synIDtrans(hlID('Normal')), layer)
+    endif
+    return <SID>Xterm2rgb256(attr)
 endfun
 
 fun! <SID>make_html_code_highlight(prepare_for_insertion, line1, line2)

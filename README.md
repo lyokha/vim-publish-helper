@@ -145,9 +145,10 @@ let g:lucius_style = 'light'
 let g:lucius_contrast = 'high'
 let g:lucius_contrast_bg = 'high'
 
+set nocp    " for line breaks with backslashes
 colorscheme lucius
 
-runtime plugin/TOhtml.vim
+runtime plugin/tohtml.vim
 runtime plugin/publish_helper.vim
 ```
 
@@ -183,6 +184,35 @@ is preferable as vim will consume less resources and work fastest.
 
 * Tag class may contain a list of values. To make vimhl.hs work properly the
   file type must be the first value in the list.
+
+* Normally pandoc adds definitions of Shaded and Highlighting environments in
+  TeX output when it finds CodeBlock branches in generated AST. Publish helper
+  will replace CodeBlock branches with RawBlock branches and pandoc may skip
+  inserting those definitions. In this case you can add it manually in the
+  preamble of the TeX document:
+
+  ```tex
+  \usepackage{color}
+  \usepackage{xcolor}
+  \usepackage{fancyvrb}
+  \newcommand{\VerbBar}{|}
+  \newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+  \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+  \usepackage{framed}
+  \newenvironment{Shaded}{
+    \definecolor{shadecolor}{rgb}{1.0, 1.0, 0.9}
+    \setlength\parskip{0cm}
+    \setlength\partopsep{-\topsep}
+    \addtolength\partopsep{0.2cm}
+    \begin{shaded}
+      \scriptsize
+  }{\end{shaded}}
+  ```
+
+  All settings inside environment Shaded are optional. For example value of
+  shadecolor defines background color of the code block: if you do not want
+  that code blocks in your documents have specific background color then just
+  do not define it in Shaded environment.
 
 Miscellaneous commands
 ----------------------
