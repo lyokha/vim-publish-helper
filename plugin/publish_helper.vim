@@ -191,6 +191,9 @@ fun! <SID>split_synids(fst_line, last_line)
             let old_fg = fg
             let old_bg = bg
         endwhile
+        " FIXME: putting strtrans() around strpart() will translate control
+        " characters to their ascii representations (as it's implemented in
+        " TOhtml). Shall i do this here or not?
         call add(result,
                     \ {'name': synId,
                     \ 'content': strpart(getline('.'), old_start - 1,
@@ -204,7 +207,7 @@ fun! <SID>split_synids(fst_line, last_line)
     return result
 endfun
 
-fun! <SID>make_latex_code_highlight(fst_line, last_line, ...)
+fun! <SID>make_tex_code_highlight(fst_line, last_line, ...)
     let colors = g:colors_name
     if exists('g:PhColorscheme') && g:PhColorscheme != g:colors_name
         exe "colorscheme ".g:PhColorscheme
@@ -256,7 +259,7 @@ endfun
 command -range=% MakeHtmlCodeHighlight silent call
             \ <SID>make_html_code_highlight(1, <line1>, <line2>)
 command -range=% -nargs=? MakeTexCodeHighlight silent call
-            \ <SID>make_latex_code_highlight(<line1>, <line2>, <f-args>)
+            \ <SID>make_tex_code_highlight(<line1>, <line2>, <f-args>)
 
 command GetFgColorUnderCursor echo <SID>get_color_under_cursor(0)
 command GetBgColorUnderCursor echo <SID>get_color_under_cursor(1)
