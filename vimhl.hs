@@ -6,12 +6,12 @@ import System.IO
 import System.Directory
 import System.FilePath
 import System.Process
-import qualified Data.CaseInsensitive as CI
+import Data.Char (toLower)
 
 vimHl :: Maybe Format -> Block -> IO Block
 vimHl (Just format) cb@(CodeBlock (id, classes@(ft:_), namevals) contents)
   | format == Format "html" || format == Format "latex" =
-        case lookup (CI.mk "hl") ci_namevals of
+        case lookup "hl" namevals' of
         Just "vim" -> do
             let tempbuf  = "_vimhl_buffer"
                 tempfile = "_vimhl_result"
@@ -20,12 +20,12 @@ vimHl (Just format) cb@(CodeBlock (id, classes@(ft:_), namevals) contents)
                     | format == Format "latex" = "MakeTexCodeHighlight" ++ nmb
                     where nmb
                             | "numberLines" `elem` classes =
-                                case lookup (CI.mk "startFrom") ci_namevals of
+                                case lookup "startfrom" namevals' of
                                 Nothing  -> " -1"
                                 Just val -> " " ++ val
                             | otherwise = ""
                 colorscheme =
-                    case lookup (CI.mk "colorScheme") ci_namevals of
+                    case lookup "colorscheme" namevals' of
                     Nothing -> ""
                     Just val -> "-c 'let g:PhColorscheme = \"" ++ val ++ "\"' "
                 vimrcM = do
@@ -59,7 +59,7 @@ vimHl (Just format) cb@(CodeBlock (id, classes@(ft:_), namevals) contents)
             return $ RawBlock format block
         _          -> return cb
   | otherwise = return cb
-  where ci_namevals = map (\(x, y) -> (CI.mk x, y)) namevals
+  where namevals' = map (\(x, y) -> (map (\x -> toLower x) x, y)) namevals
 vimHl _ cb = return cb
 
 main :: IO ()

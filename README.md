@@ -148,6 +148,8 @@ let g:lucius_contrast_bg = 'high'
 set nocp    " for line breaks with backslashes
 colorscheme lucius
 
+let g:PhCtrlTrans = 0
+
 runtime plugin/tohtml.vim
 runtime plugin/publish_helper.vim
 ```
@@ -239,23 +241,33 @@ Get background color under cursor.
 Configuration
 -------------
 
-You can specify dedicated color scheme for syntax highlights by
-MakeHtmlCodeHighlight and MakeTexCodeHighlight in variable g:PhColorscheme.
-For example
+### g:PhColorscheme
 
 ```vim
 let g:PhColorscheme = 'lucius'
 ```
 
-If the variable is not defined then the current color scheme will be used.
+This variable specifies dedicated color scheme for syntax highlights by
+MakeHtmlCodeHighlight and MakeTexCodeHighlight. If not set then the current
+color scheme will be used. Do not set it in .vimrc.pandoc as normal setting of
+color scheme is preferred there.
+
+### g:PhCtrlTrans
+
+```vim
+let g:PhCtrlTrans = 1
+```
+
+Some programming languages allow using verbatim control characters. For
+example you may define an interactive scenario in viml with command *normal*
+which may require them. This variable specifies that MakeTexCodeHighlight will
+accurately translate verbatim control characters in their usual vim ascii
+representation. Setting this variable for using from vimhl.hs does not always
+work as expected because some values (like ^M) may have been already lost on
+the pandoc's AST level. This variable is not set by default.
 
 Thanks to
 ---------
 
 Christian Brabandt for plugin Colorizer and Xterm2rgb translation functions.
-
-Issues
-------
-
-* MakeTexCodeHighlight does not work properly with control characters in code.
 

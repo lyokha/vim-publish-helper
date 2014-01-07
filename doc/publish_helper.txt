@@ -1,10 +1,10 @@
-*publish_helper.txt*  For Vim version 7.3 and above  Last change: 2014 January 4
+*publish_helper.txt*  For Vim version 7.3 and above  Last change: 2014 January 7
 
                        ------------------------------
                         Publish Helper (HTML and TeX)
                        ------------------------------
 
-                                version 0.4
+                                version 0.5
 
 Author: Alexey Radkov
 
@@ -26,8 +26,9 @@ Author: Alexey Radkov
         5.1 GetFgColorUnderCursor ............: |publish_helper-cmd-fgcolor|
         5.2 GetBgColorUnderCursor ............: |publish_helper-cmd-bgcolor|
     6. Configuration .........................: |publish_helper-configure|
+        6.1 g:PhColorscheme ..................: |publish_helper-cfg-var-colors|
+        6.2 g:PhCtrlTrans ....................: |publish_helper-cfg-var-ctrltr|
     7. Thanks to .............................: |publish_helper-thanks|
-    8. Issues ................................: |publish_helper-issues|
     A. Change History ........................: |publish_helper-changes|
 
 ==============================================================================
@@ -168,6 +169,8 @@ producing HTML documents). Here is an example of good .vimrc.pandoc contents:
     set nocp    " for line breaks with backslashes
     colorscheme lucius
 
+    let g:PhCtrlTrans = 0
+
     runtime plugin/tohtml.vim
     runtime plugin/publish_helper.vim
 <
@@ -263,25 +266,38 @@ Get background color under cursor.
                                            *publish_helper-configure*
 6. Configuration~
 
-You can specify dedicated color scheme for syntax highlights by
-MakeHtmlCodeHighlight and MakeTexCodeHighlight in variable g:PhColorscheme.
-For example
+------------------------------------------------------------------------------
+                                           *publish_helper-cfg-var-colors*
+6.1 g:PhColorscheme~
+
 >
     let g:PhColorscheme = 'lucius'
 <
-If the variable is not defined then the current color scheme will be used.
+This variable specifies dedicated color scheme for syntax highlights by
+MakeHtmlCodeHighlight and MakeTexCodeHighlight. If not set then the current
+color scheme will be used. Do not set it in .vimrc.pandoc as normal setting of
+color scheme is preferred there.
+
+------------------------------------------------------------------------------
+                                           *publish_helper-cfg-var-ctrltr*
+6.2 g:PhCtrlTrans~
+
+>
+    let g:PhCtrlTrans = 1
+<
+Some programming languages allow using verbatim control characters. For
+example you may define an interactive scenario in viml with command |normal|
+which may require them. This variable specifies that MakeTexCodeHighlight will
+accurately translate verbatim control characters in their usual vim ascii
+representation. Setting this variable for using from vimhl.hs does not always
+work as expected because some values (like ^M) may have been already lost on
+the pandoc's AST level. This variable is not set by default.
 
 ==============================================================================
                                            *publish_helper-thanks*
 7. Thanks to~
 
 Christian Brabandt for plugin Colorizer and Xterm2rgb translation functions.
-
-==============================================================================
-                                           *publish_helper-issues*
-8. Issues~
-
-- MakeTexCodeHighlight does not work properly with control characters in code.
 
 ==============================================================================
                                            *publish_helper-changes*
@@ -307,5 +323,9 @@ A. Change History~
     - fixed white-instead-black foreground issue
     - added example of how to use Shaded and Highlighting environments in docs
     - other small fixes
+
+0.5
+    - added new variable g:PhCtrlTrans that deals with correct representation
+      of control characters in MakeTexCodeHighlight
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:

@@ -1,6 +1,6 @@
 " File: publish_helper.vim
 " Author: Alexey Radkov
-" Version: 0.4
+" Version: 0.5
 " Description: two commands for publishing highlighted code in HTML or TeX
 "              (optionally from pandoc as highlighting engine from filter
 "              vimhl.hs)
@@ -156,6 +156,44 @@ fun! <SID>make_html_code_highlight(prepare_for_insertion, line1, line2)
     endif
 endfun
 
+fun! <SID>add_synid(result, synId, line, linenr, fg, bg)
+    if !exists('g:PhCtrlTrans') || g:PhCtrlTrans == 0
+        call add(a:result,
+                    \ {'name': a:synId, 'content': a:line,
+                    \  'line': a:linenr, 'fg': a:fg, 'bg': a:bg})
+        return
+    endif
+    let len = strlen(a:line)
+    let pos = 0
+    let old_pos = 0
+    while pos != -1 && pos < len
+        let old_pos = pos
+        let pos = match(a:line, '[^[:print:]]', pos)
+        if pos != -1
+            if pos > old_pos
+                call add(a:result,
+                    \ {'name': a:synId,
+                    \  'content': strpart(a:line, old_pos, pos - old_pos),
+                    \  'line': a:linenr, 'fg': a:fg, 'bg': a:bg})
+            endif
+            let trans = synIDtrans(hlID('SpecialKey'))
+            let fg = toupper(<SID>Xterm2rgb256(synIDattr(trans, 'fg')))
+            let bg = toupper(<SID>Xterm2rgb256(synIDattr(trans, 'bg')))
+            call add(a:result,
+                    \ {'name': a:synId,
+                    \  'content': strtrans(strpart(a:line, pos, 1)),
+                    \  'line': a:linenr, 'fg': fg, 'bg': bg})
+            let pos += 1
+        endif
+    endwhile
+    if old_pos < len && pos == -1
+        call add(a:result,
+                    \ {'name': a:synId,
+                    \  'content': strpart(a:line, old_pos, len - old_pos),
+                    \  'line': a:linenr, 'fg': a:fg, 'bg': a:bg})
+    endif
+endfun
+
 fun! <SID>split_synids(fst_line, last_line)
     let result = []
     let save_winview = winsaveview()
@@ -171,6 +209,7 @@ fun! <SID>split_synids(fst_line, last_line)
             call setpos('.', cursor)
             continue
         endif
+        let line = getline('.')
         while cursor[2] <= cols
             let synId = synIDattr(synID(line('.'), col('.'), 1), 'name')
             let fg = toupper(<SID>get_color_under_cursor(0))
@@ -179,11 +218,9 @@ fun! <SID>split_synids(fst_line, last_line)
             call setpos('.', cursor)
             if synId != old_synId
                 if old_synId != '^'
-                    call add(result,
-                            \ {'name': old_synId,
-                            \ 'content': strpart(getline('.'), old_start - 1,
-                            \            cursor[2] - old_start - 1),
-                            \  'line': line('.'), 'fg': old_fg, 'bg': old_bg})
+                    call <SID>add_synid(result, old_synId,
+                    \ strpart(line, old_start - 1, cursor[2] - old_start - 1),
+                    \ line('.'), old_fg, old_bg)
                 endif
                 let old_synId = synId
                 let old_start = cursor[2] - 1
@@ -191,14 +228,9 @@ fun! <SID>split_synids(fst_line, last_line)
             let old_fg = fg
             let old_bg = bg
         endwhile
-        " FIXME: putting strtrans() around strpart() will translate control
-        " characters to their ascii representations (as it's implemented in
-        " TOhtml). Shall i do this here or not?
-        call add(result,
-                    \ {'name': synId,
-                    \ 'content': strpart(getline('.'), old_start - 1,
-                    \            cursor[2] - old_start - 1),
-                    \  'line': line('.'), 'fg': fg, 'bg': bg})
+        call <SID>add_synid(result, old_synId,
+                    \ strpart(line, old_start - 1, cursor[2] - old_start - 1),
+                    \ line('.'), old_fg, old_bg)
         let cursor[1] += 1
         let cursor[2] = 1
         call setpos('.', cursor)
