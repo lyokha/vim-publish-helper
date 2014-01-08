@@ -135,8 +135,8 @@ fight this you can create a new file *.vimrc.pandoc* in your home directory with
 very minimal settings. When vimhl.hs finds this file it runs vim with options
 *--noplugin -u $HOME/.vimrc.pandoc*. As soon as plugins are turned off
 .vimrc.pandoc must source at least plugins publish\_helper and TOhtml (for
-producing HTML documents, but since version 0.6 of this plugin this is not
-necessary). Here is an example of good .vimrc.pandoc contents:
+producing HTML documents, but since version 0.6 of this plugin this is
+optional). Here is an example of good .vimrc.pandoc contents:
 
 ```vim
 syntax on
