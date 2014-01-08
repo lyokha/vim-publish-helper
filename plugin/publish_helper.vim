@@ -223,7 +223,7 @@ fun! <SID>split_synids(fst_line, last_line, ...)
     call setpos('.', [0, a:fst_line, 1, 0])
     let cursor = getpos('.')
     let linenr = a:0 ? (a:1 < 0 ? a:fst_line : a:1) : -1
-    let n_fmt = strlen(string(linenr + a:last_line - a:fst_line)) + 2
+    let n_fmt = strlen(string(linenr + a:last_line - a:fst_line))
     let trans = synIDtrans(hlID('SpecialKey'))
     let sk_fg = toupper(<SID>Xterm2rgb256(synIDattr(trans, 'fg')))
     let sk_bg = toupper(<SID>Xterm2rgb256(synIDattr(trans, 'bg')))
@@ -232,7 +232,7 @@ fun! <SID>split_synids(fst_line, last_line, ...)
         let old_start = cursor[2]
         let cols = col('$')
         if linenr >= 0
-            exe "let linecol = printf('%-".n_fmt."d', ".linenr.")"
+            exe "let linecol = printf('%".n_fmt."d  ', ".linenr.")"
             call <SID>add_synid(result, 'linenr', linecol, line('.'),
                         \ sk_fg, sk_bg, '', '')
         endif
