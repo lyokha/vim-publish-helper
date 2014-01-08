@@ -29,6 +29,10 @@ Wraps the generated HTML code inside *&lt;pre&gt;&lt;tt&gt;* and
 HTML document: an article in your blog, HTML book etc. The code highlights will
 look the same as in your vim session!
 
+Starting from **version 0.6** MakeHtmlCodeHighlight uses same highlighting
+engine as MakeTexCodeHighlight by default. To switch back to TOhtml engine set
+variable *g:PhHtmlEngine = 'tohtml'*.
+
 ### MakeTexCodeHighlight
 
 Basically this command is a twin of the previous one, only it produces a TeX
@@ -131,7 +135,8 @@ fight this you can create a new file *.vimrc.pandoc* in your home directory with
 very minimal settings. When vimhl.hs finds this file it runs vim with options
 *--noplugin -u $HOME/.vimrc.pandoc*. As soon as plugins are turned off
 .vimrc.pandoc must source at least plugins publish\_helper and TOhtml (for
-producing HTML documents). Here is an example of good .vimrc.pandoc contents:
+producing HTML documents, but since version 0.6 of this plugin this is not
+necessary). Here is an example of good .vimrc.pandoc contents:
 
 ```vim
 syntax on
@@ -150,7 +155,6 @@ colorscheme lucius
 
 let g:PhCtrlTrans = 0
 
-runtime plugin/tohtml.vim
 runtime plugin/publish_helper.vim
 ```
 
@@ -252,6 +256,16 @@ MakeHtmlCodeHighlight and MakeTexCodeHighlight. If not set then the current
 color scheme will be used. Do not set it in .vimrc.pandoc as normal setting of
 color scheme is preferred there.
 
+### g:PhHtmlEngine
+
+```vim
+let g:PhHtmlEngine = 'tohtml'
+```
+
+Available since **version 0.6**. If value is *tohtml* then TOhtml engine will be
+used to render HTML highlights, otherwise the internal engine will be used.
+Not set by default.
+
 ### g:PhCtrlTrans
 
 ```vim
@@ -265,6 +279,15 @@ accurately translate verbatim control characters in their usual vim ascii
 representation. Setting this variable for using from vimhl.hs does not always
 work as expected because some values (like ^M) may have been already lost on
 the pandoc's AST level. This variable is not set by default.
+
+### g:PhTrimBlocks
+
+```vim
+let g:PhTrimBlocks = 0
+```
+
+This variable defines if blank lines around code blocks will be removed. Set
+to 1 by default.
 
 Thanks to
 ---------

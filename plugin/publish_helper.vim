@@ -1,6 +1,6 @@
 " File: publish_helper.vim
 " Author: Alexey Radkov
-" Version: 0.5
+" Version: 0.6
 " Description: two commands for publishing highlighted code in HTML or TeX
 "              (optionally from pandoc as highlighting engine from filter
 "              vimhl.hs)
@@ -49,8 +49,6 @@
 "   nmap <silent> ,vc :GetFgColorUnderCursor<CR>
 "   nmap <silent> ,vb :GetBgColorUnderCursor<CR>
 "
-" Issues: tex code maker does not work properly with control characters.
-"
 " Thanks: Christian Brabandt for plugin Colorizer and Xterm2rgb translation
 "         functions
 
@@ -60,6 +58,18 @@ endif
 
 let g:loaded_PublishHelperPlugin = 1
 
+if !exists('g:PhCtrlTrans')
+    let g:PhCtrlTrans = 0
+endif
+
+if !exists('g:PhTrimBlocks')
+    let g:PhTrimBlocks = 1
+endif
+
+if !exists('g:PhHtmlEngine')
+    let g:PhHtmlEngine = ''
+endif
+
 " next Xterm2rgb... conversion functions are adopted from plugin Colorizer.vim
 fun! <SID>Xterm2rgb16(color)
     " 16 basic colors
@@ -67,21 +77,21 @@ fun! <SID>Xterm2rgb16(color)
     let g=0
     let b=0
     let basic16 = [
-                \ [ 0x00, 0x00, 0x00 ], 
-                \ [ 0xCD, 0x00, 0x00 ], 
-                \ [ 0x00, 0xCD, 0x00 ], 
-                \ [ 0xCD, 0xCD, 0x00 ], 
-                \ [ 0x00, 0x00, 0xEE ], 
-                \ [ 0xCD, 0x00, 0xCD ], 
-                \ [ 0x00, 0xCD, 0xCD ], 
-                \ [ 0xE5, 0xE5, 0xE5 ], 
-                \ [ 0x7F, 0x7F, 0x7F ], 
-                \ [ 0xFF, 0x00, 0x00 ], 
-                \ [ 0x00, 0xFF, 0x00 ], 
-                \ [ 0xFF, 0xFF, 0x00 ], 
-                \ [ 0x5C, 0x5C, 0xFF ], 
-                \ [ 0xFF, 0x00, 0xFF ], 
-                \ [ 0x00, 0xFF, 0xFF ], 
+                \ [ 0x00, 0x00, 0x00 ],
+                \ [ 0xCD, 0x00, 0x00 ],
+                \ [ 0x00, 0xCD, 0x00 ],
+                \ [ 0xCD, 0xCD, 0x00 ],
+                \ [ 0x00, 0x00, 0xEE ],
+                \ [ 0xCD, 0x00, 0xCD ],
+                \ [ 0x00, 0xCD, 0xCD ],
+                \ [ 0xE5, 0xE5, 0xE5 ],
+                \ [ 0x7F, 0x7F, 0x7F ],
+                \ [ 0xFF, 0x00, 0x00 ],
+                \ [ 0x00, 0xFF, 0x00 ],
+                \ [ 0xFF, 0xFF, 0x00 ],
+                \ [ 0x5C, 0x5C, 0xFF ],
+                \ [ 0xFF, 0x00, 0xFF ],
+                \ [ 0x00, 0xFF, 0xFF ],
                 \ [ 0xFF, 0xFF, 0xFF ]
                 \ ]
     let r = basic16[a:color][0]
@@ -114,21 +124,19 @@ fun! <SID>Xterm2rgb256(color)
     return printf("%02x%02x%02x", r, g, b)
 endfun
 
-fun! <SID>get_color_under_cursor(bg)
-    let synId = synID(line("."), col("."), 1)
-    let name = synIDattr(synId, "name")
-    if name == ''
-        return 'none'
-    endif
+fun! <SID>get_color_under_cursor(bg, ...)
     let layer = a:bg ? "bg" : "fg"
-    let attr = synIDattr(synIDtrans(synId), layer)
+    let attr = synIDattr(synIDtrans(synID(line("."), col("."), 1)), layer)
     if empty(attr) || attr == -1
+        if a:0 == 0 || a:1 == 0
+            return 'none'
+        endif
         let attr = synIDattr(synIDtrans(hlID('Normal')), layer)
     endif
     return <SID>Xterm2rgb256(attr)
 endfun
 
-fun! <SID>make_html_code_highlight(prepare_for_insertion, line1, line2)
+fun! <SID>make_tohtml_code_highlight(prepare_for_insertion, line1, line2)
     let colors = g:colors_name
     if exists('g:PhColorscheme') && g:PhColorscheme != g:colors_name
         exe "colorscheme ".g:PhColorscheme
@@ -146,18 +154,36 @@ fun! <SID>make_html_code_highlight(prepare_for_insertion, line1, line2)
         silent $;?^</font?+1d
         $s/.*/<\/tt><\/pre>/
         %s/<br>$//
-        if getline(2) =~ '^[[:blank:]]*$'
-            2;/[^[:blank:]]\+/-1d
+        if g:PhTrimBlocks
+            if getline(2) =~ '^\s*$'
+                2;/[^[:blank:]]\+/-1d
+            endif
+            if getline(line('$') - 1) =~ '^\s*$'
+                silent $-1;?[^[:blank:]]\+?+1d
+            endif
         endif
-        if getline(line('$') - 1) =~ '^[[:blank:]]*$'
-            silent $-1;?[^[:blank:]]\+?+1d
-        endif
-        normal ggJx0
+        normal gggJ0
     endif
 endfun
 
+fun! <SID>escape_tex(block)
+    let block = a:block
+    let block = escape(block, '\{}_$%')
+    let block = substitute(block, '\\\\', '\\textbackslash{}', 'g')
+    return block
+endfun
+
+fun! <SID>escape_html(block)
+    let block = a:block
+    let block = substitute(block, '&', '\&amp;',  'g')
+    let block = substitute(block, '<', '\&lt;',   'g')
+    let block = substitute(block, '>', '\&gt;',   'g')
+    let block = substitute(block, '"', '\&quot;', 'g')
+    return block
+endfun
+
 fun! <SID>add_synid(result, synId, line, linenr, fg, bg)
-    if !exists('g:PhCtrlTrans') || g:PhCtrlTrans == 0
+    if g:PhCtrlTrans == 0
         call add(a:result,
                     \ {'name': a:synId, 'content': a:line,
                     \  'line': a:linenr, 'fg': a:fg, 'bg': a:bg})
@@ -212,8 +238,8 @@ fun! <SID>split_synids(fst_line, last_line)
         let line = getline('.')
         while cursor[2] <= cols
             let synId = synIDattr(synID(line('.'), col('.'), 1), 'name')
-            let fg = toupper(<SID>get_color_under_cursor(0))
-            let bg = toupper(<SID>get_color_under_cursor(1))
+            let fg = toupper(<SID>get_color_under_cursor(0, 1))
+            let bg = toupper(<SID>get_color_under_cursor(1, 1))
             let cursor[2] += 1
             call setpos('.', cursor)
             if synId != old_synId
@@ -239,24 +265,45 @@ fun! <SID>split_synids(fst_line, last_line)
     return result
 endfun
 
-fun! <SID>make_tex_code_highlight(fst_line, last_line, ...)
+fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
     let colors = g:colors_name
     if exists('g:PhColorscheme') && g:PhColorscheme != g:colors_name
         exe "colorscheme ".g:PhColorscheme
     endif
-    let parts = <SID>split_synids(a:fst_line, a:last_line)
+    let fst_line = a:fst_line
+    let last_line = a:last_line
+    if g:PhTrimBlocks
+        let linenr = fst_line
+        while linenr <= a:last_line
+            if getline(linenr) =~ '^\s*$'
+                if linenr == fst_line
+                    let fst_line += 1
+                endif
+            else
+                let last_line = linenr
+            endif
+            let linenr += 1
+        endwhile
+    endif
+    let parts = <SID>split_synids(fst_line, last_line)
     if exists('g:PhColorscheme') && g:PhColorscheme != colors
         exe "colorscheme ".colors
     endif
     let save_paste = &paste
     new +set\ nowrap\ paste
-    let numbers = ''
-    if a:0
-        let numbers = "numbers=left,firstnumber=".(a:1 < 0 ? a:fst_line : a:1)
+    if a:ft == 'tex'
+        let numbers = ''
+        if a:0
+            let numbers = "numbers=left,firstnumber=".
+                        \ (a:1 < 0 ? fst_line : a:1)
+        endif
+        call append(0, ['\begin{Shaded}',
+                    \ '\begin{Highlighting}['.numbers.']'])
+    elseif a:ft == 'html'
+        call append(0, '<pre><tt>')
     endif
-    call append(0, ['\begin{Shaded}', '\begin{Highlighting}['.numbers.']'])
     normal dd
-    let old_line = a:fst_line
+    let old_line = fst_line
     let line = old_line
     let content = ''
     for hl in parts
@@ -266,30 +313,55 @@ fun! <SID>make_tex_code_highlight(fst_line, last_line, ...)
             let old_line += 1
             let content = ''
         endwhile
-        let part = escape(hl['content'], '\{}_$%')
-        let part = substitute(part, '\\\\', '\\textbackslash{}', 'g')
+        let part = hl['content']
         let fg = hl['fg']
-        if fg != 'NONE' && part !~ '^\s*$'
-            let part = '\textcolor[HTML]{'.fg.'}{'.part.'}'
+        if part !~ '^\s*$'
+            if a:ft == 'tex'
+                let part = <SID>escape_tex(part)
+                let part = '\textcolor[HTML]{'.fg.'}{'.part.'}'
+            elseif a:ft == 'html'
+                let part = <SID>escape_html(part)
+                let part = '<font color="#'.fg.'">'.part.'</font>'
+            endif
         endif
         let content .= part
     endfor
     call append('$', content)
-    while line < a:last_line
-        call append('$', '')
-        let line += 1
-    endwhile
-    call append('$', ['\end{Highlighting}', '\end{Shaded}'])
-    call setpos('.', [0, 1, 1, 0])
-    set ft=tex
+    if !g:PhTrimBlocks
+        while line < a:last_line
+            call append('$', '')
+            let line += 1
+        endwhile
+    endif
+    if a:ft == 'tex'
+        call append('$', ['\end{Highlighting}', '\end{Shaded}'])
+        call setpos('.', [0, 1, 1, 0])
+    elseif a:ft == 'html'
+        call append('$', '</tt></pre>')
+        normal gggJ0
+    endif
+    let &ft = a:ft
     if !save_paste
         set nopaste
     endif
 endfun
 
+fun! <SID>make_tex_code_highlight(fst_line, last_line, ...)
+    call call(function('<SID>make_code_highlight'),
+                \ [a:fst_line, a:last_line, 'tex'] + a:000)
+endfun
+
+fun! <SID>make_html_code_highlight(fst_line, last_line)
+    if g:PhHtmlEngine == 'tohtml'
+        call <SID>make_tohtml_code_highlight(1, a:fst_line, a:last_line)
+    else
+        call <SID>make_code_highlight(a:fst_line, a:last_line, 'html')
+    endif
+endfun
+
 
 command -range=% MakeHtmlCodeHighlight silent call
-            \ <SID>make_html_code_highlight(1, <line1>, <line2>)
+            \ <SID>make_html_code_highlight(<line1>, <line2>)
 command -range=% -nargs=? MakeTexCodeHighlight silent call
             \ <SID>make_tex_code_highlight(<line1>, <line2>, <f-args>)
 
