@@ -16,7 +16,7 @@ vimHl (Just format) cb@(CodeBlock (id, classes@(ft:_), namevals) contents)
             let tempbuf  = "_vimhl_buffer"
                 tempfile = "_vimhl_result"
                 vimhlcmd
-                    | format == Format "html"  = "MakeHtmlCodeHighlight"
+                    | format == Format "html"  = "MakeHtmlCodeHighlight" ++ nmb
                     | format == Format "latex" = "MakeTexCodeHighlight" ++ nmb
                     where nmb
                             | "numberLines" `elem` classes =

@@ -155,10 +155,10 @@ fun! <SID>make_tohtml_code_highlight(prepare_for_insertion, line1, line2)
         $s/.*/<\/tt><\/pre>/
         %s/<br>$//
         if g:PhTrimBlocks
-            if getline(2) =~ '^\s*$'
+            if getline(2) =~ '^[[:blank:]\u00A0]*$'
                 2;/[^[:blank:]]\+/-1d
             endif
-            if getline(line('$') - 1) =~ '^\s*$'
+            if getline(line('$') - 1) =~ '^[[:blank:]\u00A0]*$'
                 silent $-1;?[^[:blank:]]\+?+1d
             endif
         endif
@@ -182,8 +182,8 @@ fun! <SID>escape_html(block)
     return block
 endfun
 
-fun! <SID>add_synid(result, synId, line, linenr, fg, bg)
-    if g:PhCtrlTrans == 0
+fun! <SID>add_synid(result, synId, line, linenr, fg, bg, sk_fg, sk_bg)
+    if g:PhCtrlTrans == 0 || empty(a:sk_fg)
         call add(a:result,
                     \ {'name': a:synId, 'content': a:line,
                     \  'line': a:linenr, 'fg': a:fg, 'bg': a:bg})
@@ -202,13 +202,10 @@ fun! <SID>add_synid(result, synId, line, linenr, fg, bg)
                     \  'content': strpart(a:line, old_pos, pos - old_pos),
                     \  'line': a:linenr, 'fg': a:fg, 'bg': a:bg})
             endif
-            let trans = synIDtrans(hlID('SpecialKey'))
-            let fg = toupper(<SID>Xterm2rgb256(synIDattr(trans, 'fg')))
-            let bg = toupper(<SID>Xterm2rgb256(synIDattr(trans, 'bg')))
             call add(a:result,
                     \ {'name': a:synId,
                     \  'content': strtrans(strpart(a:line, pos, 1)),
-                    \  'line': a:linenr, 'fg': fg, 'bg': bg})
+                    \  'line': a:linenr, 'fg': a:sk_fg, 'bg': a:sk_bg})
             let pos += 1
         endif
     endwhile
@@ -220,18 +217,31 @@ fun! <SID>add_synid(result, synId, line, linenr, fg, bg)
     endif
 endfun
 
-fun! <SID>split_synids(fst_line, last_line)
+fun! <SID>split_synids(fst_line, last_line, ...)
     let result = []
     let save_winview = winsaveview()
     call setpos('.', [0, a:fst_line, 1, 0])
     let cursor = getpos('.')
+    let linenr = a:0 ? (a:1 < 0 ? a:fst_line : a:1) : -1
+    let n_fmt = strlen(string(linenr + a:last_line - a:fst_line)) + 2
+    let trans = synIDtrans(hlID('SpecialKey'))
+    let sk_fg = toupper(<SID>Xterm2rgb256(synIDattr(trans, 'fg')))
+    let sk_bg = toupper(<SID>Xterm2rgb256(synIDattr(trans, 'bg')))
     while cursor[1] <= a:last_line
         let old_synId = '^'
         let old_start = cursor[2]
         let cols = col('$')
+        if linenr >= 0
+            exe "let linecol = printf('%-".n_fmt."d', ".linenr.")"
+            call <SID>add_synid(result, 'linenr', linecol, line('.'),
+                        \ sk_fg, sk_bg, '', '')
+        endif
         if cols == 1
             let cursor[1] += 1
             let cursor[2] = 1
+            if linenr >= 0
+                let linenr += 1
+            endif
             call setpos('.', cursor)
             continue
         endif
@@ -246,7 +256,7 @@ fun! <SID>split_synids(fst_line, last_line)
                 if old_synId != '^'
                     call <SID>add_synid(result, old_synId,
                     \ strpart(line, old_start - 1, cursor[2] - old_start - 1),
-                    \ line('.'), old_fg, old_bg)
+                    \ line('.'), old_fg, old_bg, sk_fg, sk_bg)
                 endif
                 let old_synId = synId
                 let old_start = cursor[2] - 1
@@ -256,9 +266,12 @@ fun! <SID>split_synids(fst_line, last_line)
         endwhile
         call <SID>add_synid(result, old_synId,
                     \ strpart(line, old_start - 1, cursor[2] - old_start - 1),
-                    \ line('.'), old_fg, old_bg)
+                    \ line('.'), old_fg, old_bg, sk_fg, sk_bg)
         let cursor[1] += 1
         let cursor[2] = 1
+        if linenr >= 0
+            let linenr += 1
+        endif
         call setpos('.', cursor)
     endwhile
     call winrestview(save_winview)
@@ -275,7 +288,7 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
     if g:PhTrimBlocks
         let linenr = fst_line
         while linenr <= a:last_line
-            if getline(linenr) =~ '^\s*$'
+            if getline(linenr) =~ '^[[:blank:]\u00A0]*$'
                 if linenr == fst_line
                     let fst_line += 1
                 endif
@@ -285,7 +298,11 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
             let linenr += 1
         endwhile
     endif
-    let parts = <SID>split_synids(fst_line, last_line)
+    if a:0 && a:ft == 'html'
+        let parts = call('<SID>split_synids', [fst_line, last_line] + a:000)
+    else
+        let parts = <SID>split_synids(fst_line, last_line)
+    endif
     if exists('g:PhColorscheme') && g:PhColorscheme != colors
         exe "colorscheme ".colors
     endif
@@ -315,7 +332,7 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
         endwhile
         let part = hl['content']
         let fg = hl['fg']
-        if part !~ '^\s*$'
+        if part !~ '^[[:blank:]\u00A0]*$'
             if a:ft == 'tex'
                 let part = <SID>escape_tex(part)
                 let part = '\textcolor[HTML]{'.fg.'}{'.part.'}'
@@ -351,17 +368,18 @@ fun! <SID>make_tex_code_highlight(fst_line, last_line, ...)
                 \ [a:fst_line, a:last_line, 'tex'] + a:000)
 endfun
 
-fun! <SID>make_html_code_highlight(fst_line, last_line)
+fun! <SID>make_html_code_highlight(fst_line, last_line, ...)
     if g:PhHtmlEngine == 'tohtml'
         call <SID>make_tohtml_code_highlight(1, a:fst_line, a:last_line)
     else
-        call <SID>make_code_highlight(a:fst_line, a:last_line, 'html')
+        call call(function('<SID>make_code_highlight'),
+                    \ [a:fst_line, a:last_line, 'html'] + a:000)
     endif
 endfun
 
 
-command -range=% MakeHtmlCodeHighlight silent call
-            \ <SID>make_html_code_highlight(<line1>, <line2>)
+command -range=% -nargs=? MakeHtmlCodeHighlight silent call
+            \ <SID>make_html_code_highlight(<line1>, <line2>, <f-args>)
 command -range=% -nargs=? MakeTexCodeHighlight silent call
             \ <SID>make_tex_code_highlight(<line1>, <line2>, <f-args>)
 

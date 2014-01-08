@@ -31,7 +31,8 @@ look the same as in your vim session!
 
 Starting from **version 0.6** MakeHtmlCodeHighlight uses same highlighting
 engine as MakeTexCodeHighlight by default. To switch back to TOhtml engine set
-variable *g:PhHtmlEngine = 'tohtml'*.
+variable *g:PhHtmlEngine = 'tohtml'*. When using default highlighting engine an
+optional argument for numbering lines is available: see next section.
 
 ### MakeTexCodeHighlight
 
