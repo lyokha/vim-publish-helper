@@ -342,7 +342,7 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
                 let part = '\textcolor[HTML]{'.fg.'}{'.part.'}'
             elseif a:ft == 'html'
                 let part = <SID>escape_html(part)
-                let part = '<font color="#'.fg.'">'.part.'</font>'
+                let part = '<span style="color: #'.fg.'">'.part.'</span>'
             endif
         endif
         let content .= part
