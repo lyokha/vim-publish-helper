@@ -34,6 +34,10 @@ engine as MakeTexCodeHighlight by default. To switch back to TOhtml engine set
 variable *g:PhHtmlEngine = 'tohtml'*. When using default highlighting engine an
 optional argument for numbering lines is available: see next section.
 
+Output of TOhtml may differ from that of default highlighting engine: it
+renders buffers in a very verbose way and may content folds, bold text etc.
+whereas default engine normally ignores view details of the buffer.
+
 ### MakeTexCodeHighlight
 
 Basically this command is a twin of the previous one, only it produces a TeX
@@ -221,6 +225,16 @@ is preferable as vim will consume less resources and work fastest.
   that code blocks in your documents have specific background color then just
   do not define it in Shaded environment.
 
+* If you have installed vim plugin for pandoc
+  (http://www.vim.org/scripts/script.php?script_id=3730) then you'll probably
+  notice bad syntax highlighting when editing .vimrc.pandoc from vim. To make
+  it normal change content of .vim/ftdetect/pandoc.vim to
+
+  ```vim
+  au BufNewFile,BufRead *.markdown,*.md,*.mkd,*.pd,*.pdk,*.pandoc,*.text
+           \ if expand('<afile>:t') != '.vimrc.pandoc' | set filetype=pandoc
+  ```
+
 Miscellaneous commands
 ----------------------
 
@@ -266,6 +280,19 @@ let g:PhHtmlEngine = 'tohtml'
 Available since **version 0.6**. If value is *tohtml* then TOhtml engine will be
 used to render HTML highlights, otherwise the internal engine will be used.
 Not set by default.
+
+### g:PhHtmlPreAttrs
+
+This variable sets attributes that will be inserted inside tags *&lt;pre&gt;* in
+the generated HTML documents. Examples:
+
+```vim
+let g:PhHtmlPreAttrs = 'style="white-space: pre-wrap;"'
+```
+
+```vim
+let g:PhHtmlPreAttrs = 'style="overflow-x: auto;"'
+```
 
 ### g:PhCtrlTrans
 

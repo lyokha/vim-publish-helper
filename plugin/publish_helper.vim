@@ -70,6 +70,10 @@ if !exists('g:PhHtmlEngine')
     let g:PhHtmlEngine = ''
 endif
 
+if !exists('g:PhHtmlPreAttrs')
+    let g:PhHtmlPreAttrs = ''
+endif
+
 " next Xterm2rgb... conversion functions are adopted from plugin Colorizer.vim
 fun! <SID>Xterm2rgb16(color)
     " 16 basic colors
@@ -150,7 +154,7 @@ fun! <SID>make_tohtml_code_highlight(prepare_for_insertion, line1, line2)
     setlocal nowrap
     if a:prepare_for_insertion
         1;/^<font face=/-1d
-        1s/.*/<pre><tt>/
+        exe "1s/.*/<pre ".g:PhHtmlPreAttrs."><tt>/"
         silent $;?^</font?+1d
         $s/.*/<\/tt><\/pre>/
         %s/<br>$//
@@ -317,7 +321,7 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
         call append(0, ['\begin{Shaded}',
                     \ '\begin{Highlighting}['.numbers.']'])
     elseif a:ft == 'html'
-        call append(0, '<pre><tt>')
+        call append(0, '<pre '.g:PhHtmlPreAttrs.'><tt>')
     endif
     normal dd
     let old_line = fst_line

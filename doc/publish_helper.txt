@@ -28,8 +28,9 @@ Author: Alexey Radkov
     6. Configuration .........................: |publish_helper-configure|
         6.1 g:PhColorscheme ..................: |publish_helper-cfg-var-colors|
         6.2 g:PhHtmlEngine ...................: |publish_helper-cfg-var-htmleng|
-        6.3 g:PhCtrlTrans ....................: |publish_helper-cfg-var-ctrltr|
-        6.3 g:PhTrimBlocks ...................: |publish_helper-cfg-var-trimblk|
+        6.3 g:PhHtmlPreAttrs .................: |publish_helper-cfg-var-htmlpre|
+        6.4 g:PhCtrlTrans ....................: |publish_helper-cfg-var-ctrltr|
+        6.5 g:PhTrimBlocks ...................: |publish_helper-cfg-var-trimblk|
     7. Thanks to .............................: |publish_helper-thanks|
     A. Change History ........................: |publish_helper-changes|
 
@@ -68,6 +69,10 @@ Starting from version 0.6 MakeHtmlCodeHighlight uses same highlighting engine
 as MakeTexCodeHighlight by default. To switch back to TOhtml engine set
 variable g:PhHtmlEngine = "tohtml". When using default highlighting engine an
 optional argument for numbering lines is available: see next section.
+
+Output of TOhtml may differ from that of default highlighting engine: it
+renders buffers in a very verbose way and may content folds, bold text etc.
+whereas default engine normally ignores view details of the buffer.
 
 ------------------------------------------------------------------------------
                                            *publish_helper-cmd-tex*
@@ -244,6 +249,15 @@ is preferable as vim will consume less resources and work fastest.
   that code blocks in your documents have specific background color then just
   do not define it in Shaded environment.
 
+- If you have installed vim plugin for pandoc
+  (http://www.vim.org/scripts/script.php?script_id=3730) then you'll probably
+  notice bad syntax highlighting when editing .vimrc.pandoc from vim. To make
+  it normal change content of .vim/ftdetect/pandoc.vim to
+>
+    au BufNewFile,BufRead *.markdown,*.md,*.mkd,*.pd,*.pdk,*.pandoc,*.text
+             \ if expand('<afile>:t') != '.vimrc.pandoc' | set filetype=pandoc
+<
+
 ==============================================================================
                                            *publish_helper-misc-commands*
 5. Miscellaneous commands~
@@ -297,8 +311,21 @@ used to render HTML highlights, otherwise the internal engine will be used.
 Not set by default.
 
 ------------------------------------------------------------------------------
+                                           *publish_helper-cfg-var-htmlpre*
+6.3 g:PhHtmlPreAttrs~
+
+This variable sets attributes that will be inserted inside tags <pre> in the
+generated HTML documents. Examples:
+>
+    let g:PhHtmlPreAttrs = 'style="white-space: pre-wrap;"'
+<
+>
+    let g:PhHtmlPreAttrs = 'style="overflow-x: auto;"'
+<
+
+------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-ctrltr*
-6.3 g:PhCtrlTrans~
+6.4 g:PhCtrlTrans~
 
 >
     let g:PhCtrlTrans = 1
@@ -313,7 +340,7 @@ the pandoc's AST level. This variable is not set by default.
 
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-trimblk*
-6.4 g:PhTrimBlocks~
+6.5 g:PhTrimBlocks~
 
 >
     let g:PhTrimBlocks = 0
