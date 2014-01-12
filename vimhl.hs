@@ -30,16 +30,15 @@ vimHl (Just format) cb@(CodeBlock (id, classes@(ft:_), namevals) contents)
                     Just val -> "-c 'let g:PhColorscheme = \"" ++ val ++ "\"' "
                 vimrcM = do
                     home <- getHomeDirectory
-                    exists <- doesFileExist $ vimrc home
+                    let vimrc = home `combine` ".vimrc.pandoc"
+                    exists <- doesFileExist vimrc
                     if exists
                         then do
-                            permissions <- getPermissions $ vimrc home
+                            permissions <- getPermissions vimrc
                             if readable permissions
-                                then return $ "--noplugin -u '" ++ vimrc home ++
-                                              "' "
+                                then return $ "--noplugin -u '" ++ vimrc ++ "' "
                                 else return ""
                         else return ""
-                    where vimrc home = home `combine` ".vimrc.pandoc"
             vimrc <- vimrcM
             writeFile tempbuf contents
             {- vim must think that it was launched from a terminal, otherwise
