@@ -77,7 +77,7 @@ This distribution is shipped with a haskell program vimhl.hs which is supposed
 to be such a filter. Normally one may want to compile it
 
 ```sh
-ghc --make vimh
+ghc --make vimhl
 ```
 
 and move produced binary executable file vimhl in some directory listed in the

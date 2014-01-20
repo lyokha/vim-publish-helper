@@ -114,7 +114,7 @@ filter feature available from pandoc version 1.12.
 This distribution is shipped with a haskell program vimhl.hs which is supposed
 to be such a filter. Normally one may want to compile it
 >
-    ghc --make vimh
+    ghc --make vimhl
 >
 and move produced binary executable file vimhl in some directory listed in the
 environment variable $PATH. Alterantively one may make original file vimhl.hs
