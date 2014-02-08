@@ -196,10 +196,10 @@ TOhtml.
 The new attribute *vars* allows loading vim global variables from the original
 document. To turn conditions in the example above on it must be defined as
 *vars="load_TagHl,PhHtmlEngine=tohtml"*. This example shows that variables must
-be delimited by commas, their values are defined after equal sign, if the
-equal sign is missing then the value is supposed to be equal to 1, quote signs
-around the value and the prefix *g:* before the variable name are missing and
-will be substituted transparently inside vimhl.
+be delimited by *commas*, their values are defined after *equal sign*, if the
+equal sign is missing then the value is supposed to be equal to *1*,
+*quote signs* around the value and the prefix *g:* before the variable name are
+missing and will be substituted transparently inside vimhl.
 
 ### Options to choose color scheme
 
