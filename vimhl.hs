@@ -6,6 +6,7 @@ import System.IO
 import System.Directory
 import System.FilePath
 import System.Process
+import Text.Regex
 import Data.Char (toLower)
 
 vimHl :: Maybe Format -> Block -> IO Block
@@ -28,6 +29,19 @@ vimHl (Just format) cb@(CodeBlock (id, classes@(ft:_), namevals) contents)
                     case lookup "colorscheme" namevals' of
                     Nothing -> ""
                     Just val -> "-c 'let g:PhColorscheme = \"" ++ val ++ "\"' "
+                cmds =
+                    case lookup "vars" namevals' of
+                    Nothing -> ""
+                    Just val ->
+                        unwords (map cmd (map flag (filter (not . null)
+                            (map (splitRegex regex')
+                                 (splitRegex regex val))))) ++ " "
+                        where cmd (x:y:_) = "--cmd 'let g:" ++ x ++ " = \"" ++
+                                            y ++ "\"'"
+                              flag (x:[]) = [x, "1"]
+                              flag x      = x
+                              regex       = mkRegex "[[:space:]]*,[[:space:]]*"
+                              regex'      = mkRegex "[[:space:]]*=[[:space:]]*"
                 vimrcM = do
                     home <- getHomeDirectory
                     let vimrc = home `combine` ".vimrc.pandoc"
@@ -45,9 +59,9 @@ vimHl (Just format) cb@(CodeBlock (id, classes@(ft:_), namevals) contents)
              - it won't load its usual environment and the syntax engine! -}
             hin <- openFile "/dev/tty" ReadMode
             (_, Just hout, _, handle) <- createProcess (shell $
-                "vim -Nen " ++ vimrc ++ colorscheme ++ "-c 'set ft=" ++ ft ++
-                " | " ++ vimhlcmd ++ "' " ++ "-c 'w! " ++ tempfile ++
-                "' -c 'qa!' " ++ tempbuf)
+                "vim -Nen " ++ cmds ++ vimrc ++ colorscheme ++
+                "-c 'set ft=" ++ ft ++ " | " ++ vimhlcmd ++ "' " ++
+                "-c 'w! " ++ tempfile ++ "' -c 'qa!' " ++ tempbuf)
                 {std_in = UseHandle hin, std_out = CreatePipe}
             waitForProcess handle
             hClose hin
