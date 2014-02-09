@@ -36,12 +36,12 @@ vimHl (Just format) cb@(CodeBlock (id, classes@(ft:_), namevals) contents)
                         unwords (map cmd (map flag (filter (not . null)
                             (map (splitRegex regex')
                                  (splitRegex regex val))))) ++ " "
-                        where cmd (x:y:_) = "--cmd 'let g:" ++ x ++ " = \"" ++
-                                            y ++ "\"'"
-                              flag (x:[]) = [x, "1"]
-                              flag x      = x
-                              regex       = mkRegex "[[:space:]]*,[[:space:]]*"
-                              regex'      = mkRegex "[[:space:]]*=[[:space:]]*"
+                        where cmd (x:y:_) =
+                                  "--cmd 'let g:" ++ x ++ " = \"" ++ y ++ "\"'"
+                              flag [x] = [x, "1"]
+                              flag x   = x
+                              regex    = mkRegex "[[:space:]]*,[[:space:]]*"
+                              regex'   = mkRegex "[[:space:]]*=[[:space:]]*"
                 vimrcM = do
                     home <- getHomeDirectory
                     let vimrc = home `combine` ".vimrc.pandoc"
