@@ -144,8 +144,9 @@ producing HTML documents, but since version 0.6 of this plugin this is
 optional). Here is an example of good .vimrc.pandoc contents:
 
 ```vim
+set nocompatible
+
 filetype off    " filetype is set by vimhl
-set nocp        " for line breaks with backslashes
 
 let g:lucius_style = 'light'
 let g:lucius_contrast = 'high'

@@ -169,8 +169,9 @@ very minimal settings. When vimhl.hs finds this file it runs vim with options
 producing HTML documents, but since version 0.6 of this plugin this is
 optional). Here is an example of good .vimrc.pandoc contents:
 >
+    set nocompatible
+
     filetype off    " filetype is set by vimhl
-    set nocp        " for line breaks with backslashes
 
     let g:lucius_style = 'light'
     let g:lucius_contrast = 'high'
@@ -205,7 +206,7 @@ conditions. Imagine that script .vimrc.pandoc has lines
         runtime plugin/TagHighlight.vim
         let g:TagHighlightSettings['LanguageDetectionMethods'] = ['FileType']
     endif
-    
+
     if exists('g:PhHtmlEngine') && g:PhHtmlEngine == 'tohtml'
         runtime plugin/tohtml.vim
     endif
