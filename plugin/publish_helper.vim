@@ -164,8 +164,8 @@ fun! <SID>make_tohtml_code_highlight(fst_line, last_line, ...)
     exe "1s/.*/<pre ".g:PhHtmlPreAttrs.">/"
     silent $;?^</font?+1d
     $s/.*/<\/pre>/
-    silent %s/<br>$//
-    silent %s/&nbsp;/ /g
+    silent %s/<br>$//e
+    silent %s/&nbsp;/ /ge
     if g:PhTrimBlocks
         if getline(2) =~ '^[[:blank:]\u00A0]*$'
             2;/[^[:blank:]]\+/-1d
@@ -182,7 +182,7 @@ fun! <SID>make_tohtml_code_highlight(fst_line, last_line, ...)
         let last_line = line('$')
         while cursor[1] < last_line
             exe "let linecol = printf('>%".n_fmt."d', ".linenr.")"
-            s/>\s*\d\+/\=linecol/e
+            silent s/>\s*\d\+/\=linecol/e
             let cursor[1] += 1
             let linenr += 1
             call setpos('.', cursor)
