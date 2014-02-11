@@ -1,6 +1,6 @@
 " File: publish_helper.vim
 " Author: Alexey Radkov
-" Version: 0.7
+" Version: 0.8
 " Description: two commands for publishing highlighted code in HTML or TeX
 "              (optionally from pandoc as highlighting engine from filter
 "              vimhl.hs)
@@ -140,34 +140,55 @@ fun! <SID>get_color_under_cursor(bg, ...)
     return <SID>Xterm2rgb256(attr)
 endfun
 
-fun! <SID>make_tohtml_code_highlight(prepare_for_insertion, line1, line2)
+fun! <SID>make_tohtml_code_highlight(fst_line, last_line, ...)
     let colors = g:colors_name
     if exists('g:PhColorscheme') && g:PhColorscheme != g:colors_name
         exe "colorscheme ".g:PhColorscheme
     endif
     let g:html_use_css = 0
-    exe a:line1.",".a:line2."TOhtml"
+    if a:0
+        let g:html_number_lines = 1
+        let g:html_line_ids = 0
+    endif
+    exe a:fst_line.",".a:last_line."TOhtml"
     unlet g:html_use_css
+    if a:0
+        unlet g:html_number_lines
+        unlet g:html_line_ids
+    endif
     if exists('g:PhColorscheme') && g:PhColorscheme != colors
         exe "colorscheme ".colors
     endif
     setlocal nowrap
-    if a:prepare_for_insertion
-        1;/^<font face=/-1d
-        exe "1s/.*/<pre ".g:PhHtmlPreAttrs."><tt>/"
-        silent $;?^</font?+1d
-        $s/.*/<\/tt><\/pre>/
-        %s/<br>$//
-        if g:PhTrimBlocks
-            if getline(2) =~ '^[[:blank:]\u00A0]*$'
-                2;/[^[:blank:]]\+/-1d
-            endif
-            if getline(line('$') - 1) =~ '^[[:blank:]\u00A0]*$'
-                silent $-1;?[^[:blank:]]\+?+1d
-            endif
+    1;/^<font face=/-1d
+    exe "1s/.*/<pre ".g:PhHtmlPreAttrs.">/"
+    silent $;?^</font?+1d
+    $s/.*/<\/pre>/
+    silent %s/<br>$//
+    silent %s/&nbsp;/ /g
+    if g:PhTrimBlocks
+        if getline(2) =~ '^[[:blank:]\u00A0]*$'
+            2;/[^[:blank:]]\+/-1d
         endif
-        normal gggJ0
+        if getline(line('$') - 1) =~ '^[[:blank:]\u00A0]*$'
+            silent $-1;?[^[:blank:]]\+?+1d
+        endif
     endif
+    if a:0 && a:1 >= 0
+        let linenr = a:1
+        let n_fmt = strlen(string(linenr + a:last_line - a:fst_line))
+        call setpos('.', [0, 2, 1, 0])
+        let cursor = getpos('.')
+        let last_line = line('$')
+        while cursor[1] < last_line
+            exe "let linecol = printf('>%".n_fmt."d', ".linenr.")"
+            s/>\s*\d\+/\=linecol/e
+            let cursor[1] += 1
+            let linenr += 1
+            call setpos('.', cursor)
+        endwhile
+    endif
+    normal gggJ0
 endfun
 
 fun! <SID>escape_tex(block)
@@ -321,7 +342,7 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
         call append(0, ['\begin{Shaded}',
                     \ '\begin{Highlighting}['.numbers.']'])
     elseif a:ft == 'html'
-        call append(0, '<pre '.g:PhHtmlPreAttrs.'><tt>')
+        call append(0, '<pre '.g:PhHtmlPreAttrs.'>')
     endif
     normal dd
     let old_line = fst_line
@@ -358,7 +379,7 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
         call append('$', ['\end{Highlighting}', '\end{Shaded}'])
         call setpos('.', [0, 1, 1, 0])
     elseif a:ft == 'html'
-        call append('$', '</tt></pre>')
+        call append('$', '</pre>')
         normal gggJ0
     endif
     let &ft = a:ft
@@ -374,7 +395,8 @@ endfun
 
 fun! <SID>make_html_code_highlight(fst_line, last_line, ...)
     if g:PhHtmlEngine == 'tohtml'
-        call <SID>make_tohtml_code_highlight(1, a:fst_line, a:last_line)
+        call call(function('<SID>make_tohtml_code_highlight'),
+                    \ [a:fst_line, a:last_line] + a:000)
     else
         call call(function('<SID>make_code_highlight'),
                     \ [a:fst_line, a:last_line, 'html'] + a:000)

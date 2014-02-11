@@ -1,10 +1,10 @@
-*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2014 Feb 8
+*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2014 Feb 11
 
                        ------------------------------
                         Publish Helper (HTML and TeX)
                        ------------------------------
 
-                                version 0.7
+                                version 0.8
 
 Author: Alexey Radkov
 
@@ -62,14 +62,21 @@ to HTML or TeX.
 Produces HTML code from the contents of the current buffer or a selected part
 of it. Uses plugin TOhtml internally with temporarily set variable
 g:html_use_css = 0 thus embedding color tags inside the generated HTML code.
-Wraps the generated HTML code inside <pre><tt> and </tt></pre> tags. Copy it
-in a clipboard and then insert in any HTML document: an article in your blog,
+Wraps the generated HTML code inside <pre> ... </pre> tags. Copy it in a
+clipboard and then insert in any HTML document: an article in your blog,
 HTML book etc. The code highlights will look the same as in your vim session!
+
+The command may accept an optional argument that defines if the generated
+code will be numbered in the resulting document and what number the first line
+will be. If this argument is missing then line numbers will not be generated.
+Otherwise if it is a positive integer then the number of the first line of the
+generated code will be equal to this value, if it is a negative integer then
+the number of the first line will be equal to the number of the first line in
+the original buffer.
 
 Starting from version 0.6 MakeHtmlCodeHighlight uses same highlighting engine
 as MakeTexCodeHighlight by default. To switch back to TOhtml engine set
-variable g:PhHtmlEngine = "tohtml". When using default highlighting engine an
-optional argument for numbering lines is available: see next section.
+variable g:PhHtmlEngine = 'tohtml'.
 
 Output of TOhtml may differ from that of default highlighting engine: it
 renders buffers in a very verbose way and may content folds, bold text etc.
@@ -92,12 +99,6 @@ and
     \end{Highlighting}
     \end{Shaded}
 <
-The command may accept an optional argument that defines how the generated
-code will be enumerated in the resulting document. If this argument is missing
-then no enumeration will be generated. Otherwise if it is a positive integer
-then the number of the first line of the generated code will be equal to its
-value, if it is a negative integer then the number of the first line will be
-equal to the number of the first line in the original buffer.
 
 ==============================================================================
                                            *publish_helper-pandoc*
@@ -151,8 +152,8 @@ vimhl)
 If you then generate the PDF document from the article.tex the codes will be
 highlighted exactly as they were highlighted inside vim! As soon as command
 MakeTexCodeHighlight accepts the optional argument which defines that
-generated code must be enumerated you can put usual pandoc options inside tags
-<pre> to turn code enumeration on
+generated code must be numbered you can put usual pandoc options inside tags
+<pre> to turn code numbering on
 >
     <pre class="cpp numberLines" hl="vim" startFrom="100">
 >
@@ -209,6 +210,8 @@ conditions. Imagine that script .vimrc.pandoc has lines
 
     if exists('g:PhHtmlEngine') && g:PhHtmlEngine == 'tohtml'
         runtime plugin/tohtml.vim
+        let g:html_no_progress = 1
+        let g:html_ignore_folding = 1
     endif
 >
 The first condition says that if a global variable g:load_TagHl exists then
@@ -433,5 +436,11 @@ A. Change History~
     - customizing attributes of HTML tag <pre> using variable g:PhHtmlPreAttrs
     - select between conditions in .vimrc or .vimrc.pandoc using variables
       defined in a new attribute vars (see docs)
+
+0.8
+    - both HTML rendering engines do not use tag <tt> any longer
+    - improved TOhtml rendering engine: full support of line numbering,
+      regular spaces instead HTML non-breaking spaces
+    - docs updated
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:

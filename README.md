@@ -24,15 +24,21 @@ Basic commands
 Produces HTML code from the contents of the current buffer or a selected part
 of it. Uses plugin TOhtml internally with temporarily set variable
 *g:html\_use\_css = 0* thus embedding color tags inside the generated HTML code.
-Wraps the generated HTML code inside *&lt;pre&gt;&lt;tt&gt;* and
-*&lt;/tt&gt;&lt;/pre&gt;* tags. Copy it in a clipboard and then insert in any
-HTML document: an article in your blog, HTML book etc. The code highlights will
-look the same as in your vim session!
+Wraps the generated HTML code inside *&lt;pre&gt; ... &lt;/pre&gt;* tags. Copy
+it in a clipboard and then insert in any HTML document: an article in your blog,
+HTML book etc. The code highlights will look the same as in your vim session!
+
+The command may accept an optional argument that defines if the generated
+code will be numbered in the resulting document and what number the first line
+will be. If this argument is missing then line numbers will not be generated.
+Otherwise if it is a positive integer then the number of the first line of the
+generated code will be equal to this value, if it is a negative integer then
+the number of the first line will be equal to the number of the first line in
+the original buffer.
 
 Starting from **version 0.6** MakeHtmlCodeHighlight uses same highlighting
 engine as MakeTexCodeHighlight by default. To switch back to TOhtml engine set
-variable *g:PhHtmlEngine = 'tohtml'*. When using default highlighting engine an
-optional argument for numbering lines is available: see next section.
+variable *g:PhHtmlEngine = 'tohtml'*.
 
 Output of TOhtml may differ from that of default highlighting engine: it
 renders buffers in a very verbose way and may content folds, bold text etc.
@@ -56,13 +62,6 @@ and
 \end{Highlighting}
 \end{Shaded}
 ```
-
-The command may accept an optional argument that defines how the generated
-code will be enumerated in the resulting document. If this argument is missing
-then no enumeration will be generated. Otherwise if it is a positive integer
-then the number of the first line of the generated code will be equal to its
-value, if it is a negative integer then the number of the first line will be
-equal to the number of the first line in the original buffer.
 
 vimhl.hs and pandoc
 -------------------
@@ -125,8 +124,8 @@ pandoc -f html -t latex -F vimhl -o article.tex article.html
 If you then generate the PDF document from the article.tex the codes will be
 highlighted exactly as they were highlighted inside vim! As soon as command
 MakeTexCodeHighlight accepts the optional argument which defines that
-generated code must be enumerated you can put usual pandoc options inside tags
-*&lt;pre&gt;* to turn code enumeration on
+generated code must be numbered you can put usual pandoc options inside tags
+*&lt;pre&gt;* to turn code numbering on
 
 ```html
 <pre class="cpp numberLines" hl="vim" startFrom="100">
@@ -184,6 +183,8 @@ endif
 
 if exists('g:PhHtmlEngine') && g:PhHtmlEngine == 'tohtml'
     runtime plugin/tohtml.vim
+    let g:html_no_progress = 1
+    let g:html_ignore_folding = 1
 endif
 ```
 
