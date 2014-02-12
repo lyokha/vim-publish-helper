@@ -80,7 +80,7 @@ ghc --make vimhl
 ```
 
 and move produced binary executable file vimhl in some directory listed in the
-environment variable $PATH. Alterantively one may make original file vimhl.hs
+environment variable $PATH. Alternatively one may make original file vimhl.hs
 executable
 
 ```sh
