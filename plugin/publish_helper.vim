@@ -140,7 +140,34 @@ fun! <SID>get_color_under_cursor(bg, ...)
     return <SID>Xterm2rgb256(attr)
 endfun
 
+fun! <SID>get_trimmed_range(fst_line, last_line)
+    let result = [a:fst_line, a:last_line]
+    let linenr = a:fst_line
+    while linenr <= a:last_line
+        if getline(linenr) =~ '^[[:blank:]\u00A0]*$'
+            if linenr == result[0]
+                let result[0] += 1
+            endif
+        else
+            let result[1] = linenr
+        endif
+        let linenr += 1
+    endwhile
+    return result
+endfun
+
 fun! <SID>make_tohtml_code_highlight(fst_line, last_line, ...)
+    let range = [a:fst_line, a:last_line]
+    if g:PhTrimBlocks
+        let range = <SID>get_trimmed_range(a:fst_line, a:last_line)
+    endif
+    if range[0] > range[1]
+        new +set\ nowrap
+        call append(0, ['<pre '.g:PhHtmlPreAttrs.'>', '</pre>'])
+        delete
+        let &ft = 'html'
+        return
+    endif
     let colors = g:colors_name
     if exists('g:PhColorscheme') && g:PhColorscheme != g:colors_name
         exe "colorscheme ".g:PhColorscheme
@@ -150,7 +177,7 @@ fun! <SID>make_tohtml_code_highlight(fst_line, last_line, ...)
         let g:html_number_lines = 1
         let g:html_line_ids = 0
     endif
-    exe a:fst_line.",".a:last_line."TOhtml"
+    exe range[0].",".range[1]."TOhtml"
     unlet g:html_use_css
     if a:0
         unlet g:html_number_lines
@@ -166,17 +193,9 @@ fun! <SID>make_tohtml_code_highlight(fst_line, last_line, ...)
     $s/.*/<\/pre>/
     silent %s/<br>$//e
     silent %s/&nbsp;/ /ge
-    if g:PhTrimBlocks
-        if getline(2) =~ '^[[:blank:]\u00A0]*$'
-            2;/[^[:blank:]]\+/-1d
-        endif
-        if getline(line('$') - 1) =~ '^[[:blank:]\u00A0]*$'
-            silent $-1;?[^[:blank:]]\+?+1d
-        endif
-    endif
     if a:0 && a:1 >= 0
         let linenr = a:1
-        let n_fmt = strlen(string(linenr + a:last_line - a:fst_line))
+        let n_fmt = strlen(string(linenr + range[1] - range[0]))
         call setpos('.', [0, 2, 1, 0])
         let cursor = getpos('.')
         let last_line = line('$')
@@ -304,48 +323,39 @@ fun! <SID>split_synids(fst_line, last_line, ...)
 endfun
 
 fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
-    let colors = g:colors_name
-    if exists('g:PhColorscheme') && g:PhColorscheme != g:colors_name
-        exe "colorscheme ".g:PhColorscheme
-    endif
-    let fst_line = a:fst_line
-    let last_line = a:last_line
+    let range = [a:fst_line, a:last_line]
     if g:PhTrimBlocks
-        let linenr = fst_line
-        while linenr <= a:last_line
-            if getline(linenr) =~ '^[[:blank:]\u00A0]*$'
-                if linenr == fst_line
-                    let fst_line += 1
-                endif
-            else
-                let last_line = linenr
-            endif
-            let linenr += 1
-        endwhile
+        let range = <SID>get_trimmed_range(a:fst_line, a:last_line)
     endif
-    if a:0 && a:ft == 'html'
-        let parts = call('<SID>split_synids', [fst_line, last_line] + a:000)
-    else
-        let parts = <SID>split_synids(fst_line, last_line)
+    let parts = []
+    if range[0] <= range[1]
+        let colors = g:colors_name
+        if exists('g:PhColorscheme') && g:PhColorscheme != g:colors_name
+            exe "colorscheme ".g:PhColorscheme
+        endif
+        if a:0 && a:ft == 'html'
+            let parts = call('<SID>split_synids', range + a:000)
+        else
+            let parts = <SID>split_synids(range[0], range[1])
+        endif
+        if exists('g:PhColorscheme') && g:PhColorscheme != colors
+            exe "colorscheme ".colors
+        endif
     endif
-    if exists('g:PhColorscheme') && g:PhColorscheme != colors
-        exe "colorscheme ".colors
-    endif
-    let save_paste = &paste
-    new +set\ nowrap\ paste
+    new +set\ nowrap
     if a:ft == 'tex'
         let numbers = ''
         if a:0
             let numbers = "numbers=left,firstnumber=".
-                        \ (a:1 < 0 ? fst_line : a:1)
+                        \ (a:1 < 0 ? range[0] : a:1)
         endif
         call append(0, ['\begin{Shaded}',
                     \ '\begin{Highlighting}['.numbers.']'])
     elseif a:ft == 'html'
         call append(0, '<pre '.g:PhHtmlPreAttrs.'>')
     endif
-    normal dd
-    let old_line = fst_line
+    delete
+    let old_line = range[0]
     let line = old_line
     let content = ''
     for hl in parts
@@ -383,9 +393,6 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
         normal gggJ0
     endif
     let &ft = a:ft
-    if !save_paste
-        set nopaste
-    endif
 endfun
 
 fun! <SID>make_tex_code_highlight(fst_line, last_line, ...)
