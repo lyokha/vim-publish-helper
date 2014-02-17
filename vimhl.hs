@@ -53,9 +53,9 @@ vimHl (Just format) cb@(CodeBlock (id, classes@(ft:_), namevals) contents)
                                 else return ""
                         else return ""
                 runVim src dst hsrc hdst = do
-                    vimrc <- vimrcM
                     hPutStr hsrc contents
-                    hClose hsrc
+                    mapM_ hClose [hsrc, hdst]
+                    vimrc <- vimrcM
                     {- vim must think that it was launched from a terminal,
                      - otherwise it won't load its usual environment and the
                      - syntax engine! -}
@@ -66,7 +66,7 @@ vimHl (Just format) cb@(CodeBlock (id, classes@(ft:_), namevals) contents)
                         "-c 'w! " ++ dst ++ "' -c 'qa!' " ++ src)
                         {std_in = UseHandle hin, std_out = CreatePipe}
                     waitForProcess handle
-                    mapM_ hClose [hin, hout, hdst]
+                    mapM_ hClose [hin, hout]
                     block <- readFile dst
                     return $ RawBlock format block
             withSystemTempFile "_vimhl_src." $
