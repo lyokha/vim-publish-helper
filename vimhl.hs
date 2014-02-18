@@ -67,11 +67,12 @@ vimHl (Just format) cb@(CodeBlock (id, classes@(ft:_), namevals) contents)
                         {std_in = UseHandle hin, std_out = CreatePipe}
                     waitForProcess handle
                     mapM_ hClose [hin, hout]
-                    block <- readFile dst
-                    return $ RawBlock format block
-            withSystemTempFile "_vimhl_src." $
-                \src hsrc -> withSystemTempFile "_vimhl_dst." $
-                    \dst hdst -> runVim src dst hsrc hdst
+            block <- withSystemTempFile "_vimhl_src." $
+                        \src hsrc -> withSystemTempFile "_vimhl_dst." $
+                            \dst hdst -> do
+                                runVim src dst hsrc hdst
+                                readFile dst
+            return $ RawBlock format block
         _          -> return cb
   | otherwise = return cb
   where namevals' = map (\(x, y) -> (map (\x -> toLower x) x, y)) namevals
