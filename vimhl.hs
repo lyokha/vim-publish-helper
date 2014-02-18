@@ -75,7 +75,7 @@ vimHl (Just format) cb@(CodeBlock (id, classes@(ft:_), namevals) contents)
             return $ RawBlock format block
         _          -> return cb
   | otherwise = return cb
-  where namevals' = map (\(x, y) -> (map (\x -> toLower x) x, y)) namevals
+  where namevals' = map (\(x, y) -> (map toLower x, y)) namevals
 vimHl _ cb = return cb
 
 main :: IO ()
