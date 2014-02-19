@@ -11,13 +11,13 @@ import System.Process
 import Data.Char (toLower)
 
 vimHl :: Maybe Format -> Block -> IO Block
-vimHl (Just (Format fmt)) cb@(CodeBlock (_, classes@(ft:_), namevals) contents)
+vimHl (Just fm@(Format fmt)) cb@(CodeBlock (_, cls@(ft:_), namevals) contents)
   | lookup "hl" namevals' == Just "vim" && fmt `elem` ["html", "latex"] = do
       let vimhlcmd
               | fmt == "html"  = "MakeHtmlCodeHighlight" ++ nmb
               | fmt == "latex" = "MakeTexCodeHighlight" ++ nmb
               where nmb
-                      | "numberLines" `elem` classes =
+                      | "numberLines" `elem` cls =
                           case lookup "startfrom" namevals' of
                           Nothing  -> " -1"
                           Just val -> " " ++ val
@@ -68,7 +68,7 @@ vimHl (Just (Format fmt)) cb@(CodeBlock (_, classes@(ft:_), namevals) contents)
                       \dst hdst -> do
                           runVim src dst hsrc hdst
                           readFile dst
-      return $ RawBlock (Format fmt) block
+      return $ RawBlock fm block
   | otherwise = return cb
   where namevals' = map (\(x, y) -> (map toLower x, y)) namevals
 vimHl _ cb = return cb
