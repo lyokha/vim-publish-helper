@@ -172,17 +172,19 @@ fun! <SID>make_tohtml_code_highlight(fst_line, last_line, ...)
     if exists('g:PhColorscheme') && g:PhColorscheme != g:colors_name
         exe "colorscheme ".g:PhColorscheme
     endif
+    let save_globals = {}
+    for var in ['g:html_use_css', 'g:html_number_lines', 'g:html_line_ids']
+        exe 'let val = '.(exists(var) ? var : '""')
+        let save_globals[var] = exists(var) ? 'let '.var.' = '.val :
+                    \ 'unlet '.var
+    endfor
     let g:html_use_css = 0
-    if a:0
-        let g:html_number_lines = 1
-        let g:html_line_ids = 0
-    endif
+    let g:html_number_lines = a:0 ? 1 : 0
+    let g:html_line_ids = 0
     exe range[0].",".range[1]."TOhtml"
-    unlet g:html_use_css
-    if a:0
-        unlet g:html_number_lines
-        unlet g:html_line_ids
-    endif
+    for val in values(save_globals)
+        exe val
+    endfor
     if exists('g:PhColorscheme') && g:PhColorscheme != colors
         exe "colorscheme ".colors
     endif
