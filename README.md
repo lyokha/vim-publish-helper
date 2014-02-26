@@ -239,7 +239,7 @@ is preferable as vim will consume less resources and work fastest.
   inserting those definitions. In this case you can add it manually in the
   preamble of the TeX document:
 
-  ```tex
+    ```tex
   \usepackage{color}
   \usepackage{xcolor}
   \usepackage{fancyvrb}
@@ -255,7 +255,7 @@ is preferable as vim will consume less resources and work fastest.
     \begin{shaded}
       \scriptsize
   }{\end{shaded}}
-  ```
+    ```
 
   All settings inside environment Shaded are optional. For example value of
   shadecolor defines background color of the code block: if you do not want
@@ -267,10 +267,10 @@ is preferable as vim will consume less resources and work fastest.
   notice bad syntax highlighting when editing .vimrc.pandoc from vim. To make
   it normal change content of .vim/ftdetect/pandoc.vim to
 
-  ```vim
+    ```vim
   au BufNewFile,BufRead *.markdown,*.md,*.mkd,*.pd,*.pdk,*.pandoc,*.text
            \ if expand('<afile>:t') != '.vimrc.pandoc' | set filetype=pandoc
-  ```
+    ```
 
 Miscellaneous commands
 ----------------------
