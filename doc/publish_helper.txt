@@ -294,8 +294,10 @@ is preferable as vim will consume less resources and work fastest.
   notice bad syntax highlighting when editing .vimrc.pandoc from vim. To make
   it normal change content of .vim/ftdetect/pandoc.vim to
 >
-    au BufNewFile,BufRead *.markdown,*.md,*.mkd,*.pd,*.pdk,*.pandoc,*.text
-             \ if expand('<afile>:t') != '.vimrc.pandoc' | set filetype=pandoc
+    au BufNewFile,BufRead *.markdown,*.md,*.mkd,*.pd,*.pdc,*.pdk,*.text
+            \ set filetype=pandoc
+    au BufNewFile,BufRead *.pandoc
+            \ if expand('<afile>:t') != '.vimrc.pandoc' | set filetype=pandoc
 <
 
 ==============================================================================

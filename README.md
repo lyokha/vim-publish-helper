@@ -268,8 +268,10 @@ is preferable as vim will consume less resources and work fastest.
   it normal change content of .vim/ftdetect/pandoc.vim to
 
     ```vim
-  au BufNewFile,BufRead *.markdown,*.md,*.mkd,*.pd,*.pdk,*.pandoc,*.text
-           \ if expand('<afile>:t') != '.vimrc.pandoc' | set filetype=pandoc
+  au BufNewFile,BufRead *.markdown,*.md,*.mkd,*.pd,*.pdc,*.pdk,*.text
+              \ set filetype=pandoc
+  au BufNewFile,BufRead *.pandoc
+              \ if expand('<afile>:t') != '.vimrc.pandoc' | set filetype=pandoc
     ```
 
 Miscellaneous commands
