@@ -65,6 +65,7 @@ and
 
 vimhl.hs and pandoc
 -------------------
+
 This is probably the most interesting feature of the plugin. Both commands
 MakeHtmlCodeHighlight and MakeTexCodeHighlight can be used as drivers to the
 vim syntax highlighting engine from pandoc. This is achieved via pandoc's
