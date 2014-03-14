@@ -268,7 +268,6 @@ is preferable as vim will consume less resources and work fastest.
   inserting those definitions. In this case you can add it manually in the
   preamble of the TeX document:
 >
-    \usepackage{color}
     \usepackage{xcolor}
     \usepackage{fancyvrb}
     \newcommand{\VerbBar}{|}
@@ -288,6 +287,18 @@ is preferable as vim will consume less resources and work fastest.
   shadecolor defines background color of the code block: if you do not want
   that code blocks in your documents have specific background color then just
   do not define it in Shaded environment.
+
+  You may also want to use script vimhl_latex_tmpl.sh shipped with this plugin
+  in order to facilitate this task. The script prints to stdout a pandoc
+  template for Latex which is compatible with vimhl. Normally the output has
+  to be redirected to a file in the standard pandoc templates directory.
+>
+    ./vimhl_latex_tmpl.sh > ~/.pandoc/templates/vimhl.latex
+<
+  Now you can use this template for making standalone TeX or PDF documents
+  using pandoc's option --template=vimhl. The script accepts a number of
+  options to customize visual parameters of code blocks. To see them use
+  option -h.
 
 - If you have installed vim plugin for pandoc
   (http://www.vim.org/scripts/script.php?script_id=3730) then you'll probably
