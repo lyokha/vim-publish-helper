@@ -1,10 +1,10 @@
-*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2014 Feb 11
+*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2014 Mar 15
 
                        ------------------------------
                         Publish Helper (HTML and TeX)
                        ------------------------------
 
-                                version 0.8
+                                version 0.9
 
 Author: Alexey Radkov
 
@@ -23,6 +23,7 @@ Author: Alexey Radkov
         4.3 Customizing vim settings .........: |publish_helper-pandoc-cust-vim|
         4.4 Options to choose color scheme ...: |publish_helper-pandoc-colors|
         4.5 Remarks ..........................: |publish_helper-pandoc-notes|
+             .. Custom TeX template ..........: |publish_helper-tex-tmpl|
     5. Miscellaneous commands ................: |publish_helper-misc-commands|
         5.1 GetFgColorUnderCursor ............: |publish_helper-cmd-fgcolor|
         5.2 GetBgColorUnderCursor ............: |publish_helper-cmd-bgcolor|
@@ -30,8 +31,9 @@ Author: Alexey Radkov
         6.1 g:PhColorscheme ..................: |publish_helper-cfg-var-colors|
         6.2 g:PhHtmlEngine ...................: |publish_helper-cfg-var-htmleng|
         6.3 g:PhHtmlPreAttrs .................: |publish_helper-cfg-var-htmlpre|
-        6.4 g:PhCtrlTrans ....................: |publish_helper-cfg-var-ctrltr|
-        6.5 g:PhTrimBlocks ...................: |publish_helper-cfg-var-trimblk|
+        6.4 g:PhTexBlockStyle ................: |publish_helper-cfg-var-texbstl|
+        6.5 g:PhCtrlTrans ....................: |publish_helper-cfg-var-ctrltr|
+        6.6 g:PhTrimBlocks ...................: |publish_helper-cfg-var-trimblk|
     7. Thanks to .............................: |publish_helper-thanks|
     A. Change History ........................: |publish_helper-changes|
 
@@ -99,6 +101,10 @@ and
     \end{Highlighting}
     \end{Shaded}
 <
+
+Starting from version 0.9 the environment name (Shaded) is no longer constant
+and defined by variable g:PhTexBlockStyle. This allows applying different
+styles for code blocks in TeX documents. See also |publish_helper-tex-tmpl|.
 
 ==============================================================================
                                            *publish_helper-pandoc*
@@ -256,9 +262,6 @@ is preferable as vim will consume less resources and work fastest.
                                            *publish_helper-pandoc-notes*
 4.5 Remarks~
 
-- Be aware that when running vimhl.hs may create temporary files _vimhl_buffer
-  and _vimhl_result that will be deleted after finishing the job.
-
 - Tag class may contain a list of values. To make vimhl.hs work properly the
   file type must be the first value in the list.
 
@@ -288,12 +291,18 @@ is preferable as vim will consume less resources and work fastest.
   that code blocks in your documents have specific background color then just
   do not define it in Shaded environment.
 
+                                           *publish_helper-tex-tmpl*
+
   You may also want to use script vimhl_latex_tmpl.sh shipped with this plugin
   in order to facilitate this task. The script prints to stdout a pandoc
-  template for Latex which is compatible with vimhl. Normally the output has
-  to be redirected to a file in the standard pandoc templates directory.
+  template for Latex which is compatible with vimhl. Besides Shaded
+  environment it defines Snugshade, Framed and Leftbar environments that
+  correspond to definitions of the same names in Latex package Framed.
+
+  Normally the output has to be redirected to a file in the standard pandoc
+  templates directory.
 >
-    ./vimhl_latex_tmpl.sh > ~/.pandoc/templates/vimhl.latex
+    sh vimhl_latex_tmpl.sh > ~/.pandoc/templates/vimhl.latex
 <
   Now you can use this template for making standalone TeX or PDF documents
   using pandoc's option --template=vimhl. The script accepts a number of
@@ -377,8 +386,22 @@ generated HTML documents. Examples:
 <
 
 ------------------------------------------------------------------------------
+                                           *publish_helper-cfg-var-texbstl*
+6.4 g:PhTexBlockStyle~
+
+This variable sets visual parameters of code blocks in the generated TeX
+documents. If not set then Shaded environment is used. See also
+|publish_helper-tex-tmpl|. Examples:
+>
+    let g:PhTexBlockStyle = 'Shaded'
+<
+>
+    let g:PhTexBlockStyle = 'Framed'
+<
+
+------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-ctrltr*
-6.4 g:PhCtrlTrans~
+6.5 g:PhCtrlTrans~
 
 >
     let g:PhCtrlTrans = 1
@@ -393,7 +416,7 @@ the pandoc's AST level. This variable is not set by default.
 
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-trimblk*
-6.5 g:PhTrimBlocks~
+6.6 g:PhTrimBlocks~
 
 >
     let g:PhTrimBlocks = 0
@@ -455,5 +478,12 @@ A. Change History~
     - improved TOhtml rendering engine: full support of line numbering,
       regular spaces instead HTML non-breaking spaces
     - docs updated
+
+0.9
+    - further improvements in TOhtml rendering engine
+    - added new variable g:PhTexBlockStyle to customize code blocks visual
+      parameters in TeX documents
+    - added an auxiliary script vimhl_latex_tmpl.sh for making pandoc
+      templates for TeX compatible with vimhl (see updated docs)
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:

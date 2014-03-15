@@ -74,6 +74,10 @@ if !exists('g:PhHtmlPreAttrs')
     let g:PhHtmlPreAttrs = ''
 endif
 
+if !exists('g:PhTexBlockStyle')
+    let g:PhTexBlockStyle = 'Shaded'
+endif
+
 " next Xterm2rgb... conversion functions are adopted from plugin Colorizer.vim
 fun! <SID>Xterm2rgb16(color)
     " 16 basic colors
@@ -351,7 +355,7 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
             let numbers = "numbers=left,firstnumber=".
                         \ (a:1 < 0 ? range[0] : a:1)
         endif
-        call append(0, ['\begin{Shaded}',
+        call append(0, ['\begin{'.g:PhTexBlockStyle.'}',
                     \ '\begin{Highlighting}['.numbers.']'])
     elseif a:ft == 'html'
         call append(0, '<pre '.g:PhHtmlPreAttrs.'>')
@@ -388,7 +392,8 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
         endwhile
     endif
     if a:ft == 'tex'
-        call append('$', ['\end{Highlighting}', '\end{Shaded}'])
+        call append('$', ['\end{Highlighting}',
+                    \ '\end{'.g:PhTexBlockStyle.'}'])
         call setpos('.', [0, 1, 1, 0])
     elseif a:ft == 'html'
         call append('$', '</pre>')

@@ -63,6 +63,10 @@ and
 \end{Shaded}
 ```
 
+Starting from *version 0.9* the environment name (*Shaded*) is no longer constant
+and defined by variable g:PhTexBlockStyle. This allows applying different
+styles for code blocks in TeX documents.
+
 vimhl.hs and pandoc
 -------------------
 
@@ -227,10 +231,6 @@ is preferable as vim will consume less resources and work fastest.
 
 ### Remarks
 
-* Be aware that when running vimhl.hs may create temporary files
-  *\_vimhl\_buffer* and *\_vimhl\_result* that will be deleted after finishing
-  the job.
-
 * Tag class may contain a list of values. To make vimhl.hs work properly the
   file type must be the first value in the list.
 
@@ -264,11 +264,15 @@ is preferable as vim will consume less resources and work fastest.
 
   You may also want to use script *vimhl_latex_tmpl.sh* shipped with this plugin
   in order to facilitate this task. The script prints to stdout a pandoc
-  template for Latex which is compatible with vimhl. Normally the output has
-  to be redirected to a file in the standard pandoc templates directory.
+  template for Latex which is compatible with vimhl. Besides Shaded
+  environment it defines Snugshade, Framed and Leftbar environments that
+  correspond to definitions of the same names in Latex package Framed.
+
+  Normally the output has to be redirected to a file in the standard pandoc
+  templates directory.
 
     ```sh
-  ./vimhl_latex_tmpl.sh > ~/.pandoc/templates/vimhl.latex
+  sh vimhl_latex_tmpl.sh > ~/.pandoc/templates/vimhl.latex
     ```
 
   Now you can use this template for making standalone TeX or PDF documents
@@ -345,6 +349,19 @@ let g:PhHtmlPreAttrs = 'style="white-space: pre-wrap;"'
 
 ```vim
 let g:PhHtmlPreAttrs = 'style="overflow-x: auto;"'
+```
+
+### g:PhTexBlockStyle
+
+This variable sets visual parameters of code blocks in the generated TeX
+documents. If not set then *Shaded* environment is used. Examples:
+
+```vim
+let g:PhTexBlockStyle = 'Shaded'
+```
+
+```vim
+let g:PhTexBlockStyle = 'Framed'
 ```
 
 ### g:PhCtrlTrans
