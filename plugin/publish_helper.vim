@@ -1,6 +1,6 @@
 " File: publish_helper.vim
 " Author: Alexey Radkov
-" Version: 0.8
+" Version: 0.9
 " Description: two commands for publishing highlighted code in HTML or TeX
 "              (optionally from pandoc as highlighting engine from filter
 "              vimhl.hs)
