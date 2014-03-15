@@ -264,8 +264,8 @@ is preferable as vim will consume less resources and work fastest.
 
   You may also want to use script *vimhl_latex_tmpl.sh* shipped with this plugin
   in order to facilitate this task. The script prints to stdout a pandoc
-  template for Latex which is compatible with vimhl. Besides Shaded
-  environment it defines Snugshade, Framed and Leftbar environments that
+  template for Latex which is compatible with vimhl. Besides *Shaded*
+  environment it defines *Snugshade*, *Framed* and *Leftbar* environments that
   correspond to definitions of the same names in Latex package Framed.
 
   Normally the output has to be redirected to a file in the standard pandoc
