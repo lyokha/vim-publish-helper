@@ -12,15 +12,18 @@ F_COLOR='000000'
 BG_COLOR_FMT='HTML'
 S_BG_COLOR_FMT='HTML'
 F_COLOR_FMT='HTML'
+
+ROUND_CORNER='0pt'
 SCRIPTSIZE='
     \\scriptsize\'
 
-while getopts ':mb:s:f:nh' opt ; do
+while getopts ':mb:s:f:r:nh' opt ; do
     case $opt in
         m) MDFRAMED=1 ;;
         b) BG_COLOR=$OPTARG ;;
         s) S_BG_COLOR=$OPTARG ;;
-        f) F_COLOR=$OPTARG ;;
+        f) MDFRAMED=1; F_COLOR=$OPTARG ;;
+        r) MDFRAMED=1; ROUND_CORNER=$OPTARG ;;
         n) SCRIPTSIZE= ;;
         h) cat <<END
 Prints to STDOUT Pandoc template for Latex compatible with vimhl;
@@ -37,9 +40,11 @@ Options:
   -s set background color in Snugshade code blocks;
      HTML, RGB and rgb (comma-separated values) formats are supported;
      default value is '$S_BG_COLOR'
-  -f set frame line color in Mdframed code blocks;
+  -f set frame line color in Mdframed code blocks, implies option -m;
      HTML, RGB and rgb (comma-separated values) formats are supported;
      default value is '$F_COLOR'
+  -r set frame round corners magnitude, implies option -m;
+     default value is '$ROUND_CORNER'
   -n do not set scriptsize (which is set by default) in code blocks
   -h print this message and exit
 
@@ -97,12 +102,13 @@ IFS='' read -r -d '' RPL <<END
 END
 
 IFS='' read -r -d '' MRPL <<END
-\\\\usepackage{mdframed}\\
+\\\\usepackage[framemethod=tikz]{mdframed}\\
 \\\\newenvironment{Mdframed}{\\
   \\\\definecolor{mdframedbgcolor}{$BG_COLOR_FMT}{$BG_COLOR}\\
   \\\\definecolor{mdframedlcolor}{$F_COLOR_FMT}{$F_COLOR}\\
   \\\\begin{mdframed}[linecolor=mdframedlcolor,\\
-                   backgroundcolor=mdframedbgcolor]\\$SCRIPTSIZE
+                   backgroundcolor=mdframedbgcolor,\\
+                   roundcorner=$ROUND_CORNER]\\$SCRIPTSIZE
 }{\\\\end{mdframed}}\\
 END
 
