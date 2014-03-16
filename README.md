@@ -63,9 +63,9 @@ and
 \end{Shaded}
 ```
 
-Starting from *version 0.9* the environment name (*Shaded*) is no longer constant
-and defined by variable g:PhTexBlockStyle. This allows applying different
-styles for code blocks in TeX documents.
+Starting from **version 0.9** the environment name (*Shaded*) is no longer
+constant and defined by variable g:PhTexBlockStyle. This allows applying
+different styles for code blocks in TeX documents.
 
 vimhl.hs and pandoc
 -------------------
@@ -262,11 +262,12 @@ is preferable as vim will consume less resources and work fastest.
   that code blocks in your documents have specific background color then just
   do not define it in Shaded environment.
 
-  You may also want to use script *vimhl_latex_tmpl.sh* shipped with this plugin
+  You may also want to use script *vimhl_latex_tmpl.sh* shipped with the plugin
   in order to facilitate this task. The script prints to stdout a pandoc
   template for Latex which is compatible with vimhl. Besides *Shaded*
-  environment it defines *Snugshade*, *Framed* and *Leftbar* environments that
-  correspond to definitions of the same names in Latex package Framed.
+  environment it defines *Snugshade*, *Framed*, *Leftbar* and *Mdframed*
+  environments that correspond to definitions of the same names in Latex
+  packages Framed and Mdframed.
 
   Normally the output has to be redirected to a file in the standard pandoc
   templates directory.
