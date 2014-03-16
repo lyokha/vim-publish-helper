@@ -1,33 +1,45 @@
-#!/bin/bash 
+#!/bin/bash
 
 HL_M_PTN='^\$highlighting-macros\$$'
 HL_M_IF_PTN='^\$if(highlighting-macros)\$$'
 VERB_N_IF_PTN='^\$if(verbatim-in-note)\$$'
-VERB_N_IF2_PTN='^\$if(verbatim-in-note)\$\n\\usepackage'
+VERB_N_IF2_PTN='^\$if(verbatim-in-note)\$\n\\usepackage{fancyvrb}'
 ENDIF_PTN='^\$endif\$$'
 
 BG_COLOR='FFFFEE'
 S_BG_COLOR='FFFFEE'
-COLOR_FMT='HTML'
-S_COLOR_FMT='HTML'
+F_COLOR='000000'
+BG_COLOR_FMT='HTML'
+S_BG_COLOR_FMT='HTML'
+F_COLOR_FMT='HTML'
 SCRIPTSIZE='
     \\scriptsize\'
 
-while getopts ':b:s:nh' opt ; do
+while getopts ':mb:s:f:nh' opt ; do
     case $opt in
+        m) MDFRAMED=1 ;;
         b) BG_COLOR=$OPTARG ;;
         s) S_BG_COLOR=$OPTARG ;;
+        f) F_COLOR=$OPTARG ;;
         n) SCRIPTSIZE= ;;
         h) cat <<END
 Prints to STDOUT Pandoc template for Latex compatible with vimhl;
-the template defines new environments: Shaded, Snugshade, Framed and Leftbar
+the template defines new environments: Shaded, Snugshade, Framed, Leftbar
+and Mdframed (if option -m was specified)
 
-  -b set background color in shaded code blocks;
+Options:
+
+  -m define environment Mdframed which provides more parameters for
+     frames than standard latex package Framed does
+  -b set background color in Shaded and Mdframed code blocks;
      HTML, RGB and rgb (comma-separated values) formats are supported;
      default value is '$BG_COLOR'
-  -s set background color in snugshade code blocks;
+  -s set background color in Snugshade code blocks;
      HTML, RGB and rgb (comma-separated values) formats are supported;
      default value is '$S_BG_COLOR'
+  -f set frame line color in Mdframed code blocks;
+     HTML, RGB and rgb (comma-separated values) formats are supported;
+     default value is '$F_COLOR'
   -n do not set scriptsize (which is set by default) in code blocks
   -h print this message and exit
 
@@ -42,19 +54,14 @@ done
 
 shift $((OPTIND-1))
 
-if [[ $BG_COLOR == *,* ]] ; then
-    COLOR_FMT='RGB'
-    if [[ $BG_COLOR == *.* ]] ; then
-        COLOR_FMT='rgb'
+for i in 'BG_' 'S_BG_' 'F_' ; do
+    color=$(eval echo $`echo ${i}COLOR`)
+    if [[ $color == *,* ]] ; then
+        fmt='RGB'
+        [[ $color == *.* ]] && fmt='rgb'
+        eval `echo ${i}COLOR_FMT`=$fmt
     fi
-fi
-
-if [[ $S_BG_COLOR == *,* ]] ; then
-    S_COLOR_FMT='RGB'
-    if [[ $S_BG_COLOR == *.* ]] ; then
-        S_COLOR_FMT='rgb'
-    fi
-fi
+done
 
 IFS='' read -r -d '' RPL <<END
 \\\\usepackage{xcolor}\\
@@ -64,14 +71,14 @@ IFS='' read -r -d '' RPL <<END
 \\\\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\\\\\\\\\\{\\\\}}\\
 \\\\usepackage{framed}\\
 \\\\newenvironment{Shaded}{\\
-  \\\\definecolor{shadecolor}{$COLOR_FMT}{$BG_COLOR}\\
+  \\\\definecolor{shadecolor}{$BG_COLOR_FMT}{$BG_COLOR}\\
   \\\\setlength\\\\parskip{0cm}\\
   \\\\setlength\\\\partopsep{-\\\\topsep}\\
   \\\\addtolength\\\\partopsep{0.2cm}\\
   \\\\begin{shaded}\\$SCRIPTSIZE
 }{\\\\end{shaded}}\\
 \\\\newenvironment{Snugshade}{\\
-  \\\\definecolor{shadecolor}{$S_COLOR_FMT}{$S_BG_COLOR}\\
+  \\\\definecolor{shadecolor}{$S_BG_COLOR_FMT}{$S_BG_COLOR}\\
   \\\\begin{snugshade}\\$SCRIPTSIZE
 }{\\\\end{snugshade}}\\
 \\\\newenvironment{Framed}{\\
@@ -86,8 +93,20 @@ IFS='' read -r -d '' RPL <<END
   \\\\addtolength\\\\partopsep{0.2cm}\\
   \\\\setlength{\\\\FrameSep}{10cm}\\
   \\\\begin{leftbar}\\$SCRIPTSIZE
-}{\\\\end{leftbar}}
+}{\\\\end{leftbar}}\\
 END
+
+IFS='' read -r -d '' MRPL <<END
+\\\\usepackage{mdframed}\\
+\\\\newenvironment{Mdframed}{\\
+  \\\\definecolor{mdframedbgcolor}{$BG_COLOR_FMT}{$BG_COLOR}\\
+  \\\\definecolor{mdframedlcolor}{$F_COLOR_FMT}{$F_COLOR}\\
+  \\\\begin{mdframed}[linecolor=mdframedlcolor,\\
+                   backgroundcolor=mdframedbgcolor]\\$SCRIPTSIZE
+}{\\\\end{mdframed}}\\
+END
+
+[ -n "$MDFRAMED" ] && RPL=$RPL$MRPL
 
 pandoc -D latex |
 sed -e "/$HL_M_PTN/i \\$RPL" \
