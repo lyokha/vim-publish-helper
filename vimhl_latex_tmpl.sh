@@ -96,7 +96,6 @@ IFS='' read -r -d '' RPL <<END
   \\\\setlength\\\\parskip{0cm}\\
   \\\\setlength\\\\partopsep{-\\\\topsep}\\
   \\\\addtolength\\\\partopsep{0.2cm}\\
-  \\\\setlength{\\\\FrameSep}{10cm}\\
   \\\\begin{leftbar}\\$SCRIPTSIZE
 }{\\\\end{leftbar}}\\
 END
