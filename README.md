@@ -526,24 +526,26 @@ An example
     vimhl_latex_tmpl.sh -s FFFF99 -f FF6699 -d > ~/.pandoc/templates/vimhl.latex
     ```
 
-- HTML result of
+- **HTML result of**
 
     ```sh
     pandoc --standalone -Fvimhl -o example.html example.md
     ```
 
 <p align="center">
-  <img src="../images/images/vimhl-html.png?raw=true" hspace="20" alt="HTML result"/>
+  <br/>
+  <img src="../images/images/vimhl-html.png?raw=true" alt="HTML result"/>
 </p>
 
-- Pdf result of
+- **Pdf result of**
 
     ```sh
     pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
     ```
 
 <p align="center">
-  <img src="../images/images/vimhl-latex.png?raw=true" border="2" alt="PDF result"/>
+  <br/>
+  <img src="../images/images/vimhl-latex.png?raw=true" alt="PDF result"/>
 </p>
 
 
