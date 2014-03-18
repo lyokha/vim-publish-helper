@@ -1,6 +1,6 @@
 " File: publish_helper.vim
 " Author: Alexey Radkov
-" Version: 0.9
+" Version: 0.10
 " Description: two commands for publishing highlighted code in HTML or TeX
 "              (optionally from pandoc as highlighting engine from filter
 "              vimhl.hs)
@@ -76,6 +76,18 @@ endif
 
 if !exists('g:PhTexBlockStyle')
     let g:PhTexBlockStyle = 'Shaded'
+endif
+
+if !exists('g:PhShellOutputFt')
+    let g:PhShellOutputFt = 'shelloutput'
+endif
+
+if !exists('g:PhShellOutputPrompt')
+    let g:PhShellOutputPrompt = '||| '
+endif
+
+if !exists('g:PhAlsoletter')
+    let g:PhAlsoletter = ''
 endif
 
 " next Xterm2rgb... conversion functions are adopted from plugin Colorizer.vim
@@ -176,6 +188,7 @@ fun! <SID>make_tohtml_code_highlight(fst_line, last_line, ...)
     if exists('g:PhColorscheme') && g:PhColorscheme != g:colors_name
         exe "colorscheme ".g:PhColorscheme
     endif
+    let ft = &ft
     let save_globals = {}
     for var in ['g:html_use_css', 'g:html_number_lines', 'g:html_line_ids']
         exe 'let val = '.(exists(var) ? var : '""')
@@ -199,6 +212,9 @@ fun! <SID>make_tohtml_code_highlight(fst_line, last_line, ...)
     $s/.*/<\/pre>/
     silent %s/<br>$//e
     silent %s/&nbsp;/ /ge
+    if ft == g:PhShellOutputFt
+        exe 'silent %s/\%(>\s*\)\@<='.g:PhShellOutputPrompt.'//e'
+    endif
     if a:0 && a:1 >= 0
         let linenr = a:1
         let n_fmt = strlen(string(linenr + range[1] - range[0]))
@@ -333,23 +349,35 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
     if g:PhTrimBlocks
         let range = <SID>get_trimmed_range(a:fst_line, a:last_line)
     endif
+    let shell_output_tex = &ft == g:PhShellOutputFt && a:ft == 'tex'
+    let shell_output_html = &ft == g:PhShellOutputFt && a:ft == 'html'
     let parts = []
     if range[0] <= range[1]
-        let colors = g:colors_name
-        if exists('g:PhColorscheme') && g:PhColorscheme != g:colors_name
-            exe "colorscheme ".g:PhColorscheme
-        endif
-        if a:0 && a:ft == 'html'
-            let parts = call('<SID>split_synids', range + a:000)
+        if shell_output_tex
+            let parts = getline(range[0], range[1])
         else
-            let parts = <SID>split_synids(range[0], range[1])
-        endif
-        if exists('g:PhColorscheme') && g:PhColorscheme != colors
-            exe "colorscheme ".colors
+            let colors = g:colors_name
+            if exists('g:PhColorscheme') && g:PhColorscheme != g:colors_name
+                exe "colorscheme ".g:PhColorscheme
+            endif
+            if a:0 && a:ft == 'html'
+                let parts = call('<SID>split_synids', range + a:000)
+            else
+                let parts = <SID>split_synids(range[0], range[1])
+            endif
+            if exists('g:PhColorscheme') && g:PhColorscheme != colors
+                exe "colorscheme ".colors
+            endif
         endif
     endif
     new +set\ nowrap
-    if a:ft == 'tex'
+    if shell_output_tex
+        let alsoletter = empty(g:PhAlsoletter) ? '' :
+                    \ ',alsoletter={'.g:PhAlsoletter.'}'
+        call append(0, ['\begin{'.g:PhTexBlockStyle.'}',
+                    \ '\begin{lstlisting}[language='.g:PhShellOutputFt.
+                    \ ',breaklines'.alsoletter.']'])
+    elseif a:ft == 'tex'
         let numbers = ''
         if a:0
             let numbers = "numbers=left,firstnumber=".
@@ -361,37 +389,52 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
         call append(0, '<pre '.g:PhHtmlPreAttrs.'>')
     endif
     delete
-    let old_line = range[0]
-    let line = old_line
-    let content = ''
-    for hl in parts
-        let line = hl['line']
-        while line > old_line
-            call append('$', content)
-            let old_line += 1
-            let content = ''
-        endwhile
-        let part = hl['content']
-        let fg = hl['fg']
-        if part !~ '^[[:blank:]\u00A0]*$'
-            if a:ft == 'tex'
-                let part = <SID>escape_tex(part)
-                let part = '\textcolor[HTML]{'.fg.'}{'.part.'}'
-            elseif a:ft == 'html'
-                let part = <SID>escape_html(part)
-                let part = '<span style="color: #'.fg.'">'.part.'</span>'
+    let line = range[0]
+    if shell_output_tex
+        for part in parts
+            call append('$', part)
+            let line += 1
+        endfor
+    else
+        let old_line = line
+        let content = ''
+        for hl in parts
+            let line = hl['line']
+            while line > old_line
+                call append('$', content)
+                let old_line += 1
+                let content = ''
+            endwhile
+            let part = hl['content']
+            let fg = hl['fg']
+            if part !~ '^[[:blank:]\u00A0]*$'
+                if a:ft == 'tex'
+                    let part = <SID>escape_tex(part)
+                    let part = '\textcolor[HTML]{'.fg.'}{'.part.'}'
+                elseif a:ft == 'html'
+                    if shell_output_html
+                        exe 'let part = substitute(part, ''\%(^\s*\)\@<='
+                                    \ .g:PhShellOutputPrompt.''', "", "")'
+                    endif
+                    let part = <SID>escape_html(part)
+                    let part = '<span style="color: #'.fg.'">'.part.'</span>'
+                endif
             endif
-        endif
-        let content .= part
-    endfor
-    call append('$', content)
+            let content .= part
+        endfor
+        call append('$', content)
+    endif
     if !g:PhTrimBlocks
         while line < a:last_line
             call append('$', '')
             let line += 1
         endwhile
     endif
-    if a:ft == 'tex'
+    if shell_output_tex
+        call append('$', ['\end{lstlisting}',
+                    \ '\end{'.g:PhTexBlockStyle.'}'])
+        call setpos('.', [0, 1, 1, 0])
+    elseif a:ft == 'tex'
         call append('$', ['\end{Highlighting}',
                     \ '\end{'.g:PhTexBlockStyle.'}'])
         call setpos('.', [0, 1, 1, 0])
