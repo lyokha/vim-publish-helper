@@ -526,7 +526,7 @@ An example
     vimhl_latex_tmpl.sh -s FFFF99 -f FF6699 -d > ~/.pandoc/templates/vimhl.latex
     ```
 
-- **HTML result of**
+- **HTML result of command**
 
     ```sh
     pandoc --standalone -Fvimhl -o example.html example.md
@@ -537,7 +537,7 @@ An example
   <img src="../images/images/vimhl-html.png?raw=true" alt="HTML result"/>
 </p>
 
-- **Pdf result of**
+- **Pdf result of command**
 
     ```sh
     pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
