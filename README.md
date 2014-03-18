@@ -534,7 +534,7 @@ vimhl_latex_tmpl.sh -s FFFF99 -f FF6699 -d > ~/.pandoc/templates/vimhl.latex
 pandoc --standalone -Fvimhl -o example.html example.md
 ```
 
-![HTML result](images/vimhl-html.png)
+[HTML result](images/vimhl-html.png)
 
 - Pdf result of
 
@@ -542,7 +542,7 @@ pandoc --standalone -Fvimhl -o example.html example.md
 pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
 ```
 
-![PDF result](images/vimhl-pdf.png)
+[PDF result](images/vimhl-pdf.png)
 
 
 Thanks to
