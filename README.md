@@ -472,7 +472,7 @@ An example
         ``` {#vimrc_pandoc .vim .numberLines hl="vim" vars="PhTexBlockStyle=Mdframed"}
         set nocompatible
 
-        filetype off    " filetype is set by vimhl
+        filetype off
 
         let g:lucius_style = 'light'
         let g:lucius_contrast = 'high'
