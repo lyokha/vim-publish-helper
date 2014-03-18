@@ -533,7 +533,7 @@ An example
     ```
 
 <p align="center">
-  <img src="../images/images/vimhl-html.png?raw=true" border="2" alt="HTML result"/>
+  <img src="../images/images/vimhl-html.png?raw=true" hspace="20" alt="HTML result"/>
 </p>
 
 - Pdf result of
