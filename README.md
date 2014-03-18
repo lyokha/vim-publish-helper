@@ -458,7 +458,7 @@ An example
 
 - Pandoc flavoured markdown source file:
 
-    ````````md
+    ````````
         ### Original example from [*Pandoc User's Guide*](http://johnmacfarlane.net/pandoc/README.html#fenced-code-blocks)
 
         ``` {#mycode .haskell .numberLines hl="vim" startFrom="99"}
@@ -472,7 +472,7 @@ An example
         ``` {#vimrc_pandoc .vim .numberLines hl="vim" vars="PhTexBlockStyle=Mdframed"}
         set nocompatible
 
-        filetype off
+        filetype off    " filetype is set by vimhl
 
         let g:lucius_style = 'light'
         let g:lucius_contrast = 'high'
