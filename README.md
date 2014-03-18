@@ -534,7 +534,7 @@ An example
     pandoc --standalone -Fvimhl -o example.html example.md
     ```
 
-![HTML result](http://raw.github.com/lyokha/vim-publish-helper/images/images/vimhl-html.png)
+![HTML result](../images/images/vimhl-html.png?raw=true)
 
 - Pdf result of
 
