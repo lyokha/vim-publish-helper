@@ -388,6 +388,71 @@ let g:PhTrimBlocks = 0
 This variable defines if blank lines around code blocks will be removed. Set
 to 1 by default.
 
+Highlighting shells outputs
+---------------------------
+
+The option for highlighting various shells outputs (bash, ghci etc.) is
+available from **version 0.10** of the plugin. Normally one may want to
+highlight shells outputs in a different way than code highlights. It means that
+look of a shell outputs block must differ from normal code block. This is easily
+achieved by specifying a variable that defines a role of the block. Imagine
+that we want to use pandoc, then the role might be defined via a variable
+passed in the attribute vars: *vars="PhBlockRole=output"* and the block view
+would be customized in the script .vimrc.pandoc like this:
+
+```vim
+if !exists('g:PhHtmlPreAttrs')
+    let g:PhHtmlPreAttrs = 'style="white-space: pre-wrap; background: #FFE"'
+endif
+
+if exists('g:PhBlockRole') && g:PhBlockRole == 'output'
+    let g:PhHtmlPreAttrs = 'style="white-space: pre-wrap; '.
+        \ 'display: inline-block; border-style: none none none solid; '.
+        \ 'border-color: blue; border-width: 15px; padding: 5px 10px"'
+    let g:PhTexBlockStyle = 'Leftbar'
+endif
+```
+
+But what shall we do with the highlights? There is no syntax for universal
+shell output. We must invent this! The plugin contains very simple definition
+of such syntax in file *syntax/shelloutput.vim*. It means that the name for this
+"language" is *shelloutput* (you can change it via variable *g:PhShellOutputFt*
+however it makes little sense without renaming the syntax file). This filetype
+has some magic for the plugin. It defines a *virtual prompt*: value of the
+variable *g:PhShellOutputPrompt* ("||| " by default). Lines that start with the
+virtual prompt (including blank characters before it) signal user input in the
+shell and are highlighted as Statement syntax item, other lines are supposed
+to be the shell output. The virtual prompt is ignored in resulting documents
+because it only plays a role of a marker for making correct highlights in the
+document.
+
+Using shell outputs in TeX documents requires extra definitions in the
+preamble because it utilizes language definition feature of the Latex package
+Listings. Here is an example:
+
+```tex
+\usepackage{MnSymbol}
+\usepackage{listings}
+\definecolor{shellpromptcolor}{HTML}{000000}
+\definecolor{shelloutputcolor}{HTML}{666666}
+\lstset{basicstyle=\scriptsize\ttfamily, breaklines=true}
+\lstset{prebreak=\raisebox{0ex}[0ex][0ex]
+  {\ensuremath{\rhookswarrow}}}
+\lstset{postbreak=\raisebox{0ex}[0ex][0ex]
+  {\ensuremath{\rcurvearrowse\space}}}
+\lstdefinelanguage{shelloutput}
+  {basicstyle=\color{shelloutputcolor}
+    \scriptsize
+    \ttfamily\itshape,
+   moredelim=[il][\color{shellpromptcolor}\upshape]{|||\ }}
+```
+
+Script vimhl_latex_tmpl.sh has several options to insert these definitions
+automatically in a pandoc template. Using these definitions has advantage of
+inserting pretty line breaks automatically when they are needed. If you want
+to set up different *also-letters* (see documentation for package Listings) in
+a shell output block you can define them in variable *g:PhAlsoletter*.
+
 Thanks to
 ---------
 
