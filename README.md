@@ -519,7 +519,7 @@ An example
         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ```
 
-- My .vimrc.pandoc is on the images
+- Content of .vimrc.pandoc is on the images
 - Pandoc template for Latex was produced by command
 
     ```sh
