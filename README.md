@@ -458,7 +458,7 @@ An example
 
 - Pandoc flavoured markdown source file:
 
-    ````````
+````````
         ### Original example from [*Pandoc User's Guide*](http://johnmacfarlane.net/pandoc/README.html#fenced-code-blocks)
 
         ``` {#mycode .haskell .numberLines hl="vim" startFrom="99"}
@@ -518,7 +518,7 @@ An example
         DejaVuSansMonoForPowerline.bdfmap  DejaVuSansMonoForPowerline.psfu.bak  DejaVuSansMonoForPowerline.ttf  DejaVuSansMono-Powerline.otf
         ```
 
-    ````````
+````````
 
 - Content of .vimrc.pandoc is on the images
 - Pandoc template for Latex was produced by command
@@ -527,7 +527,7 @@ An example
     vimhl_latex_tmpl.sh -s FFFF99 -f FF6699 -d > ~/.pandoc/templates/vimhl.latex
     ```
 
-- **HTML document (rendered ib Firefox) produced by command**
+- **HTML document (rendered in Firefox) produced by command**
 
     ```sh
     pandoc --standalone -Fvimhl -o example.html example.md
