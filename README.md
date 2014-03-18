@@ -459,17 +459,17 @@ An example
 - Pandoc flavoured markdown source file:
 
     ```
-    \#\#\# Original example from [*Pandoc User's Guide*](http://johnmacfarlane.net/pandoc/README.html#fenced-code-blocks)
+    ### Original example from [*Pandoc User's Guide*](http://johnmacfarlane.net/pandoc/README.html#fenced-code-blocks)
 
-    ~~~~ {#mycode .haskell .numberLines hl="vim" startFrom="99"}
+    \~\~\~\~ {#mycode .haskell .numberLines hl="vim" startFrom="99"}
     qsort []     = []
     qsort (x:xs) = qsort (filter (< x) xs) ++ [x] ++
                    qsort (filter (>= x) xs)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
-    \#\#\# Content of my *~/.vimrc.pandoc*
+    ### Content of my \*\~/.vimrc.pandoc\*
 
-    ~~~~ {#vimrc_pandoc .vim .numberLines hl="vim" vars="PhTexBlockStyle=Mdframed"}
+    \~\~\~\~ {#vimrc_pandoc .vim .numberLines hl="vim" vars="PhTexBlockStyle=Mdframed"}
     set nocompatible
 
     filetype off    " filetype is set by vimhl
@@ -499,18 +499,18 @@ An example
         let g:html_no_progress = 1
         let g:html_ignore_folding = 1
     endif
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
-    \#\#\# Pandoc markdown example
+    ### Pandoc markdown example
 
     ~~~~ {.pandoc .numberLines hl="vim" vars="PhHtmlEngine=tohtml"}
-    \#\#\# Pandoc markdown example
+    ### Pandoc markdown example
 
-    \* Item 1
-    \* Item 2
+    * Item 1
+    * Item 2
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    \#\#\# List fonts in a shell
+    ### List fonts in a shell
 
     ~~~~ {.shelloutput hl="vim" vars="PhBlockRole=output,PhHtmlEngine=tohtml"}
     ||| ls Deja*
