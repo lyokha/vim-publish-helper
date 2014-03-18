@@ -545,7 +545,7 @@ An example
     ```
 
 <p align="center">
-  <img src="../images/images/vimhl-latex.png?raw=true" style="border: 1px solid green" alt="PDF result"/>
+  <img src="../images/images/vimhl-latex.png?raw=true" style="border: 1px solid black" alt="PDF result"/>
 </p>
 
 
