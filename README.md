@@ -534,7 +534,7 @@ An example
     pandoc --standalone -Fvimhl -o example.html example.md
     ```
 
-![HTML result](../images/vimhl-html.png)
+![HTML result](http://raw.github.com/lyokha/vim-publish-helper/images/images/vimhl-html.png)
 
 - Pdf result of
 
@@ -542,7 +542,7 @@ An example
 pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
 ```
 
-![PDF result](../images/vimhl-pdf.png)
+![PDF result](http://raw.github.com/lyokha/vim-publish-helper/images/images/vimhl-pdf.png)
 
 
 Thanks to
