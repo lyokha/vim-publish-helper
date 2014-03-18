@@ -456,7 +456,7 @@ a shell output block you can define them in variable *g:PhAlsoletter*.
 An example
 ----------
 
-- Pandoc flavoured markup source file:
+- Pandoc flavoured markdown source file:
 
     ```
         ### Original example from [*Pandoc User's Guide*](http://johnmacfarlane.net/pandoc/README.html#fenced-code-blocks)
@@ -542,7 +542,7 @@ An example
 pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
 ```
 
-![PDF result](http://raw.github.com/lyokha/vim-publish-helper/images/images/vimhl-pdf.png)
+![PDF result](http://raw.github.com/lyokha/vim-publish-helper/images/images/vimhl-latex.png)
 
 
 Thanks to
