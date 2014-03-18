@@ -458,7 +458,7 @@ An example
 
 - Pandoc flavoured markdown source file:
 
-    ```md
+        ```md
     ### Original example from [*Pandoc User's Guide*](http://johnmacfarlane.net/pandoc/README.html#fenced-code-blocks)
 
     ~~~~ {#mycode .haskell .numberLines hl="vim" startFrom="99"}
@@ -517,7 +517,7 @@ An example
     DejaVuSansMonoForPowerline.bdf     DejaVuSansMonoForPowerline.psfu      DejaVuSansMonoForPowerline.sfd  DejaVuSansMonoForPowerline.txt
     DejaVuSansMonoForPowerline.bdfmap  DejaVuSansMonoForPowerline.psfu.bak  DejaVuSansMonoForPowerline.ttf  DejaVuSansMono-Powerline.otf
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ```
+        ```
 
 - My .vimrc.pandoc is on the images
 - Pandoc template for Latex was produced by command
