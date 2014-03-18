@@ -535,17 +535,17 @@ An example
     ```
 
 <p align="center">
-  <img src="../images/images/vimhl-html.png?raw=true" style="border: 1pxi solid black" alt="HTML result"/>
+  <img src="../images/images/vimhl-html.png?raw=true" style="border: 1px solid green" alt="HTML result"/>
 </p>
 
 - Pdf result of
 
-```sh
-pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
-```
+    ```sh
+    pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
+    ```
 
 <p align="center">
-  <img src="../images/images/vimhl-latex.png?raw=true" style="border: 1pxi solid black" alt="PDF result"/>
+  <img src="../images/images/vimhl-latex.png?raw=true" style="border: 1px solid green" alt="PDF result"/>
 </p>
 
 
