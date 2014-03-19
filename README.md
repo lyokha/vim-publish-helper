@@ -519,7 +519,40 @@ An example
         ```
     ````
 
-- Content of .vimrc.pandoc is drawn on the images below
+- Content of .vimrc.pandoc (also drawn on the images below)
+
+    ```vim
+  set nocompatible
+
+  filetype off    " filetype is set by vimhl
+
+  let g:lucius_style = 'light'
+  let g:lucius_contrast = 'high'
+  let g:lucius_contrast_bg = 'high'
+
+  colorscheme lucius
+  syntax on
+
+  if !exists('g:PhHtmlPreAttrs')
+      let g:PhHtmlPreAttrs = 'style="white-space: pre-wrap; background: #FFE"'
+  endif
+
+  if exists('g:PhBlockRole') && g:PhBlockRole == 'output'
+      let g:PhHtmlPreAttrs = 'style="white-space: pre-wrap; '.
+              \ 'display: inline-block; border-style: none none none solid; '.
+              \ 'border-color: blue; border-width: 15px; padding: 5px 10px"'
+      let g:PhTexBlockStyle = 'Leftbar'
+  endif
+
+  runtime plugin/publish_helper.vim
+
+  if exists('g:PhHtmlEngine') && g:PhHtmlEngine == 'tohtml'
+      runtime plugin/tohtml.vim
+      let g:html_no_progress = 1
+      let g:html_ignore_folding = 1
+  endif
+    ```
+
 - Pandoc template for Latex was produced by command
 
     ```sh
