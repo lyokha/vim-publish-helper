@@ -520,7 +520,7 @@ An example
 
     ````
 
-- Content of .vimrc.pandoc is on the images
+- Content of .vimrc.pandoc is drawn on the images below
 - Pandoc template for Latex was produced by command
 
     ```sh
