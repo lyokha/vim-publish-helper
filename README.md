@@ -532,10 +532,13 @@ An example
     pandoc --standalone -Fvimhl -o example.html example.md
     ```
 
+    ---
+
 <p align="center">
-  <br/>
   <img src="../images/images/vimhl-html.png?raw=true" alt="HTML result"/>
 </p>
+
+    ---
 
 - **Pdf document produced by command**
 
@@ -543,10 +546,13 @@ An example
     pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
     ```
 
+    ---
+
 <p align="center">
-  <br/>
   <img src="../images/images/vimhl-latex.png?raw=true" alt="PDF result"/>
 </p>
+
+    ---
 
 
 Thanks to
