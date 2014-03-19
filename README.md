@@ -542,8 +542,6 @@ An example
 
 ---
 
-<br>
-
 - **Pdf document produced by command**
 
     ```sh
@@ -559,8 +557,6 @@ An example
 </p>
 
 ---
-
-<br>
 
 Thanks to
 ---------
