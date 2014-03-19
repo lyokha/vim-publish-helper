@@ -517,7 +517,6 @@ An example
         DejaVuSansMonoForPowerline.bdf     DejaVuSansMonoForPowerline.psfu      DejaVuSansMonoForPowerline.sfd  DejaVuSansMonoForPowerline.txt
         DejaVuSansMonoForPowerline.bdfmap  DejaVuSansMonoForPowerline.psfu.bak  DejaVuSansMonoForPowerline.ttf  DejaVuSansMono-Powerline.otf
         ```
-
     ````
 
 - Content of .vimrc.pandoc is drawn on the images below
