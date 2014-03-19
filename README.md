@@ -532,6 +532,7 @@ An example
     pandoc --standalone -Fvimhl -o example.html example.md
     ```
 
+<br>
 
 ---
 
@@ -541,12 +542,15 @@ An example
 
 ---
 
+<br>
+
 - **Pdf document produced by command**
 
     ```sh
     pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
     ```
 
+<br>
 
 ---
 
@@ -555,6 +559,8 @@ An example
 </p>
 
 ---
+
+<br>
 
 Thanks to
 ---------
