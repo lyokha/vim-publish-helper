@@ -535,8 +535,10 @@ An example
     ---
 
 <p align="center">
+  <br>
   <img src="../images/images/vimhl-html.png?raw=true" alt="HTML result"/>
 </p>
+
 
     ---
 
@@ -549,8 +551,10 @@ An example
     ---
 
 <p align="center">
+  <br>
   <img src="../images/images/vimhl-latex.png?raw=true" alt="PDF result"/>
 </p>
+
 
     ---
 
