@@ -456,7 +456,7 @@ a shell output block you can define them in variable *g:PhAlsoletter*.
 An example
 ----------
 
-- Pandoc flavoured markdown source file:
+- Pandoc flavoured markdown source file
 
         ### Original example from [*Pandoc User's Guide*](http://johnmacfarlane.net/pandoc/README.html#fenced-code-blocks)
 
