@@ -456,13 +456,13 @@ shell output. We must invent this! The plugin contains very simple definition
 of such syntax in file syntax/shelloutput.vim. It means that the name for this
 "language" is shelloutput (you can change it via variable g:PhShellOutputFt
 however it makes little sense without renaming the syntax file). This filetype
-has some magic for the plugin. It defines a virtual prompt: value of the
-variable g:PhShellOutputPrompt ("||| " by default). Lines that start with the
-virtual prompt (including blank characters before it) signal user input in the
-shell and are highlighted as Statement syntax item, other lines are supposed
-to be the shell output. The virtual prompt is ignored in resulting documents
-because it only plays a role of a marker for making correct highlights in the
-document.
+is magic for the plugin. It defines a virtual prompt: value of the variable
+g:PhShellOutputPrompt ("||| ", i.e. three-bars-space by default). Lines that
+start with the virtual prompt (including blank characters before it) signal
+user input in the shell and are highlighted as Statement syntax item, other
+lines are supposed to be the shell output. The virtual prompt is ignored in
+resulting documents because it only plays a role of a marker for making
+correct highlights in the document.
 
 Using shell outputs in TeX documents requires extra definitions in the
 preamble because it utilizes language definition feature of the Latex package
@@ -485,9 +485,10 @@ Listings. Here is an example:
 <
 Script vimhl_latex_tmpl.sh has several options to insert these definitions
 automatically in a pandoc template. Using these definitions has advantage of
-inserting pretty line breaks automatically when they are needed. If you want
-to set up different also-letters (see documentation for package Listings) in
-a shell output block you can define them in variable g:PhAlsoletter.
+inserting pretty line breaks in the document automatically when they are
+needed. If you want to set up different also-letters (see documentation for
+package Listings for the notion of this) in a shell output block you can
+define them in variable g:PhAlsoletter.
 
 ==============================================================================
                                            *publish_helper-thanks*
