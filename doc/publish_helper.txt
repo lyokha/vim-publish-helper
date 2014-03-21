@@ -459,7 +459,7 @@ however it makes little sense without renaming the syntax file). This filetype
 is magic for the plugin. It defines a virtual prompt: value of the variable
 g:PhShellOutputPrompt ("||| ", i.e. three-bars-space by default). Lines that
 start with the virtual prompt (including blank characters before it) signal
-user input in the shell and are highlighted as Statement syntax item, other
+user input in the shell and are highlighted as Statement syntax items, other
 lines are supposed to be the shell output. The virtual prompt is ignored in
 resulting documents because it only plays a role of a marker for making
 correct highlights in the document.
