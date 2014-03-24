@@ -392,7 +392,7 @@ Highlighting shells and REPLs
 ---------------------------
 
 The option for highlighting various shells and REPLs (bash, ghci, python REPL
-etc.) is available from version 0.10 of the plugin. Normally one may want to
+etc.) is available from **version 0.10** of the plugin. Normally one may want to
 highlight shells and REPLs blocks in a different way than code blocks. This is
 easily achieved by specifying a variable that defines a role of the block.
 Imagine that we want to use pandoc, then the role might be defined via a
