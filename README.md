@@ -395,9 +395,9 @@ The option for highlighting various shells and REPLs (bash, ghci, python REPL
 etc.) is available from **version 0.10** of the plugin. Normally one may want to
 highlight shells and REPLs blocks in a different way than code blocks. This is
 easily achieved by specifying a variable that defines a role of the block.
-Imagine that we want to use pandoc, then the role might be defined via a
-variable passed in the attribute vars: *vars="PhBlockRole=output"* and the block
-view would be customized in .vimrc.pandoc.
+Imagine that we want to use filter vimhl in pandoc, then the role might be
+defined via a variable passed in the attribute vars: *vars="PhBlockRole=output"*
+and the block view would be customized in .vimrc.pandoc like this:
 
 ```vim
 if !exists('g:PhHtmlPreAttrs')
