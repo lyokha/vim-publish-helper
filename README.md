@@ -456,7 +456,7 @@ variable *g:PhAlsoletter*.
 An example
 ----------
 
-- Pandoc flavoured markdown source file
+- Pandoc flavoured markdown source file example.md
 
         ### Original example from [*Pandoc User's Guide*](http://johnmacfarlane.net/pandoc/README.html#fenced-code-blocks)
 
