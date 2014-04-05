@@ -132,7 +132,8 @@ IFS='' read -r -d '' DRPL <<END
 \\\\usepackage{listings}\\
 \\\\definecolor{shellpromptcolor}{$SH_P_COLOR_FMT}{$SH_P_COLOR}\\
 \\\\definecolor{shelloutputcolor}{$SH_O_COLOR_FMT}{$SH_O_COLOR}\\
-\\\\lstset{basicstyle=\\\\scriptsize\\\\ttfamily, breaklines=true}\\
+\\\\lstset{basicstyle=\\\\scriptsize\\\\ttfamily, breaklines=true,\\
+        literate={-}{-}1}\\
 \\\\lstset{prebreak=\\\\raisebox{0ex}[0ex][0ex]\\
   {\\\\ensuremath{\\\\rhookswarrow}}}\\
 \\\\lstset{postbreak=\\\\raisebox{0ex}[0ex][0ex]\\
