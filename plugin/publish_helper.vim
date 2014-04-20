@@ -145,8 +145,9 @@ fun! <SID>Xterm2rgb256(color)
 endfun
 
 fun! <SID>get_color_under_cursor(bg, ...)
-    let layer = a:bg ? "bg" : "fg"
-    let attr = synIDattr(synIDtrans(synID(line("."), col("."), 1)), layer)
+    let layer = a:bg ? 'bg' : 'fg'
+    let synId = a:0 > 1 ? a:2 : synID(line('.'), col('.'), 1)
+    let attr = synIDattr(synIDtrans(synId), layer)
     if empty(attr) || attr == -1
         if a:0 == 0 || a:1 == 0
             return 'none'
@@ -313,9 +314,10 @@ fun! <SID>split_synids(fst_line, last_line, ...)
         endif
         let line = getline('.')
         while cursor[2] <= cols
-            let synId = synIDattr(synID(line('.'), col('.'), 1), 'name')
-            let fg = toupper(<SID>get_color_under_cursor(0, 1))
-            let bg = toupper(<SID>get_color_under_cursor(1, 1))
+            let synIdNmb = synID(line('.'), col('.'), 1)
+            let synId = synIDattr(synIdNmb, 'name')
+            let fg = toupper(<SID>get_color_under_cursor(0, 1, synIdNmb))
+            let bg = toupper(<SID>get_color_under_cursor(1, 1, synIdNmb))
             let cursor[2] += 1
             call setpos('.', cursor)
             if synId != old_synId
