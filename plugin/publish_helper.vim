@@ -214,7 +214,7 @@ fun! <SID>make_tohtml_code_highlight(fst_line, last_line, ...)
     silent %s/<br>$//e
     silent %s/&nbsp;/ /ge
     if ft == g:PhShellOutputFt
-        exe 'silent %s/\%(>\s*\)\@<='.g:PhShellOutputPrompt.'//e'
+        exe 'silent %s/>\s*\zs'.g:PhShellOutputPrompt.'//e'
     endif
     if a:0 && a:1 >= 0
         let linenr = a:1
@@ -415,7 +415,7 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
                     let part = '\textcolor[HTML]{'.fg.'}{'.part.'}'
                 elseif a:ft == 'html'
                     if shell_output_html
-                        exe 'let part = substitute(part, ''\%(^\s*\)\@<='
+                        exe 'let part = substitute(part, ''^\s*\zs'
                                     \ .g:PhShellOutputPrompt.''', "", "")'
                     endif
                     let part = <SID>escape_html(part)
