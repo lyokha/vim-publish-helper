@@ -1,6 +1,6 @@
 " File: publish_helper.vim
 " Author: Alexey Radkov
-" Version: 0.10
+" Version: 0.11
 " Description: two commands for publishing highlighted code in HTML or TeX
 "              (optionally from pandoc as highlighting engine from filter
 "              vimhl.hs)
@@ -90,6 +90,11 @@ if !exists('g:PhAlsoletter')
     let g:PhAlsoletter = ''
 endif
 
+if !exists('g:PhRichTextElems')
+    " accepted elements are 'bg', 'bold', 'italic' and 'underline'
+    let g:PhRichTextElems = ['bg', 'bold', 'italic', 'underline']
+endif
+
 " next Xterm2rgb... conversion functions are adopted from plugin Colorizer.vim
 fun! <SID>Xterm2rgb16(color)
     " 16 basic colors
@@ -146,13 +151,16 @@ endfun
 
 fun! <SID>get_color_under_cursor(bg, ...)
     let layer = a:bg ? 'bg' : 'fg'
-    let synId = a:0 > 1 ? a:2 : synID(line('.'), col('.'), 1)
-    let attr = synIDattr(synIDtrans(synId), layer)
+    let trans = a:0 > 1 ? a:2 : synIDtrans(synID(line('.'), col('.'), 1))
+    let attr = synIDattr(trans, layer)
     if empty(attr) || attr == -1
         if a:0 == 0 || a:1 == 0
             return 'none'
         endif
         let attr = synIDattr(synIDtrans(hlID('Normal')), layer)
+    endif
+    if attr =~ '^#'
+        return substitute(attr, '^#', '', '')
     endif
     return <SID>Xterm2rgb256(attr)
 endfun
@@ -249,11 +257,11 @@ fun! <SID>escape_html(block)
     return block
 endfun
 
-fun! <SID>add_synid(result, synId, line, linenr, fg, bg, sk_fg, sk_bg)
-    if g:PhCtrlTrans == 0 || empty(a:sk_fg)
+fun! <SID>add_synid(result, synId, line, linenr, trans, sk_trans)
+    if g:PhCtrlTrans == 0 || a:sk_trans == -1
         call add(a:result,
                     \ {'name': a:synId, 'content': a:line,
-                    \  'line': a:linenr, 'fg': a:fg, 'bg': a:bg})
+                    \  'line': a:linenr, 'trans': a:trans})
         return
     endif
     let len = strlen(a:line)
@@ -267,12 +275,12 @@ fun! <SID>add_synid(result, synId, line, linenr, fg, bg, sk_fg, sk_bg)
                 call add(a:result,
                     \ {'name': a:synId,
                     \  'content': strpart(a:line, old_pos, pos - old_pos),
-                    \  'line': a:linenr, 'fg': a:fg, 'bg': a:bg})
+                    \  'line': a:linenr, 'trans': a:trans})
             endif
             call add(a:result,
                     \ {'name': a:synId,
                     \  'content': strtrans(strpart(a:line, pos, 1)),
-                    \  'line': a:linenr, 'fg': a:sk_fg, 'bg': a:sk_bg})
+                    \  'line': a:linenr, 'trans': a:sk_trans})
             let pos += 1
         endif
     endwhile
@@ -280,7 +288,7 @@ fun! <SID>add_synid(result, synId, line, linenr, fg, bg, sk_fg, sk_bg)
         call add(a:result,
                     \ {'name': a:synId,
                     \  'content': strpart(a:line, old_pos, len - old_pos),
-                    \  'line': a:linenr, 'fg': a:fg, 'bg': a:bg})
+                    \  'line': a:linenr, 'trans': a:trans})
     endif
 endfun
 
@@ -291,9 +299,7 @@ fun! <SID>split_synids(fst_line, last_line, ...)
     let cursor = getpos('.')
     let linenr = a:0 ? (a:1 < 0 ? a:fst_line : a:1) : -1
     let n_fmt = strlen(string(linenr + a:last_line - a:fst_line))
-    let trans = synIDtrans(hlID('SpecialKey'))
-    let sk_fg = toupper(<SID>Xterm2rgb256(synIDattr(trans, 'fg')))
-    let sk_bg = toupper(<SID>Xterm2rgb256(synIDattr(trans, 'bg')))
+    let sk_trans = synIDtrans(hlID('SpecialKey'))
     while cursor[1] <= a:last_line
         let old_synId = '^'
         let old_start = cursor[2]
@@ -301,7 +307,7 @@ fun! <SID>split_synids(fst_line, last_line, ...)
         if linenr >= 0
             exe "let linecol = printf('%".n_fmt."d  ', ".linenr.")"
             call <SID>add_synid(result, 'linenr', linecol, line('.'),
-                        \ sk_fg, sk_bg, '', '')
+                        \ sk_trans, -1)
         endif
         if cols == 1
             let cursor[1] += 1
@@ -316,25 +322,23 @@ fun! <SID>split_synids(fst_line, last_line, ...)
         while cursor[2] <= cols
             let synIdNmb = synID(line('.'), col('.'), 1)
             let synId = synIDattr(synIdNmb, 'name')
-            let fg = toupper(<SID>get_color_under_cursor(0, 1, synIdNmb))
-            let bg = toupper(<SID>get_color_under_cursor(1, 1, synIdNmb))
+            let trans = synIDtrans(synIdNmb)
             let cursor[2] += 1
             call setpos('.', cursor)
             if synId != old_synId
                 if old_synId != '^'
                     call <SID>add_synid(result, old_synId,
                     \ strpart(line, old_start - 1, cursor[2] - old_start - 1),
-                    \ line('.'), old_fg, old_bg, sk_fg, sk_bg)
+                    \ line('.'), old_trans, sk_trans)
                 endif
                 let old_synId = synId
                 let old_start = cursor[2] - 1
             endif
-            let old_fg = fg
-            let old_bg = bg
+            let old_trans = trans
         endwhile
         call <SID>add_synid(result, old_synId,
                     \ strpart(line, old_start - 1, cursor[2] - old_start - 1),
-                    \ line('.'), old_fg, old_bg, sk_fg, sk_bg)
+                    \ line('.'), old_trans, sk_trans)
         let cursor[1] += 1
         let cursor[2] = 1
         if linenr >= 0
@@ -344,6 +348,69 @@ fun! <SID>split_synids(fst_line, last_line, ...)
     endwhile
     call winrestview(save_winview)
     return result
+endfun
+
+fun! <SID>add_tex_rich_elem(part, trans, fg, elems, idx)
+    if a:idx == len(a:elems)
+        return a:part
+    endif
+    let nested = <SID>add_tex_rich_elem(a:part, a:trans, a:fg, a:elems,
+                \ a:idx + 1)
+    if a:elems[a:idx] == 'fg'
+        return '\textcolor[HTML]{'.a:fg.'}{'.nested.'}'
+    endif
+    if a:elems[a:idx] == 'bg'
+        let bg = toupper(<SID>get_color_under_cursor(1, 0, a:trans))
+        if bg == 'NONE'
+            return nested
+        endif
+        return '\colorbox[HTML]{'.bg.'}{'.nested.'}'
+    endif
+    if a:elems[a:idx] == 'bold'
+        return synIDattr(a:trans, 'bold') == 1 ?
+                    \ '\textbf{'.nested.'}' : nested
+    endif
+    if a:elems[a:idx] == 'italic'
+        return synIDattr(a:trans, 'italic') == 1 ?
+                    \  '\emph{'.nested.'}' : nested
+    endif
+    if a:elems[a:idx] == 'underline'
+        return synIDattr(a:trans, 'underline') == 1 ?
+                    \ '\underline{'.nested.'}' : nested
+    endif
+    return nested
+endfun
+
+fun! <SID>sort_tex_rich_elems(e1, e2)
+    let order = ['bg', 'fg', 'bold', 'italic', 'underline']
+    return index(order, a:e2) < index(order, a:e1)
+endfun
+
+fun! <SID>add_tex_rich_elems(part, trans, fg)
+    let elems = sort(g:PhRichTextElems + ['fg'], '<SID>sort_tex_rich_elems')
+    return <SID>add_tex_rich_elem(a:part, a:trans, a:fg, elems, 0)
+endfun
+
+fun! <SID>add_html_rich_elem(elem, trans)
+    if a:elem == 'bg'
+        let bg = toupper(<SID>get_color_under_cursor(1, 0, a:trans))
+        if bg == 'NONE'
+            return ''
+        endif
+        return ' background-color: #'.bg.';'
+    endif
+    if synIDattr(a:trans, a:elem) == 1
+        if a:elem == 'bold'
+            return ' font-weight: bold;'
+        endif
+        if a:elem == 'italic'
+            return ' font-style: italic;'
+        endif
+        if a:elem == 'underline'
+            return ' text-decoration: underline;'
+        endif
+    endif
+    return ''
 endfun
 
 fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
@@ -408,18 +475,23 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
                 let content = ''
             endwhile
             let part = hl['content']
-            let fg = hl['fg']
+            let trans = hl['trans']
+            let fg = toupper(<SID>get_color_under_cursor(0, 1, trans))
             if part !~ '^[[:blank:]\u00A0]*$'
                 if a:ft == 'tex'
                     let part = <SID>escape_tex(part)
-                    let part = '\textcolor[HTML]{'.fg.'}{'.part.'}'
+                    let part = <SID>add_tex_rich_elems(part, trans, fg)
                 elseif a:ft == 'html'
                     if shell_output_html
                         exe 'let part = substitute(part, ''^\s*\zs'
                                     \ .g:PhShellOutputPrompt.''', "", "")'
                     endif
-                    let part = <SID>escape_html(part)
-                    let part = '<span style="color: #'.fg.'">'.part.'</span>'
+                    let value = <SID>escape_html(part)
+                    let part = '<span style="color: #'.fg.';'
+                    for elem in g:PhRichTextElems
+                        let part .= <SID>add_html_rich_elem(elem, trans)
+                    endfor
+                    let part .= '">'.value.'</span>'
                 endif
             endif
             let content .= part

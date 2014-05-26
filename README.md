@@ -388,6 +388,27 @@ let g:PhTrimBlocks = 0
 This variable defines if blank lines around code blocks will be removed. Set
 to 1 by default.
 
+### g:PhRichTextElems
+
+```vim
+let g:PhRichTextElems = ['bg', 'bold', 'italic']
+```
+
+This variable defines a list of rich text elements that will be accepted for
+rendering text both in HTML and Latex formats, it is ignored when using TOhtml
+engine. Accepted values are *bg*, *bold*, *italic* and *underline*, other
+values are quietly ignored. All accepted elements are turned on by default.
+Notice that Latex engine uses *\colorbox* for rendering background which
+normally has outstanding height that makes the whole line higher. To prevent
+this put
+
+```tex
+\setlength\fboxsep{1pt}
+```
+
+in the preamble of the TeX document. Script vimhl_latex_tmpl.sh puts this line
+in environments Shaded, Framed and Mdframed automatically.
+
 Highlighting shells and REPLs
 ---------------------------
 

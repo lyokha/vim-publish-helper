@@ -96,6 +96,7 @@ IFS='' read -r -d '' RPL <<END
   \\\\setlength\\\\parskip{0cm}\\
   \\\\setlength\\\\partopsep{-\\\\topsep}\\
   \\\\addtolength\\\\partopsep{0.2cm}\\
+  \\\\setlength\\\\fboxsep{1pt}\\
   \\\\begin{shaded}\\$SCRIPTSIZE
 }{\\\\end{shaded}}\\
 \\\\newenvironment{Snugshade}{\\
@@ -106,6 +107,7 @@ IFS='' read -r -d '' RPL <<END
   \\\\setlength\\\\parskip{0cm}\\
   \\\\setlength\\\\partopsep{-\\\\topsep}\\
   \\\\addtolength\\\\partopsep{0.2cm}\\
+  \\\\setlength\\\\fboxsep{1pt}\\
   \\\\begin{framed}\\$SCRIPTSIZE
 }{\\\\end{framed}}\\
 \\\\newenvironment{Leftbar}{\\
@@ -121,6 +123,7 @@ IFS='' read -r -d '' MRPL <<END
 \\\\newenvironment{Mdframed}{\\
   \\\\definecolor{mdframedbgcolor}{$BG_COLOR_FMT}{$BG_COLOR}\\
   \\\\definecolor{mdframedlcolor}{$F_COLOR_FMT}{$F_COLOR}\\
+  \\\\setlength\\\\fboxsep{1pt}\\
   \\\\begin{mdframed}[linecolor=mdframedlcolor,\\
                    backgroundcolor=mdframedbgcolor,\\
                    roundcorner=$ROUND_CORNER]\\$SCRIPTSIZE

@@ -1,10 +1,10 @@
-*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2014 Mar 18
+*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2014 May 26
 
                        ------------------------------
                         Publish Helper (HTML and TeX)
                        ------------------------------
 
-                                version 0.10
+                                version 0.11
 
 Author: Alexey Radkov
 
@@ -34,6 +34,7 @@ Author: Alexey Radkov
         6.4 g:PhTexBlockStyle ................: |publish_helper-cfg-var-texbstl|
         6.5 g:PhCtrlTrans ....................: |publish_helper-cfg-var-ctrltr|
         6.6 g:PhTrimBlocks ...................: |publish_helper-cfg-var-trimblk|
+        6.7 g:PhRichTextElems ................: |publish_helper-cfg-var-richelm|
     7. Highlighting shells and REPLs .........: |publish_helper-hl-sh-outputs|
     8. Thanks to .............................: |publish_helper-thanks|
     A. Change History ........................: |publish_helper-changes|
@@ -426,6 +427,26 @@ the pandoc's AST level. This variable is not set by default.
 This variable defines if blank lines around code blocks will be removed. Set
 to 1 by default.
 
+------------------------------------------------------------------------------
+                                           *publish_helper-cfg-var-richelm*
+6.7 g:PhRichTextElems~
+
+>
+    let g:PhRichTextElems = ['bg', 'bold', 'italic']
+<
+This variable defines a list of rich text elements that will be accepted for
+rendering text both in HTML and Latex formats, it is ignored when using TOhtml
+engine. Accepted values are 'bg', 'bold', 'italic' and 'underline', other
+values are quietly ignored. All accepted elements are turned on by default.
+Notice that Latex engine uses \colorbox for rendering background which
+normally has outstanding height that makes the whole line higher. To prevent
+this put
+>
+    \setlength\fboxsep{1pt}
+<
+in the preamble of the TeX document. Script vimhl_latex_tmpl.sh puts this line
+in environments Shaded, Framed and Mdframed automatically.
+
 ==============================================================================
                                            *publish_helper-hl-sh-outputs*
 7. Highlighting shells and REPLs~
@@ -553,5 +574,10 @@ A. Change History~
 
 0.10
     - added support for highlighting various shells outputs
+
+0.11
+    - added support for rich text elements: text background color, bold,
+      italic and underline typefaces and turned on by default
+    - speed improvements, now commands may run about 30% faster
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
