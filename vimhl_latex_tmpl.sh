@@ -13,21 +13,26 @@ S_BG_COLOR='FFFFEE'
 F_COLOR='000000'
 SH_P_COLOR='000000'
 SH_O_COLOR='666666'
+LB_COLOR='000000'
 BG_COLOR_FMT='HTML'
 S_BG_COLOR_FMT='HTML'
 F_COLOR_FMT='HTML'
 SH_P_COLOR_FMT='HTML'
 SH_O_COLOR_FMT='HTML'
+LB_COLOR_FMT='HTML'
 
 ROUND_CORNER='0pt'
+LB_WIDTH='3pt'
 SCRIPTSIZE='
     \\scriptsize\'
 
-while getopts ':mb:s:f:r:dp:o:nh' opt ; do
+while getopts ':mb:s:l:w:f:r:dp:o:nh' opt ; do
     case $opt in
         m) MDFRAMED=1 ;;
         b) BG_COLOR=$OPTARG ;;
         s) S_BG_COLOR=$OPTARG ;;
+        l) LB_COLOR=$OPTARG ;;
+        w) LB_WIDTH=$OPTARG ;;
         f) MDFRAMED=1; F_COLOR=$OPTARG ;;
         r) MDFRAMED=1; ROUND_CORNER=$OPTARG ;;
         d) SHOUTPUT=1 ;;
@@ -49,6 +54,11 @@ Options:
   -s set background color in Snugshade code blocks;
      HTML, RGB and rgb (comma-separated values) formats are supported;
      default value is '$S_BG_COLOR'
+  -l set left bar color in Leftbar code blocks;
+     HTML, RGB and rgb (comma-separated values) formats are supported;
+     default value is '$LB_COLOR'
+  -w set left bar width in Leftbar code blocks;
+     default value is '$LB_WIDTH'
   -f set frame line color in Mdframed code blocks, implies option -m;
      HTML, RGB and rgb (comma-separated values) formats are supported;
      default value is '$F_COLOR'
@@ -62,6 +72,7 @@ Options:
      HTML, RGB and rgb (comma-separated values) formats are supported;
      default value is '$SH_O_COLOR'
   -n do not set scriptsize (which is set by default) in code blocks
+
   -h print this message and exit
 
 END
@@ -75,7 +86,7 @@ done
 
 shift $((OPTIND-1))
 
-for i in 'BG_' 'S_BG_' 'F_' 'SH_P_' 'SH_O_' ; do
+for i in 'BG_' 'S_BG_' 'F_' 'SH_P_' 'SH_O_' 'LB_' ; do
     color=$(eval echo $`echo ${i}COLOR`)
     if [[ $color == *,* ]] ; then
         fmt='RGB'
@@ -110,6 +121,11 @@ IFS='' read -r -d '' RPL <<END
   \\\\setlength\\\\fboxsep{1pt}\\
   \\\\begin{framed}\\$SCRIPTSIZE
 }{\\\\end{framed}}\\
+\\\\renewenvironment{leftbar}{%\\
+  \\\\definecolor{leftbarcolor}{$LB_COLOR_FMT}{$LB_COLOR}%\\
+  \\\\def\\\\FrameCommand{{\\\\color{leftbarcolor}\\\\vrule width $LB_WIDTH} \\\\hspace{10pt}}%\\
+  \\\\MakeFramed {\\\\advance\\\\hsize-\\\\width \\\\FrameRestore}}%\\
+ {\\\\endMakeFramed}\\
 \\\\newenvironment{Leftbar}{\\
   \\\\setlength\\\\parskip{0cm}\\
   \\\\setlength\\\\partopsep{-\\\\topsep}\\
