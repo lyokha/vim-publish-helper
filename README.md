@@ -85,14 +85,14 @@ ghc --make vimhl
 ```
 
 and move produced binary executable file vimhl in some directory listed in the
-environment variable $PATH. Alternatively one may make original file vimhl.hs
+environment variable \$PATH. Alternatively one may make original file vimhl.hs
 executable
 
 ```sh
 chmod +x vimhl.hs
 ```
 
-and move it somewhere in the $PATH as well. The first method is preferable.
+and move it somewhere in the \$PATH as well. The first method is preferable.
 After that pandoc gets capable to produce HTML or TeX code with authentic vim
 syntax highlights! Let's make an example. Say you want to convert an HTML
 article from your cool IT blog with multiple examples of C++ codes into PDF
@@ -138,11 +138,11 @@ generated code must be numbered you can put usual pandoc options inside tags
 
 ### Using with dedicated .vimrc file
 
-Running vim with normal $HOME/.vimrc and all the scripts in the directory
-$HOME/.vim/ consumes many resources and unnecessarily slows pandoc down. To
+Running vim with normal \$HOME/.vimrc and all the scripts in the directory
+\$HOME/.vim/ consumes many resources and unnecessarily slows pandoc down. To
 fight this you can create a new file *.vimrc.pandoc* in your home directory with
 very minimal settings. When vimhl.hs finds this file it runs vim with options
-*--noplugin -u $HOME/.vimrc.pandoc*. As soon as plugins are turned off
+*--noplugin -u \$HOME/.vimrc.pandoc*. As soon as plugins are turned off
 .vimrc.pandoc must source at least plugins publish\_helper and TOhtml (for
 producing HTML documents, but since version 0.6 of this plugin this is
 optional). Here is an example of good .vimrc.pandoc contents:
@@ -215,18 +215,18 @@ Here is the algorithm of choosing color scheme in priority order:
 * If tag *&lt;pre&gt;* contains attribute *colorscheme="&lt;value&gt;"* then
   *&lt;value&gt;* is chosen, else
 
-* If file $HOME/.vimrc.pandoc contains line *colorscheme &lt;value&gt;* then
+* If file \$HOME/.vimrc.pandoc contains line *colorscheme &lt;value&gt;* then
   *&lt;value&gt;* is chosen, else
 
-* If file $HOME/.vimrc contains line *let g:PhColorscheme = "&lt;value&gt;"*
+* If file \$HOME/.vimrc contains line *let g:PhColorscheme = "&lt;value&gt;"*
   then *&lt;value&gt;* is chosen, else
 
-* If file $HOME/.vimrc contains line *colorscheme &lt;value&gt;* then
+* If file \$HOME/.vimrc contains line *colorscheme &lt;value&gt;* then
   *&lt;value&gt;* is chosen, else
 
 * System vim color scheme is chosen
 
-The second case, i.e. when colorscheme is defined in file $HOME/.vimrc.pandoc,
+The second case, i.e. when colorscheme is defined in file \$HOME/.vimrc.pandoc,
 is preferable as vim will consume less resources and work fastest.
 
 ### Remarks
