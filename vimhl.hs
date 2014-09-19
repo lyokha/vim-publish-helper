@@ -9,6 +9,7 @@ import System.Directory
 import System.FilePath
 import System.Process
 import Data.Char (toLower)
+import Control.Arrow (first)
 
 vimHl :: Maybe Format -> Block -> IO Block
 vimHl (Just fm@(Format fmt)) cb@(CodeBlock (_, cls@(ft:_), namevals) contents)
@@ -19,25 +20,25 @@ vimHl (Just fm@(Format fmt)) cb@(CodeBlock (_, cls@(ft:_), namevals) contents)
               where nmb
                       | "numberLines" `elem` cls =
                           case lookup "startfrom" namevals' of
-                          Nothing  -> " -1"
-                          Just val -> " " ++ val
+                              Nothing  -> " -1"
+                              Just val -> ' ' : val
                       | otherwise = ""
           colorscheme =
               case lookup "colorscheme" namevals' of
-              Nothing -> ""
-              Just val -> "-c 'let g:PhColorscheme = \"" ++ val ++ "\"' "
+                  Nothing -> ""
+                  Just val -> "-c 'let g:PhColorscheme = \"" ++ val ++ "\"' "
           cmds =
               case lookup "vars" namevals' of
-              Nothing -> ""
-              Just val ->
-                  unwords (map cmd $ map flag $ filter (not . null) $
-                      map (splitRegex regex') $ splitRegex regex val) ++ " "
-                  where cmd (x:y:_) =
-                            "--cmd 'let g:" ++ x ++ " = \"" ++ y ++ "\"'"
-                        flag [x]    = [x, "1"]
-                        flag x      = x
-                        regex       = mkRegex "[[:space:]]*,[[:space:]]*"
-                        regex'      = mkRegex "[[:space:]]*=[[:space:]]*"
+                  Nothing -> ""
+                  Just val ->
+                      unwords (map (cmd . flag) $ filter (not . null) $
+                          map (splitRegex regex') $ splitRegex regex val) ++ " "
+                      where cmd (x:y:_) =
+                                "--cmd 'let g:" ++ x ++ " = \"" ++ y ++ "\"'"
+                            flag [x]    = [x, "1"]
+                            flag x      = x
+                            regex       = mkRegex "[[:space:]]*,[[:space:]]*"
+                            regex'      = mkRegex "[[:space:]]*=[[:space:]]*"
           vimrcM = do
               home <- getHomeDirectory
               let vimrc = home `combine` ".vimrc.pandoc"
@@ -45,9 +46,9 @@ vimHl (Just fm@(Format fmt)) cb@(CodeBlock (_, cls@(ft:_), namevals) contents)
               if exists
                   then do
                       permissions <- getPermissions vimrc
-                      if readable permissions
-                          then return $ "--noplugin -u '" ++ vimrc ++ "' "
-                          else return ""
+                      return $ if readable permissions
+                                   then "--noplugin -u '" ++ vimrc ++ "' "
+                                   else ""
                   else return ""
           runVim src dst hsrc hdst = do
               hPutStr hsrc contents
@@ -70,7 +71,7 @@ vimHl (Just fm@(Format fmt)) cb@(CodeBlock (_, cls@(ft:_), namevals) contents)
                           readFile dst
       return $ RawBlock fm block
   | otherwise = return cb
-  where namevals' = map (\(x, y) -> (map toLower x, y)) namevals
+  where namevals' = map (first $ map toLower) namevals
 vimHl _ cb = return cb
 
 main :: IO ()
