@@ -31,13 +31,12 @@ vimHl (Just fm@(Format fmt)) cb@(CodeBlock (_, cls@(ft:_), namevals) contents)
                     Nothing -> ""
                     Just val ->
                         unwords $ map (cmd . flag) $ filter (not . null) $
-                            map (splitRegex regex') $ splitRegex regex val
+                            map (splitRegex $ dl"=") $ splitRegex (dl",") val
                         where cmd (x:y:_) =
                                   "--cmd 'let g:" ++ x ++ " = \"" ++ y ++ "\"'"
                               flag [x]    = [x, "1"]
                               flag x      = x
-                              regex       = mkRegex "[[:space:]]*,[[:space:]]*"
-                              regex'      = mkRegex "[[:space:]]*=[[:space:]]*"
+                              dl x        = mkRegex $ "\\s*" ++ x ++ "\\s*"
             vimrcM = do
                 home <- getHomeDirectory
                 let vimrc = home `combine` ".vimrc.pandoc"
