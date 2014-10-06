@@ -64,9 +64,7 @@ vimHl (Just fm@(Format fmt)) cb@(CodeBlock (_, cls@(ft:_), namevals) contents)
                 mapM_ hClose [hin, hout]
         block <- withSystemTempFile "_vimhl_src." $
                     \src hsrc -> withSystemTempFile "_vimhl_dst." $
-                        \dst hdst -> do
-                            runVim src dst hsrc hdst
-                            readFile dst
+                        \dst hdst -> runVim src dst hsrc hdst >> readFile dst
         return $ RawBlock fm block
     | otherwise = return cb
     where namevals' = map (first $ map toLower) namevals
