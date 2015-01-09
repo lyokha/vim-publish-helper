@@ -13,7 +13,7 @@ import Data.Maybe (fromMaybe)
 import Control.Arrow (first)
 
 vimHl :: Maybe Format -> Block -> IO Block
-vimHl (Just fm@(Format fmt)) cb@(CodeBlock (_, cls@(ft:_), namevals) contents)
+vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
     | lookup "hl" namevals' == Just "vim" && fmt `elem` ["html", "latex"] = do
         let vimhlcmd =
                 unwords [cmd fmt, nmb]
@@ -66,7 +66,6 @@ vimHl (Just fm@(Format fmt)) cb@(CodeBlock (_, cls@(ft:_), namevals) contents)
                     \src hsrc -> withSystemTempFile "_vimhl_dst." $
                         \dst hdst -> runVim src dst hsrc hdst >> readFile dst
         return $ RawBlock fm block
-    | otherwise = return cb
     where namevals' = map (first $ map toLower) namevals
 vimHl _ cb = return cb
 
