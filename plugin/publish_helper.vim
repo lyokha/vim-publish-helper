@@ -95,6 +95,26 @@ if !exists('g:PhRichTextElems')
     let g:PhRichTextElems = ['bg', 'bold', 'italic', 'underline']
 endif
 
+if !exists('g:PhLinenrAsTblColumn')
+    let g:PhLinenrAsTblColumn = 0
+endif
+
+if !exists('g:PhLinenrColumnBorderAttrs')
+    let g:PhLinenrColumnBorderAttrs = '1px solid'
+endif
+
+if !exists('g:PhLinenrColumnWidth')
+    let g:PhLinenrColumnWidth = '2em'
+endif
+
+if !exists('g:PhLinenrColumnAttrs')
+    let g:PhLinenrColumnAttrs = ''
+endif
+
+if !exists('g:PhCodeColumnOverflowX')
+    let g:PhCodeColumnOverflowX = 'auto'
+endif
+
 " next Xterm2rgb... conversion functions are adopted from plugin Colorizer.vim
 fun! <SID>Xterm2rgb16(color)
     " 16 basic colors
@@ -305,7 +325,10 @@ fun! <SID>split_synids(fst_line, last_line, ...)
         let old_start = cursor[2]
         let cols = col('$')
         if linenr >= 0
-            exe "let linecol = printf('%".n_fmt."d  ', ".linenr.")"
+            let linecol = linenr
+            if !g:PhLinenrAsTblColumn
+                exe "let linecol = printf('%".n_fmt."d  ', ".linenr.")"
+            endif
             call <SID>add_synid(result, 'linenr', linecol, line('.'),
                         \ sk_trans, -1)
         endif
@@ -413,6 +436,23 @@ fun! <SID>add_html_rich_elem(elem, trans)
     return ''
 endfun
 
+fun! <SID>linenr_tbl_layout(attrs)
+    let div_style = '<div style="overflow-x: '.g:PhCodeColumnOverflowX.';">'
+    let div_style_end = '</div>'
+    let pre_style = substitute(a:attrs, '\<style="',
+                \ 'style="display: inline; ', '')
+    if pre_style == a:attrs
+        let pre_style = a:attrs.' style="display: inline;"'
+    endif
+    let div_style_test = matchstr(a:attrs,
+                \ '\<style="[^"]*\zs\<background:[^;"]*;\?')
+    if !empty(div_style_test)
+        let div_style = '<div style="overflow-x: '.g:PhCodeColumnOverflowX.
+                    \ '; '.div_style_test.'">'
+    endif
+    return {'pre': pre_style, 'div': div_style, 'div_end': div_style_end}
+endfun
+
 fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
     let range = [a:fst_line, a:last_line]
     if g:PhTrimBlocks
@@ -420,6 +460,8 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
     endif
     let shell_output_tex = &ft == g:PhShellOutputFt && a:ft == 'tex'
     let shell_output_html = &ft == g:PhShellOutputFt && a:ft == 'html'
+    let linenr_html = a:0 && a:ft == 'html'
+    let linenr_html_tbl = linenr_html && g:PhLinenrAsTblColumn
     let parts = []
     if range[0] <= range[1]
         if shell_output_tex
@@ -429,7 +471,7 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
             if exists('g:PhColorscheme') && g:PhColorscheme != g:colors_name
                 exe "colorscheme ".g:PhColorscheme
             endif
-            if a:0 && a:ft == 'html'
+            if linenr_html
                 let parts = call('<SID>split_synids', range + a:000)
             else
                 let parts = <SID>split_synids(range[0], range[1])
@@ -454,8 +496,6 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
         endif
         call append(0, ['\begin{'.g:PhTexBlockStyle.'}',
                     \ '\begin{Highlighting}['.numbers.']'])
-    elseif a:ft == 'html'
-        call append(0, '<pre '.g:PhHtmlPreAttrs.'>')
     endif
     delete
     let line = range[0]
@@ -465,6 +505,44 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
             let line += 1
         endfor
     else
+        if linenr_html_tbl
+            let fg = '000000'
+            if !exists('g:PhLinenrFgColor')
+                let attr = synIDattr(synIDtrans(hlID('SpecialKey')), 'fg')
+                let fg = toupper(<SID>Xterm2rgb256(attr))
+            else
+                let fg = toupper(g:PhLinenrFgColor)
+            endif
+            let styles = <SID>linenr_tbl_layout(g:PhLinenrColumnAttrs)
+            let pre_style = styles['pre']
+            let div_style = styles['div']
+            let div_style_end = styles['div_end']
+            call append(0, '<table style="margin: 0; '.
+                        \ 'width: 100%; table-layout: fixed; border: none;">'.
+                        \ '<tr><td style="vertical-align: top; width: '.
+                        \ g:PhLinenrColumnWidth.'; text-align: right; '.
+                        \ 'padding-right: 3px; color: #'.fg.
+                        \ '; border-right: '.g:PhLinenrColumnBorderAttrs.' #'.
+                        \ fg.';">'.div_style.'<pre '.pre_style.'>')
+            for hl in parts
+                if hl['name'] == 'linenr'
+                    call append('$', hl['content'])
+                endif
+            endfor
+            call append('$', '</pre>'.div_style_end.
+                        \ '</td><td style="vertical-align: top;">')
+        endif
+        let pre_style = g:PhHtmlPreAttrs
+        let div_style = ''
+        let div_style_end = ''
+        if linenr_html_tbl
+            let styles = <SID>linenr_tbl_layout(g:PhHtmlPreAttrs)
+            let pre_style = styles['pre']
+            let div_style = styles['div']
+            let div_style_end = styles['div_end']
+        endif
+        call append(linenr_html_tbl ? '$' : 0,
+                    \ div_style.'<pre '.pre_style.'>')
         let old_line = line
         let content = ''
         for hl in parts
@@ -494,7 +572,9 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
                     let part .= '">'.value.'</span>'
                 endif
             endif
-            let content .= part
+            if !(linenr_html_tbl && hl['name'] == 'linenr')
+                let content .= part
+            endif
         endfor
         call append('$', content)
     endif
@@ -514,6 +594,9 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
         call setpos('.', [0, 1, 1, 0])
     elseif a:ft == 'html'
         call append('$', '</pre>')
+        if linenr_html_tbl
+            call append('$', div_style_end.'</td></tr></table>')
+        endif
         normal gggJ0
     endif
     let &ft = a:ft
