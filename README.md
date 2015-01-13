@@ -410,6 +410,34 @@ this put
 in the preamble of the TeX document. Script vimhl_latex_tmpl.sh puts this line
 in environments Shaded, Framed and Mdframed automatically.
 
+### g:PhLinenrAsTblColumn
+
+```vim
+let g:PhLinenrAsTblColumn = 1
+```
+
+Draw line-numbered code as an HTML table. Effective only when internal syntax
+highlighting engine is used. Not set by default. There are a few variables to
+control how various elements in the table will look.
+
+* *g:PhLinenrColumnBorderAttrs* defines border attributes between the
+  line-number and the code columns. Beware: it does not expect color settings,
+  see the next clause. Default value is *1px solid*.
+
+* *g:PhLinenrFgColor* defines foreground color of the line-number column and of
+  the border between the columns. Not set by default: color of the
+  *SpecialKey* syntax highlighting group is used in this case.
+
+* *g:PhLinenrColumnWidth* defines the line-number column width. Default value is
+  *2em*.
+
+* *g:PhLinenrColumnAttrs* defines attributes of the line-number column. Empty by
+  default. May be used to customize background color of the column.
+
+* *g:PhCodeColumnOverflowX* defines overflow-x behaviour of the code column.
+  Default value is *auto*. This value must correspond to non-wrapping text
+  models, otherwise line numbers may mismatch code lines if the latter wraps.
+
 Highlighting shells and REPLs
 ---------------------------
 

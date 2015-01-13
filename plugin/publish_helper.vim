@@ -1,6 +1,6 @@
 " File: publish_helper.vim
 " Author: Alexey Radkov
-" Version: 0.11
+" Version: 0.12
 " Description: two commands for publishing highlighted code in HTML or TeX
 "              (optionally from pandoc as highlighting engine from filter
 "              vimhl.hs)
@@ -505,6 +505,9 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
             let line += 1
         endfor
     else
+        let pre_style = g:PhHtmlPreAttrs
+        let div_style = ''
+        let div_style_end = ''
         if linenr_html_tbl
             let fg = '000000'
             if !exists('g:PhLinenrFgColor')
@@ -517,7 +520,7 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
             let pre_style = styles['pre']
             let div_style = styles['div']
             let div_style_end = styles['div_end']
-            call append(0, '<table style="margin: 0; '.
+            call append(0, '<table style="margin: 0; border-spacing: 0; '.
                         \ 'width: 100%; table-layout: fixed; border: none;">'.
                         \ '<tr><td style="vertical-align: top; width: '.
                         \ g:PhLinenrColumnWidth.'; text-align: right; '.
@@ -530,12 +533,8 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
                 endif
             endfor
             call append('$', '</pre>'.div_style_end.
-                        \ '</td><td style="vertical-align: top;">')
-        endif
-        let pre_style = g:PhHtmlPreAttrs
-        let div_style = ''
-        let div_style_end = ''
-        if linenr_html_tbl
+                        \ '</td><td style="vertical-align: top; '.
+                        \ 'padding-left: 2px">')
             let styles = <SID>linenr_tbl_layout(g:PhHtmlPreAttrs)
             let pre_style = styles['pre']
             let div_style = styles['div']

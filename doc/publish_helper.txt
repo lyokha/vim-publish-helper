@@ -1,10 +1,10 @@
-*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2014 May 26
+*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2015 Jan 13
 
                        ------------------------------
                         Publish Helper (HTML and TeX)
                        ------------------------------
 
-                                version 0.11
+                                version 0.12
 
 Author: Alexey Radkov
 
@@ -35,6 +35,7 @@ Author: Alexey Radkov
         6.5 g:PhCtrlTrans ....................: |publish_helper-cfg-var-ctrltr|
         6.6 g:PhTrimBlocks ...................: |publish_helper-cfg-var-trimblk|
         6.7 g:PhRichTextElems ................: |publish_helper-cfg-var-richelm|
+        6.8 g:PhLinenrAsTblColumn ............: |publish_helper-cfg-var-linenr|
     7. Highlighting shells and REPLs .........: |publish_helper-hl-sh-outputs|
     8. Thanks to .............................: |publish_helper-thanks|
     A. Change History ........................: |publish_helper-changes|
@@ -447,6 +448,35 @@ this put
 in the preamble of the TeX document. Script vimhl_latex_tmpl.sh puts this line
 in environments Shaded, Framed and Mdframed automatically.
 
+------------------------------------------------------------------------------
+                                           *publish_helper-cfg-var-linenr*
+6.8 g:PhLinenrAsTblColumn~
+
+>
+    let g:PhLinenrAsTblColumn = 1
+<
+Draw line-numbered code as an HTML table. Effective only when internal syntax
+highlighting engine is used. Not set by default. There are a few variables to
+control how various elements in the table will look.
+
+- g:PhLinenrColumnBorderAttrs defines border attributes between the
+  line-number and the code columns. Beware: it does not expect color settings,
+  see the next clause. Default value is '1px solid'.
+
+- g:PhLinenrFgColor defines foreground color of the line-number column and of
+  the border between the columns. Not set by default: color of the
+  'SpecialKey' syntax highlighting group is used in this case.
+
+- g:PhLinenrColumnWidth defines the line-number column width. Default value is
+  '2em'.
+
+- g:PhLinenrColumnAttrs defines attributes of the line-number column. Empty by
+  default. May be used to customize background color of the column.
+
+- g:PhCodeColumnOverflowX defines overflow-x behaviour of the code column.
+  Default value is 'auto'. This value must correspond to non-wrapping text
+  models, otherwise line numbers may mismatch code lines if the latter wraps.
+
 ==============================================================================
                                            *publish_helper-hl-sh-outputs*
 7. Highlighting shells and REPLs~
@@ -579,5 +609,12 @@ A. Change History~
     - added support for rich text elements: text background color, bold,
       italic and underline typefaces and turned on by default
     - speed improvements, now commands may run about 30% faster
+
+0.12
+    - added an option for line numbering as an HTML table effective in
+      the internal HTML syntax highlighting engine only: set variable
+      g:PhLinenrAsTblColumn and enjoy it (see updated docs)
+    - several improvements in script vimhl_latex_tmpl.sh
+    - minor refactoring of vimhl.hs
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
