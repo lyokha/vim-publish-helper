@@ -540,8 +540,10 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
             let div_style = styles['div']
             let div_style_end = styles['div_end']
         endif
-        call append(linenr_html_tbl ? '$' : 0,
-                    \ div_style.'<pre '.pre_style.'>')
+        if a:ft == 'html'
+            call append(linenr_html_tbl ? '$' : 0,
+                        \ div_style.'<pre '.pre_style.'>')
+        endif
         let old_line = line
         let content = ''
         for hl in parts
