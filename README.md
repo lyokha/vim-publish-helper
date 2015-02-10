@@ -615,13 +615,13 @@ An example
 
 <br>
 
----
+----
 
 <p align="center">
   <img src="../images/images/vimhl-html.png?raw=true" alt="HTML result"/>
 </p>
 
----
+----
 
 - **Pdf document produced by command**
 
@@ -631,13 +631,13 @@ An example
 
 <br>
 
----
+----
 
 <p align="center">
   <img src="../images/images/vimhl-latex.png?raw=true" alt="PDF result"/>
 </p>
 
----
+----
 
 Thanks to
 ---------
