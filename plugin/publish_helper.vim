@@ -107,6 +107,10 @@ if !exists('g:PhLinenrColumnWidth')
     let g:PhLinenrColumnWidth = '2em'
 endif
 
+if !exists('g:PhLinenrTblBottomPadding')
+    let g:PhLinenrTblBottomPadding = '0'
+endif
+
 if !exists('g:PhLinenrColumnAttrs')
     let g:PhLinenrColumnAttrs = ''
 endif
@@ -521,6 +525,7 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
             let div_style = styles['div']
             let div_style_end = styles['div_end']
             call append(0, '<table style="margin: 0; border-spacing: 0; '.
+                        \ 'padding-bottom: '.g:PhLinenrTblBottomPadding.'; '.
                         \ 'width: 100%; table-layout: fixed; border: none;">'.
                         \ '<tr><td style="vertical-align: top; width: '.
                         \ g:PhLinenrColumnWidth.'; text-align: right; '.

@@ -418,11 +418,14 @@ let g:PhLinenrAsTblColumn = 1
 
 Draw line-numbered code as an HTML table. Effective only when internal syntax
 highlighting engine is used. Not set by default. There are a few variables to
-control how various elements in the table will look.
+control how various elements of the table will look.
 
 * *g:PhLinenrColumnBorderAttrs* defines border attributes between the
   line-number and the code columns. Beware: it does not expect color settings,
   see the next clause. Default value is *1px solid*.
+
+* *g:PhLinenrTblBottomPadding* defines padding on the bottom of the table.
+  Default value is '0'.
 
 * *g:PhLinenrFgColor* defines foreground color of the line-number column and of
   the border between the columns. Not set by default: color of the
