@@ -425,7 +425,7 @@ control how various elements of the table will look.
   see the next clause. Default value is *1px solid*.
 
 * *g:PhLinenrTblBottomPadding* defines padding on the bottom of the table.
-  Default value is '0'.
+  Default value is *0*.
 
 * *g:PhLinenrFgColor* defines foreground color of the line-number column and of
   the border between the columns. Not set by default: color of the
