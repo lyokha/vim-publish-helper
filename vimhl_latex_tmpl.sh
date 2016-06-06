@@ -2,8 +2,7 @@
 
 HL_M_PTN='^\$highlighting-macros\$$'
 HL_M_IF_PTN='^\$if(highlighting-macros)\$$'
-VERB_N_IF_PTN='^\$if(verbatim-in-note)\$$'
-VERB_N_IF2_PTN='^\$if(verbatim-in-note)\$\n\\usepackage{fancyvrb}'
+FANCYVRB_PTN='^\\usepackage{fancyvrb}$'
 LST_IF_PTN='^SKIP THIS$'
 LST_IF2_PTN='^\$if(listings)\$\n\\usepackage{listings}'
 ENDIF_PTN='^\$endif\$$'
@@ -194,5 +193,5 @@ pandoc -D latex |
 sed -e "/$LST_IF_PTN/N;/$LST_IF2_PTN/,/$ENDIF_PTN/d" \
     -e "/$HL_M_PTN/i \\$RPL" \
     -e "/$HL_M_IF_PTN/,/$ENDIF_PTN/d" \
-    -e "/$VERB_N_IF_PTN/N;/$VERB_N_IF2_PTN/,/$ENDIF_PTN/d"
+    -e "/$FANCYVRB_PTN/d"
 
