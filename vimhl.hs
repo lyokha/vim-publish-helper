@@ -2,7 +2,7 @@
 
 -- vimhl.hs
 import Text.Pandoc.JSON
-import Text.Regex
+import Text.Regex (mkRegex, splitRegex)
 import System.IO
 import System.IO.Temp
 import System.Directory
@@ -23,21 +23,18 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
                               fromMaybe "-1" $ lookup "startfrom" namevals'
                           | otherwise = ""
             colorscheme =
-                case lookup "colorscheme" namevals' of
-                    Nothing -> ""
-                    Just val -> "-c 'let g:PhColorscheme = \"" ++ val ++ "\"'"
+                maybe "" (("-c 'let g:PhColorscheme = \"" ++) . (++ "\"'")) $
+                    lookup "colorscheme" namevals'
             cmds =
-                case lookup "vars" namevals' of
-                    Nothing -> ""
-                    Just val ->
-                        unwords $ map (cmd . flag) $ filter (not . null) $
-                            map (splitRegex $ dl"=") $ splitRegex (dl",") val
-                        where cmd (x:y:_) =
-                                  "--cmd 'let g:" ++ x ++ " = \"" ++ y ++ "\"'"
-                              flag [x]    = [x, "1"]
-                              flag x      = x
-                              dl x        = mkRegex $ "\\s*" ++ x ++ "\\s*"
-            vimrcM = do
+                maybe "" (unwords . map (cmd . flag) . filter (not . null) .
+                            map (splitRegex $ dl"=") . splitRegex (dl",")) $
+                                lookup "vars" namevals'
+                where cmd (x:y:_) =
+                                "--cmd 'let g:" ++ x ++ " = \"" ++ y ++ "\"'"
+                      flag [x]    = [x, "1"]
+                      flag x      = x
+                      dl          = mkRegex . ("\\s*" ++) . (++ "\\s*")
+            rc = do
                 home <- getHomeDirectory
                 let vimrc = home `combine` ".vimrc.pandoc"
                 exists <- doesFileExist vimrc
@@ -51,7 +48,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
             runVim src dst hsrc hdst = do
                 hPutStr hsrc contents
                 mapM_ hClose [hsrc, hdst]
-                vimrc <- vimrcM
+                vimrc <- rc
                 {- vim must think that it was launched from a terminal,
                  - otherwise it won't load its usual environment and the
                  - syntax engine! -}
