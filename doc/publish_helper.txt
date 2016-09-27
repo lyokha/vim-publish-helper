@@ -113,7 +113,7 @@ styles for code blocks in TeX documents. See also |publish_helper-tex-tmpl|.
                                            *publish_helper-pandoc*
 4. vimhl.hs and pandoc~
 
-This is probably the most interesting feature of the plugin. Both commands
+This is the most useful feature of the plugin. Both commands
 MakeHtmlCodeHighlight and MakeTexCodeHighlight can be used as drivers to the
 vim syntax highlighting engine from pandoc. This is achieved via pandoc's
 filter feature available from pandoc version 1.12.
@@ -128,12 +128,10 @@ to be such a filter. Normally one may want to compile it
     ghc --make vimhl
 >
 and move produced binary executable file vimhl in some directory listed in the
-environment variable $PATH. Alternatively one may make original file vimhl.hs
-executable
+environment variable $PATH. Alternatively vimhl can be installed with cabal
 >
-    chmod +x vimhl.hs
+    cabal install pandoc-vimhl
 <
-and move it somewhere in the $PATH as well. The first method is preferable.
 After that pandoc gets capable to produce HTML or TeX code with authentic vim
 syntax highlights! Let's make an example. Say you want to convert an HTML
 article from your cool IT blog with multiple examples of C++ codes into PDF

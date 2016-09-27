@@ -70,7 +70,7 @@ different styles for code blocks in TeX documents.
 vimhl.hs and pandoc
 -------------------
 
-This is probably the most interesting feature of the plugin. Both commands
+This is the most useful feature of the plugin. Both the commands
 MakeHtmlCodeHighlight and MakeTexCodeHighlight can be used as drivers to the
 vim syntax highlighting engine from pandoc. This is achieved via pandoc's
 filter feature available from pandoc version 1.12.
@@ -80,19 +80,17 @@ filter feature available from pandoc version 1.12.
 This distribution is shipped with a haskell program vimhl.hs which is supposed
 to be such a filter. Normally one may want to compile it
 
-```sh
+```ShellSession
 ghc --make vimhl
 ```
 
 and move produced binary executable file vimhl in some directory listed in the
-environment variable &#36;PATH. Alternatively one may make original file
-vimhl.hs executable
+environment variable &#36;PATH. Alternatively vimhl can be installed with cabal
 
-```sh
-chmod +x vimhl.hs
+```ShellSession
+cabal install pandoc-vimhl
 ```
 
-and move it somewhere in the &#36;PATH as well. The first method is preferable.
 After that pandoc gets capable to produce HTML or TeX code with authentic vim
 syntax highlights! Let's make an example. Say you want to convert an HTML
 article from your cool IT blog with multiple examples of C++ codes into PDF
@@ -106,7 +104,7 @@ article, find tags *&lt;pre&gt;* starting the codes and add there the attribute
 
 After that you run pandoc to create TeX code from the original HTML article
 
-```sh
+```ShellSession
 pandoc -f html -t latex -o article.tex article.html
 ```
 
@@ -122,7 +120,7 @@ editor Kate's engine. Now you can add another attribute *hl="vim"* inside tags
 and run pandoc with the filter vimhl (or vimhl.hs if you did not compile
 vimhl)
 
-```sh
+```ShellSession
 pandoc -f html -t latex -F vimhl -o article.tex article.html
 ```
 
@@ -273,7 +271,7 @@ work fastest.
   Normally the output has to be redirected to a file in the standard pandoc
   templates directory.
 
-    ```sh
+    ```ShellSession
   sh vimhl_latex_tmpl.sh > ~/.pandoc/templates/vimhl.latex
     ```
 
@@ -606,13 +604,13 @@ An example
 
 - Pandoc template for Latex was produced by command
 
-    ```sh
+    ```ShellSession
     vimhl_latex_tmpl.sh -s FFFF99 -f FF6699 -d > ~/.pandoc/templates/vimhl.latex
     ```
 
 - **HTML document (rendered in Firefox) produced by command**
 
-    ```sh
+    ```ShellSession
     pandoc --standalone -Fvimhl -o example.html example.md
     ```
 
@@ -628,7 +626,7 @@ An example
 
 - **Pdf document produced by command**
 
-    ```sh
+    ```ShellSession
     pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
     ```
 
