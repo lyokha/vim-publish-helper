@@ -5,12 +5,15 @@ import Text.Pandoc.JSON
 import Text.Regex (mkRegex, splitRegex)
 import System.IO
 import System.IO.Temp
+import System.IO.Error
 import System.Directory
 import System.FilePath
 import System.Process
 import Data.Char (toLower)
 import Data.Maybe (fromMaybe)
 import Control.Arrow (first)
+import Control.Monad
+import Control.Conditional
 
 vimHl :: Maybe Format -> Block -> IO Block
 vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
@@ -34,21 +37,18 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
                       flag [x]    = [x, "1"]
                       flag x      = x
                       dl          = mkRegex . ("\\s*" ++) . (++ "\\s*")
-            rc = do
-                home <- getHomeDirectory
-                let vimrc = home `combine` ".vimrc.pandoc"
-                exists <- doesFileExist vimrc
-                if exists
-                    then do
-                        permissions <- getPermissions vimrc
-                        return $ if readable permissions
-                                     then "--noplugin -u '" ++ vimrc ++ "'"
-                                     else ""
-                    else return ""
+            rccmd = do
+                home <- getHomeDirectory `catchIOError` const (return "")
+                let vimrc  = home `combine` ".vimrc.pandoc"
+                    exists = let (&&>) = liftM2 (<&&>)
+                             in doesFileExist &&>
+                                 (getPermissions >=> return . readable)
+                    ($>) = liftM2 (<$>)
+                (bool "" . ("--noplugin -u '" ++) . (++ "'")) $> exists $ vimrc
             runVim src dst hsrc hdst = do
                 hPutStr hsrc contents
                 mapM_ hClose [hsrc, hdst]
-                vimrc <- rc
+                vimrc <- rccmd
                 {- vim must think that it was launched from a terminal,
                  - otherwise it won't load its usual environment and the
                  - syntax engine! -}
