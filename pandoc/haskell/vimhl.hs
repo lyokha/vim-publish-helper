@@ -2,7 +2,7 @@
 
 -- vimhl.hs
 import Text.Pandoc.JSON
-import Text.Regex (mkRegex, splitRegex)
+import Text.Regex (mkRegex, splitRegex, matchRegexAll)
 import System.IO
 import System.IO.Temp
 import System.IO.Error
@@ -11,7 +11,7 @@ import System.FilePath
 import System.Process
 import Data.Char (toLower)
 import Data.Maybe (fromMaybe)
-import Control.Arrow (first)
+import Control.Arrow (first, (&&&))
 import Control.Monad
 import Control.Conditional
 
@@ -29,15 +29,14 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
                 maybe "" (("-c 'let g:PhColorscheme = \"" ++) . (++ "\"'")) $
                     lookup "colorscheme" namevals'
             cmds =
-                maybe "" (unwords . map (cmd . flag) . filter (not . null) .
-                            map (splitRegex $ dl"=") . splitRegex (dl",")) $
-                                lookup "vars" namevals'
-                where cmd (x:y:_) =
-                                "--cmd 'let g:" ++ x ++ " = \"" ++ y ++ "\"'"
-                      flag [x]    = [x, "1"]
-                      flag x      = x
-                      dl          = mkRegex . ("\\s*" ++) . (++ "\\s*")
-            rccmd = do
+                maybe "" (unwords . map cmd . filter (not . null . snd) .
+                    map (matchRegexAll (dl"=") &&& id) . splitRegex (dl",")) $
+                        lookup "vars" namevals'
+                where cmd (Nothing          , x) = mkCmd x "1"
+                      cmd (Just (x, _, y, _), _) = mkCmd x  y
+                      mkCmd x y = "--cmd 'let g:" ++ x ++ " = \"" ++ y ++ "\"'"
+                      dl        = mkRegex . ("\\s*" ++) . (++ "\\s*")
+            vimrccmd = do
                 home <- getHomeDirectory `catchIOError` const (return "")
                 let vimrc  = home `combine` ".vimrc.pandoc"
                     exists = let (&&>) = liftM2 (<&&>)
@@ -48,7 +47,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
             runVim src dst hsrc hdst = do
                 hPutStr hsrc contents
                 mapM_ hClose [hsrc, hdst]
-                vimrc <- rccmd
+                vimrc <- vimrccmd
                 {- vim must think that it was launched from a terminal,
                  - otherwise it won't load its usual environment and the
                  - syntax engine! -}
