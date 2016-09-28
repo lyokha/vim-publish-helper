@@ -1,6 +1,35 @@
 Vim-publish-helper
 ==================
 
+Table of contents
+-----------------
+
+- [About](#about)
+- [Basic commands](#basic-commands)
+    + [MakeHtmlCodeHighlight](#makehtmlcodehighlight)
+    + [MakeTexCodeHighlight](#maketexcodehighlight)
+- [vimhl.hs and pandoc](#vimhl.hs-and-pandoc)
+    + [Basic usage](#basic-usage)
+    + [Using with dedicated .vimrc file](#using-with-dedicated-.vimrc-file)
+    + [Customizing vim settings](#customizing-vim-settings)
+    + [Options to choose color scheme](#options-to-choose-color-scheme)
+    + [Remarks](#remarks)
+- [Miscellaneous commands](#miscellaneous-commands)
+    + [GetFgColorUnderCursor](#getfgcolorundercursor)
+    + [GetBgColorUnderCursor](#getbgcolorundercursor)
+- [Configuration](#configuration)
+    + [g:PhColorscheme](#gphcolorscheme)
+    + [g:PhHtmlEngine](#gphhtmlengine)
+    + [g:PhHtmlPreAttrs](#gphhtmlpreattrs)
+    + [g:PhTexBlockStyle](#gphtexblockstyle)
+    + [g:PhCtrlTrans](#gphctrltrans)
+    + [g:PhTrimBlocks](#gphtrimblocks)
+    + [g:PhRichTextElems](#gphrichtextelems)
+    + [g:PhLinenrAsTblColumn](#gphlinenrastblcolumn)
+- [Highlighting shells and REPLs](#highlighting-shells-and-repls)
+- [An example](#an-example)
+- [Thanks to](#thanks-to)
+
 About
 -----
 
@@ -440,7 +469,7 @@ control how various elements of the table will look.
   models, otherwise line numbers may mismatch code lines if the latter wraps.
 
 Highlighting shells and REPLs
----------------------------
+-----------------------------
 
 The option for highlighting various shells and REPLs (bash, ghci, python REPL
 etc.) is available from **version 0.10** of the plugin. Normally one may want to
