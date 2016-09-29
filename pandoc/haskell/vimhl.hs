@@ -32,8 +32,10 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
                 maybe "" (unwords . map cmd . filter (not . null . snd) .
                     map (matchRegexAll (dl"=") &&& id) . splitRegex (dl",")) $
                         lookup "vars" namevals'
-                where cmd (Nothing          , x) = mkCmd x "1"
-                      cmd (Just (x, _, y, _), _) = mkCmd x  y
+                where cmd (Nothing           , x) = mkCmd x "1"
+                      cmd (Just ("", _, y, _), _) = error $ "Bare value '" ++
+                                                        y ++ "' found in vars"
+                      cmd (Just ( x, _, y, _), _) = mkCmd x  y
                       mkCmd x y = "--cmd 'let g:" ++ x ++ " = \"" ++ y ++ "\"'"
                       dl        = mkRegex . ("\\s*" ++) . (++ "\\s*")
             vimrccmd = do
