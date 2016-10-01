@@ -40,3 +40,4 @@ if exists('g:PhHtmlEngine') && g:PhHtmlEngine == 'tohtml'
     let g:html_ignore_folding = 1
 endif
 
+" vim: ft=vim
