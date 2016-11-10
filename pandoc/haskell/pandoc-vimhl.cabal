@@ -3,7 +3,7 @@ version:             0.1.1.0
 synopsis:            Pandoc filter for native Vim code highlighting
 description:         Pandoc filter for native Vim code highlighting in HTML and
         PDF documents. Requires Vim and plugin
-        <http://github.com/lyokha/vim-publish-helper vim-publish-helper>
+        <http://github.com/lyokha/vim-publish-helper vim-publish-helper>.
 homepage:            http://github.com/lyokha/vim-publish-helper
 license:             BSD3
 license-file:        LICENSE
