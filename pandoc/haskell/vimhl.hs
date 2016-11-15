@@ -40,7 +40,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
                       dl        = mkRegex . ("\\s*" ++) . (++ "\\s*")
             vimrccmd = do
                 home <- getHomeDirectory `catchIOError` const (return "")
-                let vimrc  = home `combine` ".vimrc.pandoc"
+                let vimrc  = home </> ".vimrc.pandoc"
                     exists = let (&&>) = liftM2 (<&&>)
                              in doesFileExist &&>
                                  (getPermissions >=> return . readable)
