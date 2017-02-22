@@ -2,7 +2,9 @@
 
 HL_M_PTN='^\$highlighting-macros\$$'
 HL_M_IF_PTN='^\$if(highlighting-macros)\$$'
-FANCYVRB_PTN='^\\usepackage{fancyvrb}$'
+FANCYVRB_IF_PTN='^\$if(verbatim-in-note)\$$'
+FANCYVRB_IF2_PTN='^\$if(verbatim-in-note)\$\n\\usepackage{fancyvrb}'
+FANCYVRB_SWAP='\\usepackage{fancyvrb}\n$if(verbatim-in-note)$'
 LST_IF_PTN='^SKIP THIS$'
 LST_IF2_PTN='^\$if(listings)\$\n\\usepackage{listings}'
 ENDIF_PTN='^\$endif\$$'
@@ -104,7 +106,6 @@ done
 
 IFS= read -r -d '' RPL <<END
 \\\\usepackage{xcolor}\\
-\\\\usepackage{fancyvrb}\\
 \\\\newcommand{\\\\VerbBar}{|}\\
 \\\\newcommand{\\\\VERB}{\\\\Verb[commandchars=\\\\\\\\\\\\{\\\\}]}\\
 \\\\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\\\\\\\\\\{\\\\}}\\
@@ -189,5 +190,5 @@ pandoc -D latex |
 sed -e "/$LST_IF_PTN/N;/$LST_IF2_PTN/,/$ENDIF_PTN/d" \
     -e "/$HL_M_PTN/i \\$RPL" \
     -e "/$HL_M_IF_PTN/,/$ENDIF_PTN/d" \
-    -e "/$FANCYVRB_PTN/d"
+    -e "/$FANCYVRB_IF_PTN/N;/$FANCYVRB_IF2_PTN/s//$FANCYVRB_SWAP/"
 
