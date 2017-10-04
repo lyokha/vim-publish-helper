@@ -181,14 +181,14 @@ if [ -n "$HLCOMPAT" ] ; then
 IFS= read -r -d '' CRPL <<END
 $(echo -e '```c\n```' |
   pandoc -tlatex -fmarkdown --highlight-style=$HL_STYLE --standalone |
-  sed -n -e 's/$/\\/' -e '/^\\newcommand{\\\w\+Tok}/p' | sed 's/\\./\\&/g')
+  sed -n 's/$/\\/; /^\\newcommand{\\\w\+Tok}/p' | sed 's/\\./\\&/g')
 END
 RPL=$RPL$CRPL
 fi
 
 pandoc -D latex |
-sed -e "/$LST_IF_PTN/N;/$LST_IF2_PTN/,/$ENDIF_PTN/d" \
-    -e "/$HL_M_PTN/i \\$RPL" \
-    -e "/$HL_M_IF_PTN/,/$ENDIF_PTN/d" \
-    -e "/$FANCYVRB_IF_PTN/N;/$FANCYVRB_IF2_PTN/s//$FANCYVRB_SWAP/"
+sed "/$LST_IF_PTN/N;/$LST_IF2_PTN/,/$ENDIF_PTN/d
+     /$HL_M_PTN/i \\$RPL
+     /$HL_M_IF_PTN/,/$ENDIF_PTN/d
+     /$FANCYVRB_IF_PTN/N;/$FANCYVRB_IF2_PTN/s//$FANCYVRB_SWAP/"
 
