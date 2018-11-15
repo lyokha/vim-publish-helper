@@ -110,14 +110,14 @@ This distribution is shipped with a haskell program vimhl.hs which is supposed
 to be such a filter. Normally one may want to compile it
 
 ```ShellSession
-ghc --make vimhl
+$ ghc --make vimhl
 ```
 
 and move produced binary executable file vimhl in some directory listed in the
 environment variable &#36;PATH. Alternatively vimhl can be installed with cabal
 
 ```ShellSession
-cabal install pandoc-vimhl
+$ cabal install pandoc-vimhl
 ```
 
 After that pandoc gets capable to produce HTML or TeX code with authentic vim
@@ -134,7 +134,7 @@ article, find tags *&lt;pre&gt;* starting the codes and add there the attribute
 After that you run pandoc to create TeX code from the original HTML article
 
 ```ShellSession
-pandoc -f html -t latex -o article.tex article.html
+$ pandoc -f html -t latex -o article.tex article.html
 ```
 
 As far as pandoc finds attribute class="cpp" inside tags
@@ -150,7 +150,7 @@ and run pandoc with the filter vimhl (or vimhl.hs if you did not compile
 vimhl)
 
 ```ShellSession
-pandoc -f html -t latex -F vimhl -o article.tex article.html
+$ pandoc -f html -t latex -F vimhl -o article.tex article.html
 ```
 
 If you then generate the PDF document from the article.tex the codes will be
@@ -276,12 +276,12 @@ work fastest.
   \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
   \usepackage{framed}
   \newenvironment{Shaded}{
-    \definecolor{shadecolor}{rgb}{1.0, 1.0, 0.9}
-    \setlength\parskip{0cm}
-    \setlength\partopsep{-\topsep}
-    \addtolength\partopsep{0.2cm}
-    \begin{shaded}
-      \scriptsize
+      \definecolor{shadecolor}{rgb}{1.0, 1.0, 0.9}
+      \setlength\parskip{0cm}
+      \setlength\partopsep{-\topsep}
+      \addtolength\partopsep{0.2cm}
+      \begin{shaded}
+          \scriptsize
   }{\end{shaded}}
     ```
 
@@ -301,7 +301,7 @@ work fastest.
   templates directory.
 
     ```ShellSession
-  sh vimhl_latex_tmpl.sh > ~/.pandoc/templates/vimhl.latex
+  $ sh vimhl_latex_tmpl.sh > ~/.pandoc/templates/vimhl.latex
     ```
 
   Now you can use this template for making standalone TeX or PDF documents
@@ -516,14 +516,14 @@ package Listings. Here is an example:
 \definecolor{shelloutputcolor}{HTML}{666666}
 \lstset{basicstyle=\scriptsize\ttfamily, breaklines=true}
 \lstset{prebreak=\raisebox{0ex}[0ex][0ex]
-  {\ensuremath{\rhookswarrow}}}
+    {\ensuremath{\rhookswarrow}}}
 \lstset{postbreak=\raisebox{0ex}[0ex][0ex]
-  {\ensuremath{\rcurvearrowse\space}}}
+    {\ensuremath{\rcurvearrowse\space}}}
 \lstdefinelanguage{shelloutput}
-  {basicstyle=\color{shelloutputcolor}
-    \scriptsize
-    \ttfamily\itshape,
-   moredelim=[il][\color{shellpromptcolor}\upshape]{|||\ }}
+    {basicstyle=\color{shelloutputcolor}
+        \scriptsize
+        \ttfamily\itshape,
+     moredelim=[il][\color{shellpromptcolor}\upshape]{|||\ }}
 ```
 
 Script vimhl_latex_tmpl.sh has several options to insert these definitions
@@ -634,13 +634,13 @@ An example
 - Pandoc template for Latex was produced by command
 
     ```ShellSession
-    vimhl_latex_tmpl.sh -s FFFF99 -f FF6699 -d > ~/.pandoc/templates/vimhl.latex
+  $ vimhl_latex_tmpl.sh -s FFFF99 -f FF6699 -d > ~/.pandoc/templates/vimhl.latex
     ```
 
 - **HTML document (rendered in Firefox) produced by command**
 
     ```ShellSession
-    pandoc --standalone -Fvimhl -o example.html example.md
+  $ pandoc --standalone -Fvimhl -o example.html example.md
     ```
 
 <br>
@@ -656,7 +656,7 @@ An example
 - **Pdf document produced by command**
 
     ```ShellSession
-    pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
+  $ pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
     ```
 
 <br>
