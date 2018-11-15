@@ -538,7 +538,9 @@ An example
 
 - Pandoc flavoured markdown source file example.md
 
-    ````Pandoc
+    <!-- ````pandoc highlights it mostly in blue which looks sharp -->
+
+    ````
   ### Original example from [*Pandoc User's Guide*](http://johnmacfarlane.net/pandoc/README.html#fenced-code-blocks)
 
   ``` {#mycode .haskell .numberLines hl="vim" startFrom="99"}
