@@ -643,8 +643,6 @@ An example
   $ pandoc --standalone -Fvimhl -o example.html example.md
     ```
 
-<br>
-
 ----
 
 <p align="center">
@@ -658,8 +656,6 @@ An example
     ```ShellSession
   $ pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
     ```
-
-<br>
 
 ----
 
