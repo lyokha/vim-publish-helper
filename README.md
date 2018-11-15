@@ -33,15 +33,15 @@ Table of contents
 About
 -----
 
-Vim plugin publish\_helper provides two basic commands MakeHtmlCodeHighlight
-and MakeTexCodeHighlight to produce HTML or TeX code respectively from the
+Vim plugin *publish\_helper* provides two basic commands *MakeHtmlCodeHighlight*
+and *MakeTexCodeHighlight* to produce HTML or TeX code respectively from the
 contents of the current buffer or a part of the current buffer (in Visual
 mode). The generated code opens up in a new window and contains color tags
 that cite colors from the original buffer according to the current vim color
-scheme or a color scheme declared by variable g:PhColorscheme.
+scheme or a color scheme declared by variable *g:PhColorscheme*.
 
-The distribution of the plugin is shipped with a haskell program vimhl.hs that
-may act as a filter for a great format conversion tool pandoc enabling it to
+The distribution of the plugin is shipped with a haskell program *vimhl.hs* that
+may act as a filter for a great format conversion tool *pandoc* enabling it to
 make use of vim's internal syntax highlighting engine when converting formats
 to HTML or TeX.
 
@@ -65,8 +65,8 @@ generated code will be equal to this value, if it is a negative integer then
 the number of the first line will be equal to the number of the first line in
 the original buffer.
 
-Starting from **version 0.6** MakeHtmlCodeHighlight uses same highlighting
-engine as MakeTexCodeHighlight by default. To switch back to TOhtml engine set
+Starting from **version 0.6** *MakeHtmlCodeHighlight* uses same highlighting
+engine as *MakeTexCodeHighlight* by default. To switch back to TOhtml engine set
 variable *g:PhHtmlEngine = 'tohtml'*.
 
 Output of TOhtml may differ from that of default highlighting engine: it
@@ -93,28 +93,29 @@ and
 ```
 
 Starting from **version 0.9** the environment name (*Shaded*) is no longer
-constant and defined by variable g:PhTexBlockStyle. This allows applying
+constant and defined by variable *g:PhTexBlockStyle*. This allows applying
 different styles for code blocks in TeX documents.
 
 vimhl.hs and pandoc
 -------------------
 
 This is the most useful feature of the plugin. Both the commands
-MakeHtmlCodeHighlight and MakeTexCodeHighlight can be used as drivers to the
+*MakeHtmlCodeHighlight* and *MakeTexCodeHighlight* can be used as drivers to the
 vim syntax highlighting engine from pandoc. This is achieved via pandoc's
 filter feature available from pandoc version 1.12.
 
 ### Basic usage
 
-This distribution is shipped with a haskell program vimhl.hs which is supposed
-to be such a filter. Normally one may want to compile it
+This distribution is shipped with a haskell program *vimhl.hs* which is supposed
+to be such a filter. Normally one may want to compile it.
 
 ```ShellSession
 $ ghc --make vimhl
 ```
 
-and move produced binary executable file vimhl in some directory listed in the
-environment variable &#36;PATH. Alternatively vimhl can be installed with cabal
+and move built binary executable file *vimhl* in some directory listed in the
+environment variable *&#36;PATH*. Alternatively *vimhl* can be installed with
+*cabal*.
 
 ```ShellSession
 $ cabal install pandoc-vimhl
@@ -125,13 +126,13 @@ syntax highlights! Let's make an example. Say you want to convert an HTML
 article from your cool IT blog with multiple examples of C++ codes into PDF
 format via pandoc HTML-to-TeX conversion engine. Normally you open the
 article, find tags *&lt;pre&gt;* starting the codes and add there the attribute
-*class="cpp"*
+*class="cpp"*.
 
 ```html
 <pre class="cpp">
 ```
 
-After that you run pandoc to create TeX code from the original HTML article
+After that you run pandoc to create TeX code from the original HTML article.
 
 ```ShellSession
 $ pandoc -f html -t latex -o article.tex article.html
@@ -140,14 +141,14 @@ $ pandoc -f html -t latex -o article.tex article.html
 As far as pandoc finds attribute class="cpp" inside tags
 *&lt;pre&gt; ... &lt;/pre&gt;* it generates its own code highlights based on the
 editor Kate's engine. Now you can add another attribute *hl="vim"* inside tags
-*&lt;pre&gt;*
+*&lt;pre&gt;*.
 
 ```html
 <pre class="cpp" hl="vim">
 ```
 
-and run pandoc with the filter vimhl (or vimhl.hs if you did not compile
-vimhl)
+and run pandoc with the filter *vimhl* (or *vimhl.hs* if you did not compile
+it).
 
 ```ShellSession
 $ pandoc -f html -t latex -F vimhl -o article.tex article.html
@@ -155,9 +156,9 @@ $ pandoc -f html -t latex -F vimhl -o article.tex article.html
 
 If you then generate the PDF document from the article.tex the codes will be
 highlighted exactly as they were highlighted inside vim! As soon as command
-MakeTexCodeHighlight accepts the optional argument which defines that
-generated code must be numbered you can put usual pandoc options inside tags
-*&lt;pre&gt;* to turn code numbering on
+*MakeTexCodeHighlight* accepts the optional argument which defines that
+generated code must be numbered, you can put usual pandoc options inside tags
+*&lt;pre&gt;* to turn code numbering on.
 
 ```html
 <pre class="cpp numberLines" hl="vim" startFrom="100">
@@ -165,14 +166,14 @@ generated code must be numbered you can put usual pandoc options inside tags
 
 ### Using with dedicated .vimrc file
 
-Running vim with normal &#36;HOME/.vimrc and all the scripts in the directory
+Running vim with normal *&#36;HOME/.vimrc* and all the scripts in the directory
 &#36;HOME/.vim/ consumes many resources and unnecessarily slows pandoc down. To
 fight this you can create a new file *.vimrc.pandoc* in your home directory with
-very minimal settings. When vimhl.hs finds this file it runs vim with options
-*--noplugin -u &#36;HOME/.vimrc.pandoc*. As soon as plugins are turned off
-.vimrc.pandoc must source at least plugins publish\_helper and TOhtml (for
-producing HTML documents, but since version 0.6 of this plugin this is
-optional). Here is an example of good .vimrc.pandoc contents:
+very minimal settings. When *vimhl.hs* finds this file it runs vim with options
+*--noplugin -u &#36;HOME/.vimrc.pandoc*. As soon as plugins are turned off,
+*.vimrc.pandoc* must source at least plugins *publish\_helper* and *TOhtml* (for
+producing HTML documents, but since **version 0.6** of this plugin this is
+optional). Here is an example of a good *.vimrc.pandoc* contents:
 
 ```vim
 set nocompatible
@@ -191,20 +192,20 @@ let g:PhCtrlTrans = 0
 runtime plugin/publish_helper.vim
 ```
 
-You may need to source other plugins, for example TagHighlight which makes
+You may need to source other plugins, for example *TagHighlight* which makes
 possible to highlight tags generated by ctags.
 
 ### Customizing vim settings
 
-Starting from **version 0.7** vimhl accepts a new attribute *vars* to define
-global vim variables. The example of a custom .vimrc.pandoc script from the
-previous section contains definition of a global variable g:PhCtrlTrans. Now you
-can remove this definition from the script and set variable g:PhCtrlTrans
+Starting from **version 0.7** *vimhl* accepts a new attribute *vars* to define
+global vim variables. The example of a custom *.vimrc.pandoc* script from the
+previous section contains definition of a global variable *g:PhCtrlTrans*. Now
+you can remove this definition from the script and set variable *g:PhCtrlTrans*
 dynamically from the filter only for those code blocks that require it. To
 accomplish this put the new attribute *vars="PhCtrlTrans"* in such code blocks.
 
 Global variables are also good for making selection between arbitrary
-conditions. Imagine that script .vimrc.pandoc has lines
+conditions. Imagine that script *.vimrc.pandoc* has lines
 
 ```vim
 if exists('g:load_TagHl')
@@ -221,10 +222,10 @@ endif
 ```
 
 The first condition says that if a global variable *g:load_TagHl* exists then
-vimhl must use color scheme *bandit* and load plugin *TagHighlight* that would
+*vimhl* must use color scheme *bandit* and load plugin *TagHighlight* that would
 normally add extra highlighting groups to make code highlights look rich and
 more beautiful. The second condition says that if a global variable
-*g:PhHtmlEngine* exists and is equal to *tohtml* then vimhl must load plugin
+*g:PhHtmlEngine* exists and is equal to *tohtml* then *vimhl* must load plugin
 TOhtml.
 
 The new attribute *vars* allows loading vim global variables from the original
@@ -233,7 +234,7 @@ document. To turn conditions in the example above on it must be defined as
 be delimited by *commas*, their values are defined after *equal sign*, if the
 equal sign is missing then the value is supposed to be equal to *1*,
 *quote signs* around the value and the prefix *g:* before the variable name are
-missing and will be substituted transparently inside vimhl.
+missing and will be substituted transparently inside *vimhl*.
 
 ### Options to choose color scheme
 
@@ -242,25 +243,25 @@ Here is the algorithm of choosing color scheme in priority order:
 * If tag *&lt;pre&gt;* contains attribute *colorscheme="&lt;value&gt;"* then
   *&lt;value&gt;* is chosen, else
 
-* If file &#36;HOME/.vimrc.pandoc contains line *colorscheme &lt;value&gt;* then
-  *&lt;value&gt;* is chosen, else
-
-* If file &#36;HOME/.vimrc contains line *let g:PhColorscheme = "&lt;value&gt;"*
+* If file *&#36;HOME/.vimrc.pandoc* contains line *colorscheme &lt;value&gt;*
   then *&lt;value&gt;* is chosen, else
 
-* If file &#36;HOME/.vimrc contains line *colorscheme &lt;value&gt;* then
+* If file *&#36;HOME/.vimrc* contains line
+  *let g:PhColorscheme = "&lt;value&gt;"* then *&lt;value&gt;* is chosen, else
+
+* If file *&#36;HOME/.vimrc contains* line *colorscheme &lt;value&gt;* then
   *&lt;value&gt;* is chosen, else
 
 * System vim color scheme is chosen
 
 The second case, i.e. when colorscheme is defined in file
-&#36;HOME/.vimrc.pandoc, is preferable as vim will consume less resources and
+*&#36;HOME/.vimrc.pandoc*, is preferable as vim will consume less resources and
 work fastest.
 
 ### Remarks
 
-* Tag class may contain a list of values. To make vimhl.hs work properly the
-  file type must be the first value in the list.
+* Tag class may contain a list of values. To make *vimhl.hs* work properly, the
+  filetype must be the first value in the list.
 
 * Normally pandoc adds definitions of Shaded and Highlighting environments in
   TeX output when it finds CodeBlock branches in generated AST. Publish helper
@@ -292,7 +293,7 @@ work fastest.
 
   You may also want to use script *vimhl_latex_tmpl.sh* shipped with the plugin
   in order to facilitate this task. The script prints to stdout a pandoc
-  template for Latex which is compatible with vimhl. Besides *Shaded*
+  template for Latex which is compatible with *vimhl*. Besides *Shaded*
   environment it defines *Snugshade*, *Framed*, *Leftbar* and *Mdframed*
   environments that correspond to definitions of the same names in Latex
   packages Framed and Mdframed.
@@ -311,8 +312,8 @@ work fastest.
 
 * If you have installed vim plugin for pandoc
   (http://www.vim.org/scripts/script.php?script_id=3730) then you'll probably
-  notice bad syntax highlighting when editing .vimrc.pandoc from vim. To make
-  it normal change content of .vim/ftdetect/pandoc.vim to
+  notice bad syntax highlighting when editing *.vimrc.pandoc* from vim. To make
+  it normal, change contents of file *.vim/ftdetect/pandoc.vim* to
 
     ```vim
   au BufNewFile,BufRead *.markdown,*.md,*.mkd,*.pd,*.pdc,*.pdk,*.text
@@ -353,8 +354,8 @@ let g:PhColorscheme = 'lucius'
 ```
 
 This variable specifies dedicated color scheme for syntax highlights by
-MakeHtmlCodeHighlight and MakeTexCodeHighlight. If not set then the current
-color scheme will be used. Do not set it in .vimrc.pandoc as normal setting of
+*MakeHtmlCodeHighlight* and *MakeTexCodeHighlight*. If not set then the current
+color scheme will be used. Do not set it in *.vimrc.pandoc* as normal setting of
 color scheme is preferred there.
 
 ### g:PhHtmlEngine
@@ -401,9 +402,9 @@ let g:PhCtrlTrans = 1
 
 Some programming languages allow using verbatim control characters. For
 example you may define an interactive scenario in viml with command *normal*
-which may require them. This variable specifies that MakeTexCodeHighlight will
+which may require them. This variable specifies that *MakeTexCodeHighlight* will
 accurately translate verbatim control characters in their usual vim ascii
-representation. Setting this variable for using from vimhl.hs does not always
+representation. Setting this variable for using from *vimhl.hs* does not always
 work as expected because some values (like ^M) may have been already lost on
 the pandoc's AST level. This variable is not set by default.
 
@@ -434,7 +435,7 @@ this put
 \setlength\fboxsep{1pt}
 ```
 
-in the preamble of the TeX document. Script vimhl_latex_tmpl.sh puts this line
+in the preamble of the TeX document. Script *vimhl_latex_tmpl.sh* puts this line
 in environments Shaded, Framed and Mdframed automatically.
 
 ### g:PhLinenrAsTblColumn
@@ -475,9 +476,9 @@ The option for highlighting various shells and REPLs (bash, ghci, python REPL
 etc.) is available from **version 0.10** of the plugin. Normally one may want to
 highlight shells and REPLs blocks in a different way than code blocks. This is
 easily achieved by specifying a variable that defines a role of the block.
-Imagine that we want to use filter vimhl in pandoc, then the role might be
+Imagine that we want to use filter *vimhl* in pandoc, then the role might be
 defined via a variable passed in the attribute vars: *vars="PhBlockRole=output"*
-and the block view would be customized in .vimrc.pandoc like this:
+and the block view would be customized in *.vimrc.pandoc* like this:
 
 ```vim
 if !exists('g:PhHtmlPreAttrs')
@@ -526,7 +527,7 @@ package Listings. Here is an example:
      moredelim=[il][\color{shellpromptcolor}\upshape]{|||\ }}
 ```
 
-Script vimhl_latex_tmpl.sh has several options to insert these definitions
+Script *vimhl_latex_tmpl.sh* has several options to insert these definitions
 automatically in a pandoc template. Using these definitions has advantage of
 inserting pretty line breaks in the document automatically when they are needed.
 If you want to set up different *also-letters* (for the notion of this see
@@ -536,7 +537,7 @@ variable *g:PhAlsoletter*.
 An example
 ----------
 
-- Pandoc flavoured markdown source file example.md
+- Pandoc flavoured markdown source file *example.md*
 
     <!-- ````pandoc highlights it mostly in blue which looks sharp -->
 
@@ -601,7 +602,7 @@ An example
   ```
     ````
 
-- Content of .vimrc.pandoc (also contained in the previous listing)
+- Content of *.vimrc.pandoc* (also contained in the previous listing)
 
     ```vim
   set nocompatible
