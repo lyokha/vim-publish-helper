@@ -643,15 +643,10 @@ An example
   $ pandoc --standalone -Fvimhl -o example.html example.md
     ```
 
-<br>
-
-----
-
-<p align="center">
-  <img src="../images/images/vimhl-html.png?raw=true" alt="HTML result"/>
+<p style="text-align:center; margin-bottom:5px">
+  <img style="border:1px solid; 87CEFA"
+    src="../images/images/vimhl-html.png?raw=true" alt="HTML result"/>
 </p>
-
-----
 
 - **Pdf document produced by command**
 
@@ -659,15 +654,10 @@ An example
   $ pandoc -Vgeometry:a4paper --template=vimhl -Fvimhl -o example.pdf example.md
     ```
 
-<br>
-
-----
-
-<p align="center">
-  <img src="../images/images/vimhl-latex.png?raw=true" alt="PDF result"/>
+<p style="text-align:center, margin-bottom:5px">
+  <img style="border:1px solid; 87CEFA"
+    src="../images/images/vimhl-latex.png?raw=true" alt="PDF result"/>
 </p>
-
-----
 
 Thanks to
 ---------
