@@ -51,7 +51,7 @@ Basic commands
 ### MakeHtmlCodeHighlight
 
 Produces HTML code from the contents of the current buffer or a selected part
-of it. Uses plugin TOhtml internally with temporarily set variable
+of it. Uses plugin *TOhtml* internally with temporarily set variable
 *g:html\_use\_css = 0* thus embedding color tags inside the generated HTML code.
 Wraps the generated HTML code inside *&lt;pre&gt; ... &lt;/pre&gt;* tags. Copy
 it in a clipboard and then insert in any HTML document: an article in your blog,
@@ -66,10 +66,10 @@ the number of the first line will be equal to the number of the first line in
 the original buffer.
 
 Starting from **version 0.6** *MakeHtmlCodeHighlight* uses same highlighting
-engine as *MakeTexCodeHighlight* by default. To switch back to TOhtml engine set
-variable *g:PhHtmlEngine = 'tohtml'*.
+engine as *MakeTexCodeHighlight* by default. To switch back to the *TOhtml*
+engine, set variable *g:PhHtmlEngine = 'tohtml'*.
 
-Output of TOhtml may differ from that of default highlighting engine: it
+Output of *TOhtml* may differ from that of default highlighting engine: it
 renders buffers in a very verbose way and may content folds, bold text etc.
 whereas default engine normally ignores view details of the buffer.
 
@@ -226,7 +226,7 @@ The first condition says that if a global variable *g:load_TagHl* exists then
 normally add extra highlighting groups to make code highlights look rich and
 more beautiful. The second condition says that if a global variable
 *g:PhHtmlEngine* exists and is equal to *tohtml* then *vimhl* must load plugin
-TOhtml.
+*TOhtml*.
 
 The new attribute *vars* allows loading vim global variables from the original
 document. To turn conditions in the example above on it must be defined as
@@ -364,8 +364,8 @@ color scheme is preferred there.
 let g:PhHtmlEngine = 'tohtml'
 ```
 
-Available since **version 0.6**. If value is *tohtml* then TOhtml engine will be
-used to render HTML highlights, otherwise the internal engine will be used.
+Available since **version 0.6**. If value is *tohtml* then *TOhtml* engine will
+be used to render HTML highlights, otherwise the internal engine will be used.
 Not set by default.
 
 ### g:PhHtmlPreAttrs
@@ -424,7 +424,7 @@ let g:PhRichTextElems = ['bg', 'bold', 'italic']
 ```
 
 This variable defines a list of rich text elements that will be accepted for
-rendering text both in HTML and Latex formats, it is ignored when using TOhtml
+rendering text both in HTML and Latex formats, it is ignored when using *TOhtml*
 engine. Accepted values are *bg*, *bold*, *italic* and *underline*, other
 values are quietly ignored. All accepted elements are turned on by default.
 Notice that Latex engine uses *\colorbox* for rendering background which
@@ -673,5 +673,5 @@ An example
 Thanks to
 ---------
 
-Christian Brabandt for plugin Colorizer and Xterm2rgb translation functions.
+Christian Brabandt for plugin *Colorizer* and *Xterm2rgb* translation functions.
 
