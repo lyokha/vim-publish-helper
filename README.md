@@ -8,7 +8,7 @@ Table of contents
 - [Basic commands](#basic-commands)
     + [MakeHtmlCodeHighlight](#makehtmlcodehighlight)
     + [MakeTexCodeHighlight](#maketexcodehighlight)
-- [vimhl.hs and pandoc](#vimhl.hs-and-pandoc)
+- [vimhl.hs and pandoc](#vimhlhs-and-pandoc)
     + [Basic usage](#basic-usage)
     + [Using with dedicated .vimrc file](#using-with-dedicated-.vimrc-file)
     + [Customizing vim settings](#customizing-vim-settings)
