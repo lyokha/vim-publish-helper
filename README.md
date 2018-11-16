@@ -28,6 +28,7 @@ Table of contents
     + [g:PhLinenrAsTblColumn](#gphlinenrastblcolumn)
 - [Highlighting shells and REPLs](#highlighting-shells-and-repls)
 - [An example](#an-example)
+- [Trivia](#trivia)
 - [Thanks to](#thanks-to)
 
 About
@@ -672,6 +673,12 @@ An example
 </p>
 
 ----
+
+Trivia
+------
+
+Since April 2014 all code blocks in articles from
+[*my blog*](https://lin-techdet.blogspot.com/) are styled using *vimhl*.
 
 Thanks to
 ---------
