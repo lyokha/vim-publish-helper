@@ -55,7 +55,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
                     {- vim must think that it was launched from a terminal,
                      - otherwise it won't load its usual environment and
                      - the syntax engine! Using WriteMode prevents vim from
-                     - getting unresponsive on Ctrl-C interruption while still
+                     - getting unresponsive on Ctrl-C interrupts while still
                      - doing well its task. -}
                     hin <- openFile "/dev/tty" WriteMode
                     (_, Just hout, _, handle) <- createProcess
