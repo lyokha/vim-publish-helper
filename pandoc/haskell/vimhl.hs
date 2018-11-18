@@ -13,6 +13,7 @@ import Data.Char (toLower)
 import Data.Maybe (fromMaybe)
 import Control.Arrow (first, (&&&))
 import Control.Monad
+import Control.Exception (bracket)
 import Control.Conditional
 
 vimHl :: Maybe Format -> Block -> IO Block
@@ -22,6 +23,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
                 unwords [cmd fmt, nmb]
                 where cmd "html"  = "MakeHtmlCodeHighlight"
                       cmd "latex" = "MakeTexCodeHighlight"
+                      cmd x       = error $ "Unexpected format '" ++ x ++ "'"
                       nmb | "numberLines" `elem` cls =
                               fromMaybe "-1" $ lookup "startfrom" namevals'
                           | otherwise = ""
@@ -32,37 +34,39 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
                 maybe "" (unwords . map cmd . filter (not . null . snd) .
                     map (matchRegexAll (dl"=") &&& id) . splitRegex (dl",")) $
                         lookup "vars" namevals'
-                where cmd (Nothing           , x) = mkCmd x "1"
-                      cmd (Just ("", _, y, _), _) = error $ "Bare value '" ++
-                                                        y ++ "' found in vars"
-                      cmd (Just ( x, _, y, _), _) = mkCmd x  y
+                where cmd (Nothing, x) = mkCmd x "1"
+                      cmd (Just ("", _, y, _), _) =
+                          error $ "Bare value '" ++ y ++ "' found in vars"
+                      cmd (Just (x, _, y, _), _) = mkCmd x y
                       mkCmd x y = "--cmd 'let g:" ++ x ++ " = \"" ++ y ++ "\"'"
-                      dl        = mkRegex . ("\\s*" ++) . (++ "\\s*")
-            vimrccmd = do
-                home <- getHomeDirectory `catchIOError` const (return "")
-                let vimrc  = home </> ".vimrc.pandoc"
-                    exists = let (&&>) = liftM2 (<&&>)
-                             in doesFileExist &&>
-                                 (getPermissions >=> return . readable)
-                    ($>) = liftM2 (<$>)
-                (bool "" . ("--noplugin -u '" ++) . (++ "'")) $> exists $ vimrc
-            runVim src dst hsrc hdst = do
-                hPutStr hsrc contents
-                mapM_ hClose [hsrc, hdst]
-                vimrc <- vimrccmd
-                {- vim must think that it was launched from a terminal,
-                 - otherwise it won't load its usual environment and the
-                 - syntax engine! -}
-                hin <- openFile "/dev/tty" ReadMode
-                (_, Just hout, _, handle) <- createProcess (shell $ unwords
-                    ["vim -Nen", cmds, vimrc, colorscheme, "-c 'set ft=" ++ ft,
-                     "|", vimhlcmd ++ "' -c 'w!", dst ++ "' -c 'qa!'", src])
-                    {std_in = UseHandle hin, std_out = CreatePipe}
-                waitForProcess handle
-                mapM_ hClose [hin, hout]
-        block <- withSystemTempFile "_vimhl_src." $
-                    \src hsrc -> withSystemTempFile "_vimhl_dst." $
-                        \dst hdst -> runVim src dst hsrc hdst >> readFile dst
+                      dl = mkRegex . ("\\s*" ++) . (++ "\\s*")
+        vimrccmd <- do
+            home <- getHomeDirectory `catchIOError` const (return "")
+            let vimrc  = home </> ".vimrc.pandoc"
+                exists = doesFileExist &&>
+                    (getPermissions >=> return . readable)
+                (&&>) = liftM2 (<&&>)
+                ($>)  = liftM2 (<$>)
+            (bool "" . ("--noplugin -u '" ++) . (++ "'")) $> exists $ vimrc
+        block <- withSystemTempFile "_vimhl_src." $ \src hsrc -> do
+            hPutStr hsrc contents >> hFlush hsrc
+            bracket (emptySystemTempFile "_vimhl_dst.") removeFile $
+                \dst -> do
+                    {- vim must think that it was launched from a terminal,
+                     - otherwise it won't load its usual environment and
+                     - the syntax engine! Using WriteMode prevents vim from
+                     - getting unresponsive on Ctrl-C interruption while still
+                     - doing well its task. -}
+                    hin <- openFile "/dev/tty" WriteMode
+                    (_, Just hout, _, handle) <- createProcess
+                        (shell $ unwords
+                            ["vim -Nen", cmds, vimrccmd, colorscheme
+                            ,"-c 'set ft=" ++ ft, "|", vimhlcmd ++ "' -c 'w!"
+                            ,dst ++ "' -c 'qa!'", src
+                            ]
+                        ) {std_in = UseHandle hin, std_out = CreatePipe}
+                    waitForProcess handle >> hClose hout
+                    readFile dst
         return $ RawBlock fm block
     where namevals' = map (first $ map toLower) namevals
 vimHl _ cb = return cb
