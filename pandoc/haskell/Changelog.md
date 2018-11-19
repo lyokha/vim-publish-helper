@@ -1,3 +1,8 @@
+### 0.1.2.1
+
+- Added Cabal flag *debug* (off by default) for printing how vim runs to
+  *stderr*.
+
 ### 0.1.2.0
 
 - Better treatment of handles of temporary files.

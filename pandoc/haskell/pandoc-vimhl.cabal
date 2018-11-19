@@ -1,5 +1,5 @@
 name:                pandoc-vimhl
-version:             0.1.2.0
+version:             0.1.2.1
 synopsis:            Pandoc filter for native Vim code highlighting
 description:         Pandoc filter for native Vim code highlighting in HTML and
         PDF documents. Requires Vim and plugin
@@ -15,14 +15,24 @@ category:            Text
 build-type:          Simple
 cabal-version:       >= 1.8
 
+flag debug
+  description:       Enable debug support (print how vim runs to stderr)
+  default:           False
+  manual:            True
+
 executable vimhl
-  build-depends:       base >= 4.7 && < 5
-                     , pandoc-types >= 1.12
-                     , directory
-                     , filepath
-                     , process
-                     , temporary >= 1.1
-                     , regex-compat
-                     , cond >= 0.2
-  main-is:             vimhl.hs
+  build-depends:     base >= 4.7 && < 5
+                   , pandoc-types >= 1.12
+                   , directory
+                   , filepath
+                   , process
+                   , temporary >= 1.1
+                   , regex-compat
+                   , cond >= 0.2
+  extensions:        CPP
+
+  if flag(debug)
+    cpp-options:    -DDEBUG
+
+  main-is:           vimhl.hs
 

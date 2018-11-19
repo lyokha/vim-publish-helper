@@ -1,5 +1,7 @@
 #!/usr/bin/env runhaskell
 
+{-# LANGUAGE CPP #-}
+
 -- vimhl.hs
 import Text.Pandoc.JSON
 import Text.Regex (mkRegex, splitRegex, matchRegexAll)
@@ -53,6 +55,16 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
             hPutStr hsrc contents >> hFlush hsrc
             bracket (emptySystemTempFile "_vimhl_dst.") removeFile $
                 \dst -> do
+                    let vimcmd =
+                            unwords
+                                ["vim -Nen", cmds, vimrccmd, colorscheme
+                                ,"-c 'set ft=" ++ ft, "|"
+                                ,vimhlcmd ++ "' -c 'w!", dst ++ "' -c 'qa!'"
+                                ,src
+                                ]
+#ifdef DEBUG
+                    hPutStr stderr $ vimcmd ++ " ... "
+#endif
                     {- vim must think that it was launched from a terminal,
                      - otherwise it won't load its usual environment and the
                      - syntax engine! Using WriteMode for stdin prevents vim
@@ -62,15 +74,12 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
                      - mode of the handle). -}
                     hin <- openFile "/dev/tty" WriteMode
                     hout <- openFile "/dev/null" WriteMode
-                    (_, _, _, handle) <- createProcess
-                        (shell $ unwords
-                            ["vim -Nen", cmds, vimrccmd, colorscheme
-                            ,"-c 'set ft=" ++ ft, "|", vimhlcmd ++ "' -c 'w!"
-                            ,dst ++ "' -c 'qa!'", src
-                            ]
-                        ) {std_in = UseHandle hin, std_out = UseHandle hout}
+                    (_, _, _, handle) <- createProcess (shell vimcmd)
+                        {std_in = UseHandle hin, std_out = UseHandle hout}
                     r <- waitForProcess handle
-                    unless (r == ExitSuccess) $ exitWith r
+#ifdef DEBUG
+                    hPutStrLn stderr "done"
+#endif
                     readFile dst
         return $ RawBlock fm block
     where namevals' = map (first $ map toLower) namevals
