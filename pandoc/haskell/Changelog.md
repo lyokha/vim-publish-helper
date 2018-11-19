@@ -1,4 +1,4 @@
-### 0.1.2.1
+### 0.1.2.2
 
 - Added Cabal flag *debug* (off by default) for printing how vim runs to
   *stderr*.
