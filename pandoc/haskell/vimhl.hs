@@ -9,12 +9,13 @@ import System.IO.Error
 import System.Directory
 import System.FilePath
 import System.Process
+import System.Exit
 import Data.Char (toLower)
 import Data.Maybe (fromMaybe)
 import Control.Arrow (first, (&&&))
 import Control.Monad
 import Control.Exception (bracket)
-import Control.Conditional
+import Control.Conditional hiding (unless)
 
 vimHl :: Maybe Format -> Block -> IO Block
 vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
@@ -53,19 +54,23 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
             bracket (emptySystemTempFile "_vimhl_dst.") removeFile $
                 \dst -> do
                     {- vim must think that it was launched from a terminal,
-                     - otherwise it won't load its usual environment and
-                     - the syntax engine! Using WriteMode prevents vim from
-                     - getting unresponsive on Ctrl-C interrupts while still
-                     - doing well its task. -}
+                     - otherwise it won't load its usual environment and the
+                     - syntax engine! Using WriteMode for stdin prevents vim
+                     - from getting unresponsive on Ctrl-C interrupts while
+                     - still doing well its task (vim checks that input is a
+                     - terminal using isatty(), however it does not check the
+                     - mode of the handle). -}
                     hin <- openFile "/dev/tty" WriteMode
-                    (_, Just hout, _, handle) <- createProcess
+                    hout <- openFile "/dev/null" WriteMode
+                    (_, _, _, handle) <- createProcess
                         (shell $ unwords
                             ["vim -Nen", cmds, vimrccmd, colorscheme
                             ,"-c 'set ft=" ++ ft, "|", vimhlcmd ++ "' -c 'w!"
                             ,dst ++ "' -c 'qa!'", src
                             ]
-                        ) {std_in = UseHandle hin, std_out = CreatePipe}
-                    waitForProcess handle >> hClose hout
+                        ) {std_in = UseHandle hin, std_out = UseHandle hout}
+                    r <- waitForProcess handle
+                    unless (r == ExitSuccess) $ exitWith r
                     readFile dst
         return $ RawBlock fm block
     where namevals' = map (first $ map toLower) namevals
