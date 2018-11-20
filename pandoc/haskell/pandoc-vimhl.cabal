@@ -13,7 +13,7 @@ maintainer:              Alexey Radkov <alexey.radkov@gmail.com>
 copyright:               2016-2018 Alexey Radkov
 category:                Text
 build-type:              Simple
-cabal-version:           >= 1.20
+cabal-version:           1.20
 
 flag debug
   description:           Enable debug support (print how vim runs to stderr)
