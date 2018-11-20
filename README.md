@@ -239,7 +239,7 @@ will be substituted automatically inside *vimhl*.
 
 ### Options to choose color scheme
 
-Here is the algorithm of choosing color scheme in priority order:
+Here is the algorithm for choosing a color scheme in priority order:
 
 * If tag *&lt;pre&gt;* contains attribute *colorscheme="&lt;value&gt;"* then
   *&lt;value&gt;* is chosen, else
@@ -255,7 +255,7 @@ Here is the algorithm of choosing color scheme in priority order:
 
 * System vim color scheme is chosen
 
-The second case, i.e. when colorscheme is defined in file
+The second case, i.e. when *colorscheme* is defined in file
 *&#36;HOME/.vimrc.pandoc*, is preferable because vim will consume less resources
 and work faster.
 
@@ -355,9 +355,9 @@ let g:PhColorscheme = 'lucius'
 ```
 
 This variable specifies dedicated color scheme for syntax highlights by
-*MakeHtmlCodeHighlight* and *MakeTexCodeHighlight*. If it is not set then the
-current color scheme will be used. Do not set it in *.vimrc.pandoc* as normal
-setting of color scheme is preferred there.
+*MakeHtmlCodeHighlight* and *MakeTexCodeHighlight*. If not set, then the current
+color scheme will be used. Do not set it in *.vimrc.pandoc* because normal
+setting of a color scheme is preferred there.
 
 ### g:PhHtmlEngine
 
@@ -367,7 +367,7 @@ let g:PhHtmlEngine = 'tohtml'
 
 Available since **version 0.6**. If value is *tohtml* then *TOhtml* engine will
 be used to render HTML highlights, otherwise the internal engine will be used.
-It is not set by default.
+Not set by default.
 
 ### g:PhHtmlPreAttrs
 
@@ -385,7 +385,7 @@ let g:PhHtmlPreAttrs = 'style="overflow-x: auto;"'
 ### g:PhTexBlockStyle
 
 This variable sets visual parameters of code blocks in generated TeX documents.
-If it is not set then *Shaded* environment will be used. Examples:
+If not set, then *Shaded* environment will be used. Examples:
 
 ```vim
 let g:PhTexBlockStyle = 'Shaded'
@@ -445,9 +445,9 @@ in environments *Shaded*, *Framed*, and *Mdframed* automatically.
 let g:PhLinenrAsTblColumn = 1
 ```
 
-Draws a line-numbered code as an HTML table. Effective only when internal syntax
-highlighting engine is used. It is not set by default. There are a few variables
-to control how various elements of the table will look.
+Draws a line-numbered code as an HTML table. Effective only when the internal
+syntax highlighting engine is used. Not set by default. There are a few
+variables to control how various elements of the table will look.
 
 * *g:PhLinenrColumnBorderAttrs* defines border attributes between the
   line-number and the code columns. Beware: it does not expect color settings,
@@ -457,8 +457,8 @@ to control how various elements of the table will look.
   Default value is *0*.
 
 * *g:PhLinenrFgColor* defines foreground color of the line-number column and of
-  the border between the columns. It is not set by default: color of the
-  *SpecialKey* syntax highlighting group will be used in this case.
+  the border between the columns. Not set by default: color of the *SpecialKey*
+  syntax highlighting group will be used in this case.
 
 * *g:PhLinenrColumnWidth* defines the line-number column width. Default value is
   *2em*.
