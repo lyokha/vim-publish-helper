@@ -2,7 +2,6 @@
 
 {-# LANGUAGE CPP #-}
 
--- vimhl.hs
 import Text.Pandoc.JSON
 import Text.Regex (mkRegex, splitRegex, matchRegexAll)
 import System.IO
@@ -16,6 +15,9 @@ import Data.Char (toLower)
 import Data.Maybe (fromMaybe)
 import Control.Arrow (first, (&&&))
 import Control.Monad
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+#endif
 import Control.Exception (bracket)
 import Control.Conditional hiding (unless)
 
