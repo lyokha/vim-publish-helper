@@ -102,10 +102,10 @@ different styles for code blocks in TeX documents.
 vimhl.hs and pandoc
 -------------------
 
-This is the most useful feature of the plugin. Both the commands
+This is the most useful feature of the plugin. Both commands
 *MakeHtmlCodeHighlight* and *MakeTexCodeHighlight* can be used as drivers to the
-vim syntax highlighting engine from pandoc. This is achieved via pandoc's
-*filter* feature available since pandoc version *1.12*.
+vim syntax highlighting engine from pandoc. This is achieved via the *filter*
+feature available in pandoc since version *1.12*.
 
 ### Basic usage
 
@@ -150,8 +150,7 @@ tags *&lt;pre&gt;*,
 <pre class="cpp" hl="vim">
 ```
 
-and run pandoc with the filter *vimhl* (or *vimhl.hs* if you did not compile
-it).
+and run pandoc with *vimhl* as a filter.
 
 ```ShellSession
 $ pandoc -f html -t latex -F vimhl -o article.tex article.html

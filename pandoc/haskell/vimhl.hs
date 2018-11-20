@@ -1,5 +1,3 @@
-#!/usr/bin/env runhaskell
-
 {-# LANGUAGE CPP #-}
 
 import Text.Pandoc.JSON

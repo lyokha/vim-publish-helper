@@ -1,3 +1,7 @@
+### 0.1.2.4
+
+- Removed *shebang* line as it may lead to compilation failures.
+
 ### 0.1.2.3
 
 - Added support for older GHC *7.8*.
