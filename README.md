@@ -510,7 +510,7 @@ a marker for making correct highlights in the document.
 
 Highlighting shells and REPLs in TeX documents requires extra definitions in
 the preamble because it utilizes language definition feature of Latex package
-*Listings*. Here is an example:
+[*Listings*](https://ctan.org/pkg/listings). Here is an example:
 
 ```tex
 \usepackage{MnSymbol}
