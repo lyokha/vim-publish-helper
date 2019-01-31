@@ -105,7 +105,6 @@ for i in 'BG_' 'S_BG_' 'F_' 'SH_P_' 'SH_O_' 'LB_' ; do
 done
 
 IFS= read -r -d '' RPL <<END
-\\\\usepackage{xcolor}\\
 \\\\newcommand{\\\\VerbBar}{|}\\
 \\\\newcommand{\\\\VERB}{\\\\Verb[commandchars=\\\\\\\\\\\\{\\\\}]}\\
 \\\\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\\\\\\\\\\{\\\\}}\\
@@ -141,6 +140,11 @@ IFS= read -r -d '' RPL <<END
   \\\\begin{leftbar}\\$SCRIPTSIZE
 }{\\\\end{leftbar}}\\
 END
+
+PANDOCV=$(pandoc -v | sed -n 's/pandoc //; 1p')
+if [[ "$PANDOCV" < "2.6" ]] ; then
+    RPL="\\\\usepackage{xcolor}\n"$RPL
+fi
 
 if [ -n "$MDFRAMED" ] ; then
 IFS= read -r -d '' MRPL <<END
