@@ -7,6 +7,7 @@ FANCYVRB_IF2_PTN='^\$if(verbatim-in-note)\$\n\\usepackage{fancyvrb}'
 FANCYVRB_SWAP='\\usepackage{fancyvrb}\n$if(verbatim-in-note)$'
 LST_IF_PTN='^SKIP THIS$'
 LST_IF2_PTN='^\$if(listings)\$\n\\usepackage{listings}'
+LST_SWAP='\\usepackage{listings}\n$if(listings)$'
 ENDIF_PTN='^\$endif\$$'
 
 BG_COLOR='FFFFEE'
@@ -164,7 +165,6 @@ fi
 if [ -n "$SHOUTPUT" ] ; then
 IFS= read -r -d '' DRPL <<END
 \\\\usepackage{MnSymbol}\\
-\\\\usepackage{listings}\\
 \\\\definecolor{shellpromptcolor}{$SH_P_COLOR_FMT}{$SH_P_COLOR}\\
 \\\\definecolor{shelloutputcolor}{$SH_O_COLOR_FMT}{$SH_O_COLOR}\\
 \\\\lstset{basicstyle=\\\\scriptsize\\\\ttfamily, breaklines=true}\\
@@ -191,7 +191,7 @@ RPL=$RPL$CRPL
 fi
 
 pandoc -D latex |
-sed "/$LST_IF_PTN/N;/$LST_IF2_PTN/,/$ENDIF_PTN/d
+sed "/$LST_IF_PTN/N;/$LST_IF2_PTN/s//$LST_SWAP/
      /$HL_M_PTN/i \\$RPL
      /$HL_M_IF_PTN/,/$ENDIF_PTN/d
      /$FANCYVRB_IF_PTN/N;/$FANCYVRB_IF2_PTN/s//$FANCYVRB_SWAP/"
