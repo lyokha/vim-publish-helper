@@ -1,9 +1,6 @@
 import Text.Pandoc.JSON
 import Text.Regex (mkRegex, splitRegex, matchRegexAll)
-import System.IO
-#if MIN_VERSION_pandoc_types(1,20,0)
-                 hiding (readFile, hPutStr)
-#endif
+import System.IO (IOMode (WriteMode), openFile, hFlush)
 import System.IO.Temp
 import System.IO.Error
 import System.Directory
@@ -20,9 +17,11 @@ import Control.Applicative
 import Control.Exception (bracket)
 import Control.Conditional hiding (unless)
 #if MIN_VERSION_pandoc_types(1,20,0)
-import Prelude hiding (readFile, hPutStr)
+import Prelude hiding (readFile)
 import Data.Text.IO (readFile, hPutStr)
 import Data.Text (Text, unpack)
+#else
+import System.IO (hPutStr)
 #endif
 
 #if MIN_VERSION_pandoc_types(1,20,0)
@@ -99,7 +98,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
         return $ RawBlock fm block
     where fmt' = tOSTRING fmt
           cls' = map tOSTRING cls
-          ft' = tOSTRING ft
+          ft'  = tOSTRING ft
           namevals' = map (map toLower . tOSTRING *** tOSTRING) namevals
 vimHl _ cb = return cb
 
