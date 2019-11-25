@@ -1,8 +1,9 @@
-{-# LANGUAGE CPP #-}
-
 import Text.Pandoc.JSON
 import Text.Regex (mkRegex, splitRegex, matchRegexAll)
 import System.IO
+#if MIN_VERSION_pandoc_types(1,20,0)
+                 hiding (readFile, hPutStr)
+#endif
 import System.IO.Temp
 import System.IO.Error
 import System.Directory
@@ -11,23 +12,36 @@ import System.Process
 import System.Exit
 import Data.Char (toLower)
 import Data.Maybe (fromMaybe)
-import Control.Arrow (first, (&&&))
+import Control.Arrow ((&&&), (***))
 import Control.Monad
 #if !MIN_VERSION_base(4,8,0)
 import Control.Applicative
 #endif
 import Control.Exception (bracket)
 import Control.Conditional hiding (unless)
+#if MIN_VERSION_pandoc_types(1,20,0)
+import Prelude hiding (readFile, hPutStr)
+import Data.Text.IO (readFile, hPutStr)
+import Data.Text (Text, unpack)
+#endif
+
+#if MIN_VERSION_pandoc_types(1,20,0)
+tOSTRING :: Text -> String
+tOSTRING = unpack
+#else
+tOSTRING :: String -> String
+tOSTRING = id
+#endif
 
 vimHl :: Maybe Format -> Block -> IO Block
 vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
-    | lookup "hl" namevals' == Just "vim" && fmt `elem` ["html", "latex"] = do
+    | lookup "hl" namevals' == Just "vim" && fmt' `elem` ["html", "latex"] = do
         let vimhlcmd =
-                unwords [cmd fmt, nmb]
+                unwords [cmd fmt', nmb]
                 where cmd "html"  = "MakeHtmlCodeHighlight"
                       cmd "latex" = "MakeTexCodeHighlight"
                       cmd x       = error $ "Unexpected format '" ++ x ++ "'"
-                      nmb | "numberLines" `elem` cls =
+                      nmb | "numberLines" `elem` cls' =
                               fromMaybe "-1" $ lookup "startfrom" namevals'
                           | otherwise = ""
             colorscheme =
@@ -58,7 +72,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
                     let vimcmd =
                             unwords
                                 ["vim -Nen", cmds, vimrccmd, colorscheme
-                                ,"-c 'set ft=" ++ ft, "|"
+                                ,"-c 'set ft=" ++ ft', "|"
                                 ,vimhlcmd ++ "' -c 'w!", dst ++ "' -c 'qa!'"
                                 ,src
                                 ]
@@ -83,7 +97,10 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
 #endif
                     readFile dst
         return $ RawBlock fm block
-    where namevals' = map (first $ map toLower) namevals
+    where fmt' = tOSTRING fmt
+          cls' = map tOSTRING cls
+          ft' = tOSTRING ft
+          namevals' = map (map toLower . tOSTRING *** tOSTRING) namevals
 vimHl _ cb = return cb
 
 main :: IO ()

@@ -1,5 +1,5 @@
 name:                    pandoc-vimhl
-version:                 0.1.2.4
+version:                 0.1.3.0
 synopsis:                Pandoc filter for native Vim code highlighting
 description:             Pandoc filter for native Vim code highlighting
         in HTML and PDF documents. Requires Vim and plugin
@@ -30,6 +30,7 @@ executable vimhl
                        , temporary >= 1.1
                        , regex-compat
                        , cond >= 0.2
+                       , text
   default-extensions:    CPP
 
   if flag(debug)

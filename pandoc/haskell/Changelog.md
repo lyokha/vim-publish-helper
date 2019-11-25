@@ -1,3 +1,7 @@
+### 0.1.3.0
+
+- Updated after Pandoc *2.8* and the *String-to-Text* migration.
+
 ### 0.1.2.4
 
 - Removed *shebang* line as it may lead to compilation failures.
