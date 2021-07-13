@@ -18,10 +18,14 @@ import Control.Exception (bracket)
 import Control.Conditional hiding (unless)
 #if MIN_VERSION_pandoc_types(1,20,0)
 import Prelude hiding (readFile)
-import Data.Text.IO (readFile, hPutStr)
+import Data.Text.IO (readFile)
+import qualified Data.Text.IO as P (hPutStr)
 import Data.Text (Text, unpack)
 #else
-import System.IO (hPutStr)
+import qualified System.IO as P (hPutStr)
+#endif
+#ifdef DEBUG
+import System.IO (hPutStr, hPutStrLn, stderr)
 #endif
 
 #if MIN_VERSION_pandoc_types(1,20,0)
@@ -65,7 +69,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
                 ($>)  = liftM2 (<$>)
             (bool "" . ("--noplugin -u '" ++) . (++ "'")) $> exists $ vimrc
         block <- withSystemTempFile "_vimhl_src." $ \src hsrc -> do
-            hPutStr hsrc contents >> hFlush hsrc
+            P.hPutStr hsrc contents >> hFlush hsrc
             bracket (emptySystemTempFile "_vimhl_dst.") removeFile $
                 \dst -> do
                     let vimcmd =
