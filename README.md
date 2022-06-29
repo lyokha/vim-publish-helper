@@ -1,7 +1,7 @@
 Vim-publish-helper
 ==================
 
-[![Hackage](https://img.shields.io/hackage/v/pandoc-vimhl)](https://hackage.haskell.org/package/pandoc-vimhl)
+[![Hackage](https://img.shields.io/hackage/v/pandoc-vimhl.svg?label=hackage%20%7C%20pandoc-vimhl&logo=haskell&logoColor=%239580D1)](https://hackage.haskell.org/package/pandoc-vimhl)
 
 Table of contents
 -----------------
