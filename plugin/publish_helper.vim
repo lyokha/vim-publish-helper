@@ -46,7 +46,7 @@
 "   and finding foreground or background colors under cursor. Normally i use
 "   them in maps like following:
 "
-"   nmap <silent> ,vc :GetFgColorUnderCursor<CR>
+"   nmap <silent> ,vf :GetFgColorUnderCursor<CR>
 "   nmap <silent> ,vb :GetBgColorUnderCursor<CR>
 "
 " Thanks: Christian Brabandt for plugin Colorizer and Xterm2rgb translation
@@ -179,10 +179,21 @@ endfun
 
 fun! <SID>get_color_under_cursor(bg, ...)
     let layer = a:bg ? 'bg' : 'fg'
-    let trans = a:0 > 1 ? a:2 : synIDtrans(synID(line('.'), col('.'), 1))
+    if a:0 > 1
+        let trans = a:2
+    else
+        if a:0 == 1 && a:1 && has('nvim-0.5')
+            let [synIdNmb, len] =
+                        \ v:lua.require'publish-helper'.get_node_hl(
+                        \ bufnr(), line('.'), col('.'))
+        else
+            let [synIdNmb, len] = [synID(line('.'), col('.'), 1), 1]
+        endif
+        let trans = synIDtrans(synIdNmb)
+    endif
     let attr = synIDattr(trans, layer)
     if empty(attr) || attr == -1
-        if a:0 == 0 || a:1 == 0
+        if a:0 < 2 || a:1 == 0
             return 'none'
         endif
         let attr = synIDattr(synIDtrans(hlID('Normal')), layer)
@@ -645,6 +656,8 @@ command -range=% -nargs=? MakeHtmlCodeHighlight silent call
 command -range=% -nargs=? MakeTexCodeHighlight silent call
             \ <SID>make_tex_code_highlight(<line1>, <line2>, <f-args>)
 
-command GetFgColorUnderCursor echo <SID>get_color_under_cursor(0)
-command GetBgColorUnderCursor echo <SID>get_color_under_cursor(1)
+command GetFgColorUnderCursor echo <SID>get_color_under_cursor(0,
+            \ g:PhHighlightEngine == 'treesitter')
+command GetBgColorUnderCursor echo <SID>get_color_under_cursor(1,
+            \ g:PhHighlightEngine == 'treesitter')
 

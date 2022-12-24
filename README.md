@@ -334,7 +334,7 @@ There are two additional commands *GetFgColorUnderCursor* and
 and were added for debugging purposes only. You can map them like
 
 ```vim
-nmap <silent> ,vc :GetFgColorUnderCursor<CR>
+nmap <silent> ,vf :GetFgColorUnderCursor<CR>
 nmap <silent> ,vb :GetBgColorUnderCursor<CR>
 ```
 
