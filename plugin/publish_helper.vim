@@ -1,6 +1,6 @@
 " File: publish_helper.vim
 " Author: Alexey Radkov
-" Version: 0.12
+" Version: 0.13
 " Description: two commands for publishing highlighted code in HTML or TeX
 "              (optionally from pandoc as highlighting engine from filter
 "              vimhl.hs)
@@ -64,6 +64,10 @@ endif
 
 if !exists('g:PhTrimBlocks')
     let g:PhTrimBlocks = 1
+endif
+
+if !exists('g:PhHighlightEngine')
+    let g:PhHighlightEngine = ''
 endif
 
 if !exists('g:PhHtmlEngine')
@@ -316,7 +320,7 @@ fun! <SID>add_synid(result, synId, line, linenr, trans, sk_trans)
     endif
 endfun
 
-fun! <SID>split_synids(fst_line, last_line, ...)
+fun! <SID>split_synids(fst_line, last_line, ts, ...)
     let result = []
     let save_winview = winsaveview()
     call setpos('.', [0, a:fst_line, 1, 0])
@@ -347,19 +351,29 @@ fun! <SID>split_synids(fst_line, last_line, ...)
         endif
         let line = getline('.')
         while cursor[2] <= cols
-            let synIdNmb = synID(line('.'), col('.'), 1)
+            if a:ts && has('nvim-0.5')
+                let [synIdNmb, len] =
+                            \ v:lua.require'publish-helper'.get_node_hl(
+                            \ bufnr(), line('.'), col('.'))
+            else
+                let [synIdNmb, len] = [synID(line('.'), col('.'), 1), 1]
+            endif
             let synId = synIDattr(synIdNmb, 'name')
             let trans = synIDtrans(synIdNmb)
-            let cursor[2] += 1
+            if len == 0
+                let len = line('$') - line('.')
+            endif
+            let cursor[2] += len
             call setpos('.', cursor)
             if synId != old_synId
+                let new_start = cursor[2] - len
                 if old_synId != '^'
                     call <SID>add_synid(result, old_synId,
-                    \ strpart(line, old_start - 1, cursor[2] - old_start - 1),
+                    \ strpart(line, old_start - 1, new_start - old_start),
                     \ line('.'), old_trans, sk_trans)
                 endif
                 let old_synId = synId
-                let old_start = cursor[2] - 1
+                let old_start = new_start
             endif
             let old_trans = trans
         endwhile
@@ -457,7 +471,7 @@ fun! <SID>linenr_tbl_layout(attrs)
     return {'pre': pre_style, 'div': div_style, 'div_end': div_style_end}
 endfun
 
-fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
+fun! <SID>make_code_highlight(fst_line, last_line, ft, ts, ...)
     let range = [a:fst_line, a:last_line]
     if g:PhTrimBlocks
         let range = <SID>get_trimmed_range(a:fst_line, a:last_line)
@@ -476,9 +490,9 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ...)
                 exe "colorscheme ".g:PhColorscheme
             endif
             if linenr_html
-                let parts = call('<SID>split_synids', range + a:000)
+                let parts = call('<SID>split_synids', range + a:ts + a:000)
             else
-                let parts = <SID>split_synids(range[0], range[1])
+                let parts = <SID>split_synids(range[0], range[1], a:ts)
             endif
             if exists('g:PhColorscheme') && g:PhColorscheme != colors
                 exe "colorscheme ".colors
@@ -610,7 +624,8 @@ endfun
 
 fun! <SID>make_tex_code_highlight(fst_line, last_line, ...)
     call call(function('<SID>make_code_highlight'),
-                \ [a:fst_line, a:last_line, 'tex'] + a:000)
+                \ [a:fst_line, a:last_line, 'tex',
+                \ g:PhHighlightEngine == 'treesitter'] + a:000)
 endfun
 
 fun! <SID>make_html_code_highlight(fst_line, last_line, ...)
@@ -619,7 +634,8 @@ fun! <SID>make_html_code_highlight(fst_line, last_line, ...)
                     \ [a:fst_line, a:last_line] + a:000)
     else
         call call(function('<SID>make_code_highlight'),
-                    \ [a:fst_line, a:last_line, 'html'] + a:000)
+                    \ [a:fst_line, a:last_line, 'html',
+                    \ g:PhHighlightEngine == 'treesitter'] + a:000)
     endif
 endfun
 

@@ -21,6 +21,7 @@ Table of contents
     + [GetBgColorUnderCursor](#getbgcolorundercursor)
 - [Configuration](#configuration)
     + [g:PhColorscheme](#gphcolorscheme)
+    + [g:PhHighlightEngine](#gphhighlightengine)
     + [g:PhHtmlEngine](#gphhtmlengine)
     + [g:PhHtmlPreAttrs](#gphhtmlpreattrs)
     + [g:PhTexBlockStyle](#gphtexblockstyle)
@@ -360,6 +361,17 @@ This variable specifies dedicated color scheme for syntax highlights by
 *MakeHtmlCodeHighlight* and *MakeTexCodeHighlight*. If not set, then the current
 color scheme will be used. Do not set it in *.vimrc.pandoc* because normal
 setting of a color scheme is preferred there.
+
+### g:PhHighlightEngine
+
+```vim
+let g:PhHighlightEngine = 'treesitter'
+```
+
+Available since **version 0.13**. If value is *treesitter* then running commands
+*MakeHtmlCodeHighlight* and *MakeTexCodeHighlight* in *Neovim* with a
+treesitter-aware color scheme will make use of highlighting groups built by
+treesitter.
 
 ### g:PhHtmlEngine
 

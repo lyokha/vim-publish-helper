@@ -1,10 +1,10 @@
-*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2015 Jan 13
+*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2022 Dec 24
 
                        ------------------------------
                         Publish Helper (HTML and TeX)
                        ------------------------------
 
-                                version 0.12
+                                version 0.13
 
 Author: Alexey Radkov
 
@@ -29,13 +29,14 @@ Author: Alexey Radkov
         5.2 GetBgColorUnderCursor ............: |publish_helper-cmd-bgcolor|
     6. Configuration .........................: |publish_helper-configure|
         6.1 g:PhColorscheme ..................: |publish_helper-cfg-var-colors|
-        6.2 g:PhHtmlEngine ...................: |publish_helper-cfg-var-htmleng|
-        6.3 g:PhHtmlPreAttrs .................: |publish_helper-cfg-var-htmlpre|
-        6.4 g:PhTexBlockStyle ................: |publish_helper-cfg-var-texbstl|
-        6.5 g:PhCtrlTrans ....................: |publish_helper-cfg-var-ctrltr|
-        6.6 g:PhTrimBlocks ...................: |publish_helper-cfg-var-trimblk|
-        6.7 g:PhRichTextElems ................: |publish_helper-cfg-var-richelm|
-        6.8 g:PhLinenrAsTblColumn ............: |publish_helper-cfg-var-linenr|
+        6.2 g:PhHighlightEngine ..............: |publish_helper-cfg-var-hleng|
+        6.3 g:PhHtmlEngine ...................: |publish_helper-cfg-var-htmleng|
+        6.4 g:PhHtmlPreAttrs .................: |publish_helper-cfg-var-htmlpre|
+        6.5 g:PhTexBlockStyle ................: |publish_helper-cfg-var-texbstl|
+        6.6 g:PhCtrlTrans ....................: |publish_helper-cfg-var-ctrltr|
+        6.7 g:PhTrimBlocks ...................: |publish_helper-cfg-var-trimblk|
+        6.8 g:PhRichTextElems ................: |publish_helper-cfg-var-richelm|
+        6.9 g:PhLinenrAsTblColumn ............: |publish_helper-cfg-var-linenr|
     7. Highlighting shells and REPLs .........: |publish_helper-hl-sh-outputs|
     8. Thanks to .............................: |publish_helper-thanks|
     A. Change History ........................: |publish_helper-changes|
@@ -364,8 +365,20 @@ color scheme will be used. Do not set it in .vimrc.pandoc as normal setting of
 color scheme is preferred there.
 
 ------------------------------------------------------------------------------
+                                           *publish_helper-cfg-var-hleng*
+6.2 g:PhHighlightEngine~
+
+>
+    let g:PhHighlightEngine = 'treesitter'
+<
+Available since version 0.13. If value is "treesitter" then running commands
+MakeHtmlCodeHighlight and MakeTexCodeHighlight in Neovim with a
+treesitter-aware color scheme will make use of highlighting groups built by
+treesitter.
+
+------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-htmleng*
-6.2 g:PhHtmlEngine~
+6.3 g:PhHtmlEngine~
 
 >
     let g:PhHtmlEngine = 'tohtml'
@@ -376,7 +389,7 @@ Not set by default.
 
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-htmlpre*
-6.3 g:PhHtmlPreAttrs~
+6.4 g:PhHtmlPreAttrs~
 
 This variable sets attributes that will be inserted inside tags <pre> in the
 generated HTML documents. Examples:
@@ -389,7 +402,7 @@ generated HTML documents. Examples:
 
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-texbstl*
-6.4 g:PhTexBlockStyle~
+6.5 g:PhTexBlockStyle~
 
 This variable sets visual parameters of code blocks in the generated TeX
 documents. If not set then Shaded environment is used. See also
@@ -403,7 +416,7 @@ documents. If not set then Shaded environment is used. See also
 
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-ctrltr*
-6.5 g:PhCtrlTrans~
+6.6 g:PhCtrlTrans~
 
 >
     let g:PhCtrlTrans = 1
@@ -418,7 +431,7 @@ the pandoc's AST level. This variable is not set by default.
 
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-trimblk*
-6.6 g:PhTrimBlocks~
+6.7 g:PhTrimBlocks~
 
 >
     let g:PhTrimBlocks = 0
@@ -428,7 +441,7 @@ to 1 by default.
 
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-richelm*
-6.7 g:PhRichTextElems~
+6.8 g:PhRichTextElems~
 
 >
     let g:PhRichTextElems = ['bg', 'bold', 'italic']
@@ -448,7 +461,7 @@ in environments Shaded, Framed and Mdframed automatically.
 
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-linenr*
-6.8 g:PhLinenrAsTblColumn~
+6.9 g:PhLinenrAsTblColumn~
 
 >
     let g:PhLinenrAsTblColumn = 1
@@ -551,30 +564,42 @@ Christian Brabandt for plugin Colorizer and Xterm2rgb translation functions.
                                            *publish_helper-changes*
 A. Change History~
 
-0.1
-    - initial release
+0.13
+    - added an option to render highlights built by treesitter in Neovim;
+      use let g:PhHighlightEngine = 'treesitter' for this
 
-0.2
-    - dropped perl dependency in vimhl.hs
-    - vimhl.hs is no longer executable script (make it executable or compile)
-    - docs added
+0.12
+    - added an option for line numbering as an HTML table effective in
+      the internal HTML syntax highlighting engine only: set variable
+      g:PhLinenrAsTblColumn and enjoy it (see updated docs)
+    - several improvements in script vimhl_latex_tmpl.sh
+    - minor refactoring of vimhl.hs
 
-0.3
-    - vimhl.hs: added possibility to load a dedicated file $HOME/.vimrc.pandoc
-      instead normal $HOME/.vimrc when running pandoc: this will extremely
-      speed up pandoc; see docs for details
-    - vimhl.hs: added another option to choose color scheme when running
-      pandoc: attribute colorscheme; however using file $HOME/.vimrc.pandoc is
-      more preferable
+0.11
+    - added support for rich text elements: text background color, bold,
+      italic and underline typefaces and turned on by default
+    - speed improvements, now commands may run about 30% faster
 
-0.4
-    - fixed white-instead-black foreground issue
-    - added example of how to use Shaded and Highlighting environments in docs
-    - other small fixes
+0.10
+    - added support for highlighting various shells outputs
 
-0.5
-    - added new variable g:PhCtrlTrans that deals with correct representation
-      of control characters in MakeTexCodeHighlight
+0.9
+    - further improvements in TOhtml rendering engine
+    - added new variable g:PhTexBlockStyle to customize code blocks visual
+      parameters in TeX documents
+    - added an auxiliary script vimhl_latex_tmpl.sh for making pandoc
+      templates for TeX compatible with vimhl (see updated docs)
+
+0.8
+    - both HTML rendering engines do not use tag <tt> any longer
+    - improved TOhtml rendering engine: full support of line numbering,
+      regular spaces instead HTML non-breaking spaces
+    - docs updated
+
+0.7
+    - customizing attributes of HTML tag <pre> using variable g:PhHtmlPreAttrs
+    - select between conditions in .vimrc or .vimrc.pandoc using variables
+      defined in a new attribute vars (see docs)
 
 0.6
     - all elements that do not have syntax names are highlighted by Normal
@@ -585,37 +610,29 @@ A. Change History~
     - added new variable g:PhTrimBlocks to control how blank lines around the
       code will be managed
 
-0.7
-    - customizing attributes of HTML tag <pre> using variable g:PhHtmlPreAttrs
-    - select between conditions in .vimrc or .vimrc.pandoc using variables
-      defined in a new attribute vars (see docs)
+0.5
+    - added new variable g:PhCtrlTrans that deals with correct representation
+      of control characters in MakeTexCodeHighlight
 
-0.8
-    - both HTML rendering engines do not use tag <tt> any longer
-    - improved TOhtml rendering engine: full support of line numbering,
-      regular spaces instead HTML non-breaking spaces
-    - docs updated
+0.4
+    - fixed white-instead-black foreground issue
+    - added example of how to use Shaded and Highlighting environments in docs
+    - other small fixes
 
-0.9
-    - further improvements in TOhtml rendering engine
-    - added new variable g:PhTexBlockStyle to customize code blocks visual
-      parameters in TeX documents
-    - added an auxiliary script vimhl_latex_tmpl.sh for making pandoc
-      templates for TeX compatible with vimhl (see updated docs)
+0.3
+    - vimhl.hs: added possibility to load a dedicated file $HOME/.vimrc.pandoc
+      instead normal $HOME/.vimrc when running pandoc: this will extremely
+      speed up pandoc; see docs for details
+    - vimhl.hs: added another option to choose color scheme when running
+      pandoc: attribute colorscheme; however using file $HOME/.vimrc.pandoc is
+      more preferable
 
-0.10
-    - added support for highlighting various shells outputs
+0.2
+    - dropped perl dependency in vimhl.hs
+    - vimhl.hs is no longer executable script (make it executable or compile)
+    - docs added
 
-0.11
-    - added support for rich text elements: text background color, bold,
-      italic and underline typefaces and turned on by default
-    - speed improvements, now commands may run about 30% faster
-
-0.12
-    - added an option for line numbering as an HTML table effective in
-      the internal HTML syntax highlighting engine only: set variable
-      g:PhLinenrAsTblColumn and enjoy it (see updated docs)
-    - several improvements in script vimhl_latex_tmpl.sh
-    - minor refactoring of vimhl.hs
+0.1
+    - initial release
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
