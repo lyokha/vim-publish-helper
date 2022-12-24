@@ -105,7 +105,6 @@ and
     \end{Highlighting}
     \end{Shaded}
 <
-
 Starting from version 0.9 the environment name (Shaded) is no longer constant
 and defined by variable g:PhTexBlockStyle. This allows applying different
 styles for code blocks in TeX documents. See also |publish_helper-tex-tmpl|.
@@ -322,7 +321,6 @@ is preferable as vim will consume less resources and work fastest.
     au BufNewFile,BufRead *.pandoc
             \ if expand('<afile>:t') != '.vimrc.pandoc' | set filetype=pandoc
 <
-
 ==============================================================================
                                            *publish_helper-misc-commands*
 5. Miscellaneous commands~
@@ -355,7 +353,6 @@ Get background color under cursor.
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-colors*
 6.1 g:PhColorscheme~
-
 >
     let g:PhColorscheme = 'lucius'
 <
@@ -367,25 +364,23 @@ color scheme is preferred there.
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-hleng*
 6.2 g:PhHighlightEngine~
-
 >
     let g:PhHighlightEngine = 'treesitter'
 <
-Available since version 0.13. If value is "treesitter" then running commands
+Available since version 0.13. If value is 'treesitter' then running commands
 MakeHtmlCodeHighlight and MakeTexCodeHighlight in Neovim with a
 treesitter-aware color scheme will make use of highlighting groups built by
-treesitter. Has no effect when rendering HTML if value of *g:PhHtmlEngine* is
-"tohtml". Also affects the output of commands GetFgColorUnderCursor and
+treesitter. Has no effect when rendering HTML if value of g:PhHtmlEngine is
+'tohtml'. Also affects the output of commands GetFgColorUnderCursor and
 GetBgColorUnderCursor.
 
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-htmleng*
 6.3 g:PhHtmlEngine~
-
 >
     let g:PhHtmlEngine = 'tohtml'
 <
-Available since version 0.6. If value is "tohtml" then TOhtml engine will be
+Available since version 0.6. If value is 'tohtml' then TOhtml engine will be
 used to render HTML highlights, otherwise the internal engine will be used.
 Not set by default.
 
@@ -397,11 +392,9 @@ This variable sets attributes that will be inserted inside tags <pre> in the
 generated HTML documents. Examples:
 >
     let g:PhHtmlPreAttrs = 'style="white-space: pre-wrap;"'
-<
->
+
     let g:PhHtmlPreAttrs = 'style="overflow-x: auto;"'
 <
-
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-texbstl*
 6.5 g:PhTexBlockStyle~
@@ -411,15 +404,12 @@ documents. If not set then Shaded environment is used. See also
 |publish_helper-tex-tmpl|. Examples:
 >
     let g:PhTexBlockStyle = 'Shaded'
-<
->
+
     let g:PhTexBlockStyle = 'Framed'
 <
-
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-ctrltr*
 6.6 g:PhCtrlTrans~
-
 >
     let g:PhCtrlTrans = 1
 <
@@ -434,7 +424,6 @@ the pandoc's AST level. This variable is not set by default.
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-trimblk*
 6.7 g:PhTrimBlocks~
-
 >
     let g:PhTrimBlocks = 0
 <
@@ -444,7 +433,6 @@ to 1 by default.
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-richelm*
 6.8 g:PhRichTextElems~
-
 >
     let g:PhRichTextElems = ['bg', 'bold', 'italic']
 <
@@ -464,7 +452,6 @@ in environments Shaded, Framed and Mdframed automatically.
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-linenr*
 6.9 g:PhLinenrAsTblColumn~
-
 >
     let g:PhLinenrAsTblColumn = 1
 <
