@@ -374,7 +374,9 @@ color scheme is preferred there.
 Available since version 0.13. If value is "treesitter" then running commands
 MakeHtmlCodeHighlight and MakeTexCodeHighlight in Neovim with a
 treesitter-aware color scheme will make use of highlighting groups built by
-treesitter.
+treesitter. Has no effect when rendering HTML if value of *g:PhHtmlEngine* is
+"tohtml". Also affects the output of commands GetFgColorUnderCursor and
+GetBgColorUnderCursor.
 
 ------------------------------------------------------------------------------
                                            *publish_helper-cfg-var-htmleng*
