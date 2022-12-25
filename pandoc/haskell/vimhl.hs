@@ -73,7 +73,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
             P.hPutStr hsrc contents >> hFlush hsrc
             bracket (emptySystemTempFile "_vimhl_dst.") removeFile $
                 \dst -> do
-                    vimexe <- fromMaybe "vim" <$> lookupEnv "VIM_EXECUTABLE"
+                    vimexe <- fromMaybe "vim" <$> lookupEnv "VIMHL_BACKEND"
                     let vimcmd =
                             unwords
                                 [vimexe, "-Nen", cmds, vimrccmd, colorscheme

@@ -1,6 +1,6 @@
 ### 0.1.4.0
 
-- Use environment variable *VIM_EXECUTABLE* to choose between vim flavors.
+- Use environment variable *VIMHL_BACKEND* to choose between vim flavors.
 
 ### 0.1.3.0
 
