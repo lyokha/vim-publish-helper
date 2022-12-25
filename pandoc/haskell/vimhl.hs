@@ -94,10 +94,10 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
                     (_, _, _, handle) <- createProcess (shell vimcmd)
                         {std_in = UseHandle hin, std_out = UseHandle hout}
                     r <- waitForProcess handle
-                    unless (r == ExitSuccess) $ exitWith r
 #ifdef DEBUG
-                    hPutStrLn stderr "done"
+                    hPutStrLn stderr $ show r
 #endif
+                    unless (r == ExitSuccess) $ exitWith r
                     readFile dst
         return $ RawBlock fm block
     where fmt' = tOSTRING fmt
