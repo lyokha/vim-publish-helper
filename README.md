@@ -469,12 +469,9 @@ variables to control how various elements of the table will look.
   line-number and the code columns. Beware: it does not expect color settings,
   see the next clause. Default value is *1px solid*.
 
-* *g:PhLinenrTblBottomPadding* defines padding on the bottom of the table.
-  Default value is *0*.
-
-* *g:PhLinenrFgColor* defines foreground color of the line-number column and of
-  the border between the columns. Not set by default: color of the *SpecialKey*
-  syntax highlighting group will be used in this case.
+* *g:PhLinenrFgColor* defines the foreground color of the line-number column
+  and of the border between the columns. Not set by default: color of the
+  *SpecialKey* syntax highlighting group will be used in this case.
 
 * *g:PhLinenrColumnWidth* defines the line-number column width. Default value is
   *2em*.
@@ -485,6 +482,32 @@ variables to control how various elements of the table will look.
 * *g:PhCodeColumnOverflowX* defines *overflow-x* behaviour of the code column.
   Default value is *auto*. This value must correspond to non-wrapping text
   models, otherwise line numbers may mismatch code lines if the latter wraps.
+
+* *g:PhLinenrTblBgColor* defines the background color of the table. Default
+  value is *inherit*.
+
+* *g:PhLinenrTblBorderSpacing* defines the border spacing of the table. Default
+  value is *0*.
+
+* *g:PhLinenrTblBottomPadding* defines padding on the bottom of the table.
+  Default value is *0*.
+
+Below is an example of a stylish configuration suitable for color schemes
+with dark background colors.
+
+```vim
+let g:PhLinenrAsTblColumn = 1
+let g:PhHtmlPreAttrs =
+            \ 'style="white-space: pre-wrap; background: #2E3436; '.
+            \ 'padding: 12px; font-size: 16px"'
+let g:PhLinenrColumnAttrs =
+            \ 'style="font-size: 16px; color: #82766C; background: #2E3436"'
+let g:PhLinenrColumnBorderAttrs = '1px solid'
+let g:PhLinenrColumnWidth = '2.5em'
+let g:PhLinenrFgColor = '#204A87'
+let g:PhLinenrTblBgColor = '#2E3436'
+let g:PhLinenrTblBorderSpacing = '12px'
+```
 
 Highlighting shells and REPLs
 -----------------------------

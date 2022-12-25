@@ -111,6 +111,14 @@ if !exists('g:PhLinenrColumnWidth')
     let g:PhLinenrColumnWidth = '2em'
 endif
 
+if !exists('g:PhLinenrTblBgColor')
+    let g:PhLinenrTblBgColor = 'inherit'
+endif
+
+if !exists('g:PhLinenrTblBorderSpacing')
+    let g:PhLinenrTblBorderSpacing = '0'
+endif
+
 if !exists('g:PhLinenrTblBottomPadding')
     let g:PhLinenrTblBottomPadding = '0'
 endif
@@ -380,8 +388,8 @@ fun! <SID>split_synids(fst_line, last_line, ts, ...)
                 let new_start = cursor[2] - len
                 if old_synId != '^'
                     call <SID>add_synid(result, old_synId,
-                    \ strpart(line, old_start - 1, new_start - old_start),
-                    \ line('.'), old_trans, sk_trans)
+                        \ strpart(line, old_start - 1, new_start - old_start),
+                        \ line('.'), old_trans, sk_trans)
                 endif
                 let old_synId = synId
                 let old_start = new_start
@@ -472,6 +480,9 @@ fun! <SID>linenr_tbl_layout(attrs)
                 \ 'style="display: inline; ', '')
     if pre_style == a:attrs
         let pre_style = a:attrs.' style="display: inline;"'
+    else
+        let pre_style = substitute(pre_style,
+                \ '\<style="[^"]*\zs\<padding:[^;"]*;\?', 'padding: 0;', '')
     endif
     let div_style_test = matchstr(a:attrs,
                 \ '\<style="[^"]*\zs\<background:[^;"]*;\?')
@@ -501,7 +512,7 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ts, ...)
                 exe "colorscheme ".g:PhColorscheme
             endif
             if linenr_html
-                let parts = call('<SID>split_synids', range + a:ts + a:000)
+                let parts = call('<SID>split_synids', range + [a:ts] + a:000)
             else
                 let parts = <SID>split_synids(range[0], range[1], a:ts)
             endif
@@ -538,10 +549,10 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ts, ...)
         let div_style = ''
         let div_style_end = ''
         if linenr_html_tbl
-            let fg = '000000'
+            let fg = '#000000'
             if !exists('g:PhLinenrFgColor')
                 let attr = synIDattr(synIDtrans(hlID('SpecialKey')), 'fg')
-                let fg = toupper(<SID>Xterm2rgb256(attr))
+                let fg = '#'.toupper(<SID>Xterm2rgb256(attr))
             else
                 let fg = toupper(g:PhLinenrFgColor)
             endif
@@ -549,14 +560,16 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ts, ...)
             let pre_style = styles['pre']
             let div_style = styles['div']
             let div_style_end = styles['div_end']
-            call append(0, '<table style="margin: 0; border-spacing: 0; '.
-                        \ 'padding-bottom: '.g:PhLinenrTblBottomPadding.'; '.
-                        \ 'width: 100%; table-layout: fixed; border: none;">'.
-                        \ '<tr><td style="vertical-align: top; width: '.
+            call append(0, '<table style="background-color: '.
+                        \ g:PhLinenrTblBgColor.'; margin: 0; '.
+                        \ 'border-spacing: '.g:PhLinenrTblBorderSpacing.
+                        \ '; padding-bottom: '.g:PhLinenrTblBottomPadding.
+                        \ '; width: 100%; table-layout: fixed; border: none"'.
+                        \ '><tr><td style="vertical-align: top; width: '.
                         \ g:PhLinenrColumnWidth.'; text-align: right; '.
-                        \ 'padding-right: 3px; color: #'.fg.
-                        \ '; border-right: '.g:PhLinenrColumnBorderAttrs.' #'.
-                        \ fg.';">'.div_style.'<pre '.pre_style.'>')
+                        \ 'padding-right: 3px; border-right: '.
+                        \ g:PhLinenrColumnBorderAttrs.'; color: '.fg.'">'.
+                        \ div_style.'<pre '.pre_style.'>')
             for hl in parts
                 if hl['name'] == 'linenr'
                     call append('$', hl['content'])
