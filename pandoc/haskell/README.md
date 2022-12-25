@@ -17,3 +17,16 @@ or globally (if applicable), being a superuser
 # cabal install --global
 ```
 
+Use environment variable `VIM_EXECUTABLE` to choose between vim flavors. For
+example
+
+```ShellSession
+$ export VIM_EXECUTABLE=nvim
+```
+
+or
+
+```ShellSession
+$ export VIM_EXECUTABLE=/usr/local/bin/vim
+```
+

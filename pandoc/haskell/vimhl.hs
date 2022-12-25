@@ -3,6 +3,7 @@ import Text.Regex (mkRegex, splitRegex, matchRegexAll)
 import System.IO (IOMode (WriteMode), openFile, hFlush)
 import System.IO.Temp
 import System.IO.Error
+import System.Environment (lookupEnv)
 import System.Directory
 import System.FilePath
 import System.Process
@@ -72,9 +73,10 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
             P.hPutStr hsrc contents >> hFlush hsrc
             bracket (emptySystemTempFile "_vimhl_dst.") removeFile $
                 \dst -> do
+                    vimexe <- fromMaybe "vim" <$> lookupEnv "VIM_EXECUTABLE"
                     let vimcmd =
                             unwords
-                                ["vim -Nen", cmds, vimrccmd, colorscheme
+                                [vimexe, "-Nen", cmds, vimrccmd, colorscheme
                                 ,"-c 'set ft=" ++ ft', "|"
                                 ,vimhlcmd ++ "' -c 'w!", dst ++ "' -c 'qa!'"
                                 ,src

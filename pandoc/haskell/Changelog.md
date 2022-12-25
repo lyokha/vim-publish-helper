@@ -1,3 +1,7 @@
+### 0.1.4.0
+
+- Use environment variable *VIM_EXECUTABLE* to choose between vim flavors.
+
 ### 0.1.3.0
 
 - Updated after Pandoc *2.8* and the *String-to-Text* migration.
