@@ -9,7 +9,7 @@
 Author: Alexey Radkov
 
 ==============================================================================
-                                 *publish_helper* *publish_helper-contents*
+            *vim-publish-helper* *publish_helper* *publish_helper-contents*
 1. Contents~
 
     1. Contents ..............................: |publish_helper-contents|
@@ -113,7 +113,7 @@ styles for code blocks in TeX documents. See also |publish_helper-tex-tmpl|.
                                            *publish_helper-pandoc*
 4. vimhl.hs and pandoc~
 
-This is the most useful feature of the plugin. Both commands
+This is perhaps the most useful feature of the plugin. Both commands
 MakeHtmlCodeHighlight and MakeTexCodeHighlight can be used as drivers to the
 vim syntax highlighting engine from pandoc. This is achieved via pandoc's
 filter feature available from pandoc version 1.12.
@@ -126,7 +126,7 @@ This distribution is shipped with a haskell program vimhl.hs which is supposed
 to be such a filter. Normally one may want to compile it
 >
     ghc --make vimhl
->
+<
 and move produced binary executable file vimhl in some directory listed in the
 environment variable $PATH. Alternatively vimhl can be installed with cabal
 >
@@ -140,22 +140,22 @@ article, find tags <pre> starting the codes and add there the attribute
 class="cpp"
 >
     <pre class="cpp">
->
+<
 After that you run pandoc to create TeX code from the original HTML article
 >
     pandoc -f html -t latex -o article.tex article.html
->
+<
 As far as pandoc finds attribute class="cpp" inside tags <pre> ... </pre> it
 generates its own code highlights based on the editor Kate's engine. Now you
 can add another attribute hl="vim" inside tags <pre>
 >
     <pre class="cpp" hl="vim">
->
+<
 and run pandoc with the filter vimhl (or vimhl.hs if you did not compile
 vimhl)
 >
     pandoc -f html -t latex -F vimhl -o article.tex article.html
->
+<
 If you then generate the PDF document from the article.tex the codes will be
 highlighted exactly as they were highlighted inside vim! As soon as command
 MakeTexCodeHighlight accepts the optional argument which defines that
@@ -163,7 +163,17 @@ generated code must be numbered you can put usual pandoc options inside tags
 <pre> to turn code numbering on
 >
     <pre class="cpp numberLines" hl="vim" startFrom="100">
+<
+Notice that vimhl runs program named 'vim'. You may also want to specify the
+flavor of vim or where to find it by setting environment variable
+'VIMHL_BACKEND'. Say,
 >
+    $ export VIMHL_BACKEND=nvim
+<
+or
+>
+    $ export VIMHL_BACKEND=/usr/local/bin/vim
+<
 ------------------------------------------------------------------------------
                                            *publish_helper-pandoc-vimrc*
 4.2 Using with dedicated .vimrc file~
@@ -220,7 +230,7 @@ conditions. Imagine that script .vimrc.pandoc has lines
         let g:html_no_progress = 1
         let g:html_ignore_folding = 1
     endif
->
+<
 The first condition says that if a global variable g:load_TagHl exists then
 vimhl must use color scheme 'bandit' and load plugin 'TagHighlight' that would
 normally add extra highlighting groups to make code highlights look rich and

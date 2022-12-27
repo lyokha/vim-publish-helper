@@ -105,7 +105,7 @@ different styles for code blocks in TeX documents.
 vimhl.hs and pandoc
 -------------------
 
-This is the most useful feature of the plugin. Both commands
+This is perhaps the most useful feature of the plugin. Both commands
 *MakeHtmlCodeHighlight* and *MakeTexCodeHighlight* can be used as drivers to the
 vim syntax highlighting engine from pandoc. This is achieved via the *filter*
 feature available in pandoc since version *1.12*.
@@ -166,6 +166,20 @@ generated code must be numbered, you can put usual pandoc options inside tags
 
 ```html
 <pre class="cpp numberLines" hl="vim" startFrom="100">
+```
+
+Notice that *vimhl* runs program named *vim*. You may also want to specify the
+flavor of vim or where to find it by setting environment variable
+*VIMHL_BACKEND*. Say,
+
+```ShellSession
+$ export VIMHL_BACKEND=nvim
+```
+
+or
+
+```ShellSession
+$ export VIMHL_BACKEND=/usr/local/bin/vim
 ```
 
 ### Using with dedicated .vimrc file
