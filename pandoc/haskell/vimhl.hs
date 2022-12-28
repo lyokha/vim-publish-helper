@@ -1,22 +1,24 @@
 import Text.Pandoc.JSON
-import Text.Regex (mkRegex, splitRegex, matchRegexAll)
 import System.IO (IOMode (WriteMode), openFile, hFlush)
 import System.IO.Temp
 import System.IO.Error
 import System.Environment (lookupEnv)
 import System.Directory
+import System.Directory.Internal (andM)
 import System.FilePath
 import System.Process
 import System.Exit
-import Data.Char (toLower)
+import Data.List
+import Data.Char (isSpace, toLower)
+import Data.Bool (bool)
 import Data.Maybe (fromMaybe)
+import Data.Function (on)
 import Control.Arrow ((&&&), (***))
 import Control.Monad
 #if !MIN_VERSION_base(4,8,0)
 import Control.Applicative
 #endif
 import Control.Exception (bracket)
-import Control.Conditional hiding (unless)
 #if MIN_VERSION_pandoc_types(1,20,0)
 import Prelude hiding (readFile)
 import Data.Text.IO (readFile)
@@ -28,6 +30,7 @@ import qualified System.IO as P (hPutStr)
 #ifdef DEBUG
 import System.IO (hPutStr, hPutStrLn, stderr)
 #endif
+import Safe
 
 #if MIN_VERSION_pandoc_types(1,20,0)
 tOSTRING :: Text -> String
@@ -40,34 +43,36 @@ tOSTRING = id
 vimHl :: Maybe Format -> Block -> IO Block
 vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
     | lookup "hl" namevals' == Just "vim" && fmt' `elem` ["html", "latex"] = do
-        let vimhlcmd =
-                unwords [cmd fmt', nmb]
-                where cmd "html"  = "MakeHtmlCodeHighlight"
+        let vimhlcmd = unwords [cmd fmt', nmb]
+                where cmd "html" = "MakeHtmlCodeHighlight"
                       cmd "latex" = "MakeTexCodeHighlight"
-                      cmd x       = error $ "Unexpected format '" ++ x ++ "'"
+                      cmd x = error $ "Unexpected format '" ++ x ++ "'"
                       nmb | "numberLines" `elem` cls' =
                               fromMaybe "-1" $ lookup "startfrom" namevals'
                           | otherwise = ""
-            colorscheme =
-                maybe "" (("-c 'let g:PhColorscheme = \"" ++) . (++ "\"'")) $
-                    lookup "colorscheme" namevals'
-            cmds =
-                maybe "" (unwords . map cmd . filter (not . null . snd) .
-                    map (matchRegexAll (dl"=") &&& id) . splitRegex (dl",")) $
-                        lookup "vars" namevals'
-                where cmd (Nothing, x) = mkCmd x "1"
-                      cmd (Just ("", _, y, _), _) =
-                          error $ "Bare value '" ++ y ++ "' found in vars"
-                      cmd (Just (x, _, y, _), _) = mkCmd x y
+            colorscheme = maybe "" (("-c 'let g:PhColorscheme = \"" ++)
+                                   . (++ "\"'")
+                                   ) $ lookup "colorscheme" namevals'
+            cmds = maybe "" (unwords
+                            . map cmd
+                            . filter (not . null . fst)
+                            . map ((strip *** strip . tailSafe)
+                                  . break (== '=')
+                                  )
+                            . filter (/= ",")
+                            . groupBy ((&&) `on` (/= ','))
+                            ) $ lookup "vars" namevals'
+                where cmd (x, "") = mkCmd x "1"
+                      cmd (x, y) = mkCmd x y
                       mkCmd x y = "--cmd 'let g:" ++ x ++ " = \"" ++ y ++ "\"'"
-                      dl = mkRegex . ("\\s*" ++) . (++ "\\s*")
+                      strip = dropWhileEnd isSpace . dropWhile isSpace
         vimrccmd <- do
             home <- getHomeDirectory `catchIOError` const (return "")
-            let vimrc  = home </> ".vimrc.pandoc"
+            let vimrc = home </> ".vimrc.pandoc"
                 exists = doesFileExist &&>
                     (getPermissions >=> return . readable)
-                (&&>) = liftM2 (<&&>)
-                ($>)  = liftM2 (<$>)
+                (&&>) = liftM2 andM
+                ($>) = liftM2 (<$>)
             (bool "" . ("--noplugin -u '" ++) . (++ "'")) $> exists $ vimrc
         block <- withSystemTempFile "_vimhl_src." $ \src hsrc -> do
             P.hPutStr hsrc contents >> hFlush hsrc
@@ -104,7 +109,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
         return $ RawBlock fm block
     where fmt' = tOSTRING fmt
           cls' = map tOSTRING cls
-          ft'  = tOSTRING ft
+          ft' = tOSTRING ft
           namevals' = map (map toLower . tOSTRING *** tOSTRING) namevals
 vimHl _ cb = return cb
 

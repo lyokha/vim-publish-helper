@@ -1,3 +1,7 @@
+### 0.2.0.0
+
+- Removed dependency on packages *regex-compat* and *cond*.
+
 ### 0.1.4.0
 
 - Use environment variable *VIMHL_BACKEND* to choose between vim flavors.
