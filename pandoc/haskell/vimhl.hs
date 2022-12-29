@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 import Text.Pandoc.JSON
 import System.IO (IOMode (WriteMode), openFile, hFlush)
 import System.IO.Temp

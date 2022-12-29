@@ -30,7 +30,6 @@ executable vimhl
                        , temporary >= 1.1
                        , text
                        , safe
-  default-extensions:    CPP
 
   if flag(debug)
     cpp-options:        -DDEBUG
