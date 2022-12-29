@@ -72,8 +72,8 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
                 exists = doesFileExist &&>
                     (getPermissions >=> return . readable)
                 (&&>) = liftM2 andM
-                ($>) = liftM2 (<$>)
-            (bool "" . ("--noplugin -u '" ++) . (++ "'")) $> exists $ vimrc
+                (<<$) = liftM2 (<$>)
+            (bool "" . ("--noplugin -u '" ++) . (++ "'")) <<$ exists $ vimrc
         block <- withSystemTempFile "_vimhl_src." $ \src hsrc -> do
             P.hPutStr hsrc contents >> hFlush hsrc
             bracket (emptySystemTempFile "_vimhl_dst.") removeFile $
