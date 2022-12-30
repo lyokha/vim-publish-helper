@@ -97,11 +97,11 @@ done
 shift $((OPTIND-1))
 
 for i in 'BG_' 'S_BG_' 'F_' 'SH_P_' 'SH_O_' 'LB_' ; do
-    color=$(eval echo $`echo ${i}COLOR`)
+    color=$(eval echo "${i}COLOR")
     if [[ $color == *,* ]] ; then
         fmt='RGB'
         [[ $color == *.* ]] && fmt='rgb'
-        eval `echo ${i}COLOR_FMT`=$fmt
+        eval "${i}COLOR_FMT=$fmt"
     fi
 done
 
@@ -142,8 +142,16 @@ IFS= read -r -d '' RPL <<END
 }{\\\\end{leftbar}}\\
 END
 
+verlte() {
+    [ "$1" = "$(echo -e "$1\n$2" | sort -V | head -1)" ]
+}
+
+verlt() {
+    if [ "$1" = "$2" ] ; then return 1 ; else verlte "$1" "$2" ; fi
+}
+
 PANDOCV=$(pandoc -v | sed -n 's/pandoc //; 1p')
-if [[ "$PANDOCV" < "2.6" ]] ; then
+if verlt "$PANDOCV" "2.6" ; then
     RPL="\\\\usepackage{xcolor}\n"$RPL
 fi
 
@@ -184,7 +192,7 @@ fi
 if [ -n "$HLCOMPAT" ] ; then
 IFS= read -r -d '' CRPL <<END
 $(echo -e '```c\n```' |
-  pandoc -tlatex -fmarkdown --highlight-style=$HL_STYLE --standalone |
+  pandoc -tlatex -fmarkdown --highlight-style="$HL_STYLE" --standalone |
   sed -n 's/$/\\/; /^\\newcommand{\\\w\+Tok}/p' | sed 's/\\./\\&/g')
 END
 RPL=$RPL$CRPL
