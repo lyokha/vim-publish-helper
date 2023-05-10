@@ -1,0 +1,8 @@
+/pandoc/haskell/dist/
+/pandoc/haskell/dist-newstyle/
+
+/test/example.html
+/test/example.pdf
+
+tags
+
