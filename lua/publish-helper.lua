@@ -1,10 +1,9 @@
-local highlighter = require'vim.treesitter.highlighter'
-local ts_utils = require'nvim-treesitter.ts_utils'
+local ts = require'vim.treesitter'
 
 local M = {}
 
 function M.get_node_hl(bufnr, row, col)
-  local buf_highlighter = highlighter.active[bufnr]
+  local buf_highlighter = ts.highlighter.active[bufnr]
   local hlid = 0
   local len = 1
 
@@ -38,13 +37,13 @@ function M.get_node_hl(bufnr, row, col)
       for capture, node, _ in iter do
         local hl = query.hl_cache[capture]
 
-        if hl and ts_utils.is_in_node_range(node, row0, col0) then
+        if hl and ts.is_in_node_range(node, row0, col0) then
           local c = query._query.captures[capture]
           if c ~= nil and c ~= '' then
             local cur_hlid = 0
             cur_hlid = vim.fn.hlID(c)
             if cur_hlid ~= 0 then
-              local _, _, end_row, end_col = ts_utils.get_node_range(node)
+              local _, _, end_row, end_col = ts.get_node_range(node)
               hlid = cur_hlid
               if end_row > row0 then
                 len = 0
