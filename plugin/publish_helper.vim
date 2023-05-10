@@ -132,7 +132,7 @@ if !exists('g:PhCodeColumnOverflowX')
 endif
 
 " next Xterm2rgb... conversion functions are adopted from plugin Colorizer.vim
-fun! <SID>Xterm2rgb16(color)
+fun! s:Xterm2rgb16(color)
     " 16 basic colors
     let r=0
     let g=0
@@ -161,13 +161,13 @@ fun! <SID>Xterm2rgb16(color)
     return printf("%02x%02x%02x", r, g, b)
 endfun
 
-fun! <SID>Xterm2rgb256(color)
+fun! s:Xterm2rgb256(color)
     let r=0
     let g=0
     let b=0
     " 16 basic colors
     if a:color < 16
-        return <SID>Xterm2rgb16(a:color)
+        return s:Xterm2rgb16(a:color)
     " color cube color
     elseif a:color >= 16 && a:color < 232
         " the 6 value iterations in the xterm color cube
@@ -185,7 +185,7 @@ fun! <SID>Xterm2rgb256(color)
     return printf("%02x%02x%02x", r, g, b)
 endfun
 
-fun! <SID>get_color_under_cursor(bg, ...)
+fun! s:get_color_under_cursor(bg, ...)
     let layer = a:bg ? 'bg' : 'fg'
     if a:0 > 1
         let trans = a:2
@@ -209,10 +209,10 @@ fun! <SID>get_color_under_cursor(bg, ...)
     if attr =~ '^#'
         return substitute(attr, '^#', '', '')
     endif
-    return <SID>Xterm2rgb256(attr)
+    return s:Xterm2rgb256(attr)
 endfun
 
-fun! <SID>get_trimmed_range(fst_line, last_line)
+fun! s:get_trimmed_range(fst_line, last_line)
     let result = [a:fst_line, a:last_line]
     let linenr = a:fst_line
     while linenr <= a:last_line
@@ -228,10 +228,10 @@ fun! <SID>get_trimmed_range(fst_line, last_line)
     return result
 endfun
 
-fun! <SID>make_tohtml_code_highlight(fst_line, last_line, ...)
+fun! s:make_tohtml_code_highlight(fst_line, last_line, ...)
     let range = [a:fst_line, a:last_line]
     if g:PhTrimBlocks
-        let range = <SID>get_trimmed_range(a:fst_line, a:last_line)
+        let range = s:get_trimmed_range(a:fst_line, a:last_line)
     endif
     if range[0] > range[1]
         new +set\ nowrap
@@ -288,14 +288,14 @@ fun! <SID>make_tohtml_code_highlight(fst_line, last_line, ...)
     normal gggJ0
 endfun
 
-fun! <SID>escape_tex(block)
+fun! s:escape_tex(block)
     let block = a:block
     let block = escape(block, '\{}_$%')
     let block = substitute(block, '\\\\', '\\textbackslash{}', 'g')
     return block
 endfun
 
-fun! <SID>escape_html(block)
+fun! s:escape_html(block)
     let block = a:block
     let block = substitute(block, '&', '\&amp;',  'g')
     let block = substitute(block, '<', '\&lt;',   'g')
@@ -304,7 +304,7 @@ fun! <SID>escape_html(block)
     return block
 endfun
 
-fun! <SID>add_synid(result, synId, line, linenr, trans, sk_trans)
+fun! s:add_synid(result, synId, line, linenr, trans, sk_trans)
     if g:PhCtrlTrans == 0 || a:sk_trans == -1
         call add(a:result,
                     \ {'name': a:synId, 'content': a:line,
@@ -339,7 +339,7 @@ fun! <SID>add_synid(result, synId, line, linenr, trans, sk_trans)
     endif
 endfun
 
-fun! <SID>split_synids(fst_line, last_line, ts, ...)
+fun! s:split_synids(fst_line, last_line, ts, ...)
     let result = []
     let save_winview = winsaveview()
     call setpos('.', [0, a:fst_line, 1, 0])
@@ -356,7 +356,7 @@ fun! <SID>split_synids(fst_line, last_line, ts, ...)
             if !g:PhLinenrAsTblColumn
                 exe "let linecol = printf('%".n_fmt."d  ', ".linenr.")"
             endif
-            call <SID>add_synid(result, 'linenr', linecol, line('.'),
+            call s:add_synid(result, 'linenr', linecol, line('.'),
                         \ sk_trans, -1)
         endif
         if cols == 1
@@ -387,7 +387,7 @@ fun! <SID>split_synids(fst_line, last_line, ts, ...)
             if synId != old_synId
                 let new_start = cursor[2] - len
                 if old_synId != '^'
-                    call <SID>add_synid(result, old_synId,
+                    call s:add_synid(result, old_synId,
                         \ strpart(line, old_start - 1, new_start - old_start),
                         \ line('.'), old_trans, sk_trans)
                 endif
@@ -396,7 +396,7 @@ fun! <SID>split_synids(fst_line, last_line, ts, ...)
             endif
             let old_trans = trans
         endwhile
-        call <SID>add_synid(result, old_synId,
+        call s:add_synid(result, old_synId,
                     \ strpart(line, old_start - 1, cursor[2] - old_start - 1),
                     \ line('.'), old_trans, sk_trans)
         let cursor[1] += 1
@@ -410,17 +410,17 @@ fun! <SID>split_synids(fst_line, last_line, ts, ...)
     return result
 endfun
 
-fun! <SID>add_tex_rich_elem(part, trans, fg, elems, idx)
+fun! s:add_tex_rich_elem(part, trans, fg, elems, idx)
     if a:idx == len(a:elems)
         return a:part
     endif
-    let nested = <SID>add_tex_rich_elem(a:part, a:trans, a:fg, a:elems,
+    let nested = s:add_tex_rich_elem(a:part, a:trans, a:fg, a:elems,
                 \ a:idx + 1)
     if a:elems[a:idx] == 'fg'
         return '\textcolor[HTML]{'.a:fg.'}{'.nested.'}'
     endif
     if a:elems[a:idx] == 'bg'
-        let bg = toupper(<SID>get_color_under_cursor(1, 0, a:trans))
+        let bg = toupper(s:get_color_under_cursor(1, 0, a:trans))
         if bg == 'NONE'
             return nested
         endif
@@ -441,19 +441,19 @@ fun! <SID>add_tex_rich_elem(part, trans, fg, elems, idx)
     return nested
 endfun
 
-fun! <SID>sort_tex_rich_elems(e1, e2)
+fun! s:sort_tex_rich_elems(e1, e2)
     let order = ['bg', 'fg', 'bold', 'italic', 'underline']
     return index(order, a:e2) < index(order, a:e1)
 endfun
 
-fun! <SID>add_tex_rich_elems(part, trans, fg)
-    let elems = sort(g:PhRichTextElems + ['fg'], '<SID>sort_tex_rich_elems')
-    return <SID>add_tex_rich_elem(a:part, a:trans, a:fg, elems, 0)
+fun! s:add_tex_rich_elems(part, trans, fg)
+    let elems = sort(g:PhRichTextElems + ['fg'], 's:sort_tex_rich_elems')
+    return s:add_tex_rich_elem(a:part, a:trans, a:fg, elems, 0)
 endfun
 
-fun! <SID>add_html_rich_elem(elem, trans)
+fun! s:add_html_rich_elem(elem, trans)
     if a:elem == 'bg'
-        let bg = toupper(<SID>get_color_under_cursor(1, 0, a:trans))
+        let bg = toupper(s:get_color_under_cursor(1, 0, a:trans))
         if bg == 'NONE'
             return ''
         endif
@@ -473,7 +473,7 @@ fun! <SID>add_html_rich_elem(elem, trans)
     return ''
 endfun
 
-fun! <SID>linenr_tbl_layout(attrs)
+fun! s:linenr_tbl_layout(attrs)
     let div_style = '<div style="overflow-x: '.g:PhCodeColumnOverflowX.';">'
     let div_style_end = '</div>'
     let pre_style = substitute(a:attrs, '\<style="',
@@ -493,10 +493,10 @@ fun! <SID>linenr_tbl_layout(attrs)
     return {'pre': pre_style, 'div': div_style, 'div_end': div_style_end}
 endfun
 
-fun! <SID>make_code_highlight(fst_line, last_line, ft, ts, ...)
+fun! s:make_code_highlight(fst_line, last_line, ft, ts, ...)
     let range = [a:fst_line, a:last_line]
     if g:PhTrimBlocks
-        let range = <SID>get_trimmed_range(a:fst_line, a:last_line)
+        let range = s:get_trimmed_range(a:fst_line, a:last_line)
     endif
     let shell_output_tex = &ft == g:PhShellOutputFt && a:ft == 'tex'
     let shell_output_html = &ft == g:PhShellOutputFt && a:ft == 'html'
@@ -512,9 +512,9 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ts, ...)
                 exe "colorscheme ".g:PhColorscheme
             endif
             if linenr_html
-                let parts = call('<SID>split_synids', range + [a:ts] + a:000)
+                let parts = call('s:split_synids', range + [a:ts] + a:000)
             else
-                let parts = <SID>split_synids(range[0], range[1], a:ts)
+                let parts = s:split_synids(range[0], range[1], a:ts)
             endif
             if exists('g:PhColorscheme') && g:PhColorscheme != colors
                 exe "colorscheme ".colors
@@ -552,11 +552,11 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ts, ...)
             let fg = '#000000'
             if !exists('g:PhLinenrFgColor')
                 let attr = synIDattr(synIDtrans(hlID('SpecialKey')), 'fg')
-                let fg = '#'.toupper(<SID>Xterm2rgb256(attr))
+                let fg = '#'.toupper(s:Xterm2rgb256(attr))
             else
                 let fg = toupper(g:PhLinenrFgColor)
             endif
-            let styles = <SID>linenr_tbl_layout(g:PhLinenrColumnAttrs)
+            let styles = s:linenr_tbl_layout(g:PhLinenrColumnAttrs)
             let pre_style = styles['pre']
             let div_style = styles['div']
             let div_style_end = styles['div_end']
@@ -578,7 +578,7 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ts, ...)
             call append('$', '</pre>'.div_style_end.
                         \ '</td><td style="vertical-align: top; '.
                         \ 'padding-left: 2px">')
-            let styles = <SID>linenr_tbl_layout(g:PhHtmlPreAttrs)
+            let styles = s:linenr_tbl_layout(g:PhHtmlPreAttrs)
             let pre_style = styles['pre']
             let div_style = styles['div']
             let div_style_end = styles['div_end']
@@ -598,20 +598,20 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ts, ...)
             endwhile
             let part = hl['content']
             let trans = hl['trans']
-            let fg = toupper(<SID>get_color_under_cursor(0, 1, trans))
+            let fg = toupper(s:get_color_under_cursor(0, 1, trans))
             if part !~ '^[[:blank:]\u00A0]*$'
                 if a:ft == 'tex'
-                    let part = <SID>escape_tex(part)
-                    let part = <SID>add_tex_rich_elems(part, trans, fg)
+                    let part = s:escape_tex(part)
+                    let part = s:add_tex_rich_elems(part, trans, fg)
                 elseif a:ft == 'html'
                     if shell_output_html
                         exe 'let part = substitute(part, ''^\s*\zs'
                                     \ .g:PhShellOutputPrompt.''', "", "")'
                     endif
-                    let value = <SID>escape_html(part)
+                    let value = s:escape_html(part)
                     let part = '<span style="color: #'.fg.';'
                     for elem in g:PhRichTextElems
-                        let part .= <SID>add_html_rich_elem(elem, trans)
+                        let part .= s:add_html_rich_elem(elem, trans)
                     endfor
                     let part .= '">'.value.'</span>'
                 endif
@@ -646,18 +646,18 @@ fun! <SID>make_code_highlight(fst_line, last_line, ft, ts, ...)
     let &ft = a:ft
 endfun
 
-fun! <SID>make_tex_code_highlight(fst_line, last_line, ...)
-    call call(function('<SID>make_code_highlight'),
+fun! s:make_tex_code_highlight(fst_line, last_line, ...)
+    call call(function('s:make_code_highlight'),
                 \ [a:fst_line, a:last_line, 'tex',
                 \ g:PhHighlightEngine == 'treesitter'] + a:000)
 endfun
 
-fun! <SID>make_html_code_highlight(fst_line, last_line, ...)
+fun! s:make_html_code_highlight(fst_line, last_line, ...)
     if g:PhHtmlEngine == 'tohtml'
-        call call(function('<SID>make_tohtml_code_highlight'),
+        call call(function('s:make_tohtml_code_highlight'),
                     \ [a:fst_line, a:last_line] + a:000)
     else
-        call call(function('<SID>make_code_highlight'),
+        call call(function('s:make_code_highlight'),
                     \ [a:fst_line, a:last_line, 'html',
                     \ g:PhHighlightEngine == 'treesitter'] + a:000)
     endif
@@ -665,12 +665,12 @@ endfun
 
 
 command -range=% -nargs=? MakeHtmlCodeHighlight silent call
-            \ <SID>make_html_code_highlight(<line1>, <line2>, <f-args>)
+            \ s:make_html_code_highlight(<line1>, <line2>, <f-args>)
 command -range=% -nargs=? MakeTexCodeHighlight silent call
-            \ <SID>make_tex_code_highlight(<line1>, <line2>, <f-args>)
+            \ s:make_tex_code_highlight(<line1>, <line2>, <f-args>)
 
-command GetFgColorUnderCursor echo <SID>get_color_under_cursor(0,
+command GetFgColorUnderCursor echo s:get_color_under_cursor(0,
             \ g:PhHighlightEngine == 'treesitter')
-command GetBgColorUnderCursor echo <SID>get_color_under_cursor(1,
+command GetBgColorUnderCursor echo s:get_color_under_cursor(1,
             \ g:PhHighlightEngine == 'treesitter')
 
