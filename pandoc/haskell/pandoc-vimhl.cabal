@@ -7,7 +7,7 @@ description:             Pandoc filter for native Vim code highlighting
 homepage:                http://github.com/lyokha/vim-publish-helper
 license:                 BSD3
 license-file:            LICENSE
-extra-source-files:      Changelog.md
+extra-doc-files:         Changelog.md
 author:                  Alexey Radkov <alexey.radkov@gmail.com>
 maintainer:              Alexey Radkov <alexey.radkov@gmail.com>
 copyright:               2016-2022 Alexey Radkov

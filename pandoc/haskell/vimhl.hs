@@ -48,7 +48,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
         let vimhlcmd = unwords [cmd fmt', nmb]
                 where cmd "html" = "MakeHtmlCodeHighlight"
                       cmd "latex" = "MakeTexCodeHighlight"
-                      cmd x = error $ "Unexpected format '" ++ x ++ "'"
+                      cmd _ = undefined
                       nmb | "numberLines" `elem` cls' =
                               fromMaybe "-1" $ lookup "startfrom" namevals'
                           | otherwise = ""
