@@ -1,24 +1,18 @@
-Pandoc filter *vimhl*. Configure and build with commands
+Pandoc filter *vimhl*. Build and install with commands
 
 ```ShellSession
-$ cabal configure
 $ cabal build
-```
-
-Install with command
-
-```ShellSession
 $ cabal install
 ```
 
-or globally (if applicable), being a superuser
+The program is also available at *Hackage*, so you can install it with
 
 ```ShellSession
-# cabal install --global
+$ cabal install pandoc-vimhl
 ```
 
-Use environment variable `VIMHL_BACKEND` to choose between vim flavors. For
-example
+In runtime, use environment variable `VIMHL_BACKEND` to choose between vim
+flavors. For example
 
 ```ShellSession
 $ export VIMHL_BACKEND=nvim

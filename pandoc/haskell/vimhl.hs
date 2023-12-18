@@ -15,7 +15,7 @@ import Data.Char (isSpace, toLower)
 import Data.Bool (bool)
 import Data.Maybe (fromMaybe)
 import Data.Function (on)
-import Control.Arrow ((&&&), (***))
+import Control.Arrow
 import Control.Monad
 #if !MIN_VERSION_base(4,8,0)
 import Control.Applicative
