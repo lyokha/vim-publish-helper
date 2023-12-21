@@ -71,8 +71,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
         vimrccmd <- do
             home <- getHomeDirectory `catchIOError` const (return "")
             let vimrc = home </> ".vimrc.pandoc"
-                exists = doesFileExist &&>
-                    (getPermissions >=> return . readable)
+                exists = doesFileExist &&> (fmap readable . getPermissions)
                 (&&>) = liftM2 andM
                 (<<$) = liftM2 (<$>)
             (bool "" . ("--noplugin -u '" ++) . (++ "'")) <<$ exists $ vimrc
