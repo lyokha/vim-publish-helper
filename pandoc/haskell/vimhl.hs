@@ -32,7 +32,6 @@ import qualified System.IO as P (hPutStr)
 #ifdef DEBUG
 import System.IO (hPutStr, hPutStrLn, stderr)
 #endif
-import Safe
 
 #if MIN_VERSION_pandoc_types(1,20,0)
 tOSTRING :: Text -> String
@@ -58,9 +57,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
             cmds = maybe "" (unwords
                             . map cmd
                             . filter (not . null . fst)
-                            . map ((strip *** strip . tailSafe)
-                                  . break (== '=')
-                                  )
+                            . map ((strip *** strip . drop 1) . break (== '='))
                             . filter (/= ",")
                             . groupBy ((&&) `on` (/= ','))
                             ) $ lookup "vars" namevals'

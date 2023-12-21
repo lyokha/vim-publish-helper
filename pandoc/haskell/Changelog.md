@@ -1,3 +1,7 @@
+### 0.2.0.1
+
+- Removed dependency on package *safe*.
+
 ### 0.2.0.0
 
 - Removed dependency on packages *regex-compat* and *cond*.
