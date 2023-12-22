@@ -42,7 +42,7 @@ tOSTRING = id
 #endif
 
 vimHl :: Maybe Format -> Block -> IO Block
-vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft:_), namevals) contents)
+vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
     | lookup "hl" namevals' == Just "vim" && fmt' `elem` ["html", "latex"] = do
         let vimhlcmd = unwords [cmd fmt', nmb]
                 where cmd "html" = "MakeHtmlCodeHighlight"
