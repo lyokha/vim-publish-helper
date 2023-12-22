@@ -30,6 +30,8 @@ jobs:
           echo "$(ghc --version) "`
               `"[$(ghc --print-project-git-commit-id 2>/dev/null || echo '?')]"
           cabal update
+          cd pandoc/haskell
           cabal build
+          cd -
           set +e
 

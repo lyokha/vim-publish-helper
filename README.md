@@ -1,6 +1,7 @@
 Vim-publish-helper
 ==================
 
+[![Build Status](https://github.com/lyokha/vim-publish-helper/workflows/vimhl/badge.svg)](https://github.com/lyokha/vim-publish-helper/actions?query=workflow%3Avimhl)
 [![Hackage](https://img.shields.io/hackage/v/pandoc-vimhl.svg?label=hackage%20%7C%20pandoc-vimhl&logo=haskell&logoColor=%239580D1)](https://hackage.haskell.org/package/pandoc-vimhl)
 
 Table of contents
