@@ -65,9 +65,24 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
                                 ,vimhlcmd ++ "' -c 'w!", dst ++ "' -c 'qa!'"
                                 ,src
                                 ]
+                    {- Vim must think that it was launched from a terminal,
+                     - otherwise it won't load its usual environment and the
+                     - syntax engine! Using WriteMode for stdin prevents Vim
+                     - from getting unresponsive on Ctrl-C interrupts while
+                     - still doing well its task (Vim checks that input is a
+                     - terminal using isatty(), however it does not check the
+                     - mode of the handle). Note that Neovim loads the syntax
+                     - engine just fine. -}
+                    hin <- (Just <$> openFile "/dev/tty" WriteMode)
+                        `catchIOError` const (return Nothing)
                     hout <- openFile "/dev/null" WriteMode
-                    (_, _, _, handle) <- createProcess (shell vimcmd)
-                        {std_out = UseHandle hout}
+                    (_, _, _, handle) <- createProcess $
+                        maybe (shell vimcmd) {std_out = UseHandle hout}
+                            (\hin' -> (shell vimcmd)
+                                {std_in = UseHandle hin'
+                                ,std_out = UseHandle hout
+                                }
+                            ) hin
                     r <- waitForProcess handle
                     unless (r == ExitSuccess) $ exitWith r
                     T.readFile dst

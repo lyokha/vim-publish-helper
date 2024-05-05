@@ -1,3 +1,8 @@
+### 0.3.1.0
+
+- Do not throw if */dev/tty* cannot be opened. Note that Neovim loads the syntax
+  engine without *tty* emulation just fine.
+
 ### 0.3.0.0
 
 - Support for packages *base* &lt; *4.8* and *pandoc-types* &lt; *1.20* was
