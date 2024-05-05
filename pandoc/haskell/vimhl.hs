@@ -65,17 +65,9 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
                                 ,vimhlcmd ++ "' -c 'w!", dst ++ "' -c 'qa!'"
                                 ,src
                                 ]
-                    {- vim must think that it was launched from a terminal,
-                     - otherwise it won't load its usual environment and the
-                     - syntax engine! Using WriteMode for stdin prevents vim
-                     - from getting unresponsive on Ctrl-C interrupts while
-                     - still doing well its task (vim checks that input is a
-                     - terminal using isatty(), however it does not check the
-                     - mode of the handle). -}
-                    hin <- openFile "/dev/tty" WriteMode
                     hout <- openFile "/dev/null" WriteMode
                     (_, _, _, handle) <- createProcess (shell vimcmd)
-                        {std_in = UseHandle hin, std_out = UseHandle hout}
+                        {std_out = UseHandle hout}
                     r <- waitForProcess handle
                     unless (r == ExitSuccess) $ exitWith r
                     T.readFile dst
