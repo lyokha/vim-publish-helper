@@ -1,7 +1,7 @@
 ### 0.3.1.0
 
-- Do not throw if */dev/tty* cannot be opened. Note that Neovim loads the syntax
-  engine without *tty* emulation just fine.
+- Do not throw the error if */dev/tty* cannot be open. Note that Neovim loads
+  the syntax engine without *tty* emulation just fine.
 
 ### 0.3.0.0
 
