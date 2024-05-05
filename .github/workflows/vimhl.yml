@@ -15,7 +15,6 @@ jobs:
             cabal: '3.10'
             experimental: false
             release: true
-        include:
           - ghc: '9.8'
             cabal: '3.10'
             experimental: false
