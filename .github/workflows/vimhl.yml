@@ -1,11 +1,5 @@
 name: vimhl
-on:
-  push:
-    branches:
-      - master
-    tags:
-      - '*'
-  workflow_dispatch:
+on: push
 jobs:
   build:
     runs-on: ubuntu-latest
