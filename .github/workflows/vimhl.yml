@@ -9,8 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
@@ -51,6 +49,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         if: ${{ matrix.release && startsWith(github.ref, 'refs/tags/') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_VIMHL }}
         with:
           files: |
             dist/vimhl-${{ steps.tag.outputs.tag }}-ghc-${{ matrix.ghc }}
