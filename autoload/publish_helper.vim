@@ -173,6 +173,7 @@ fun! s:escape_html(block)
     let block = substitute(block, '<', '\&lt;',   'g')
     let block = substitute(block, '>', '\&gt;',   'g')
     let block = substitute(block, '"', '\&quot;', 'g')
+    let block = substitute(block, "'", '\&apos;', 'g')
     return block
 endfun
 

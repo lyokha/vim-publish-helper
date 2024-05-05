@@ -1,3 +1,13 @@
+### 0.3.0.0
+
+- Support for packages *base* &lt; *4.8* and *pandoc-types* &lt; *1.20* was
+  dropped.
+- If output format is *gfm*, the code block gets translated to a *RawBlock* in
+  *HTML* format with style adhered to code blocks in Github README pages.
+- Use environment variable *VIMRC_PANDOC* to point to the custom vim
+  configuration.
+- Cabal flag *debug* was removed.
+
 ### 0.2.0.1
 
 - Removed dependency on package *safe*.

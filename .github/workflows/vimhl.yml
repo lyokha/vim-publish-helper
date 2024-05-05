@@ -1,37 +1,58 @@
 name: vimhl
 on:
   push:
-    branches: [master]
+    branches:
+      - master
+    tags:
+      - '*'
   workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        ghc: ['8.6', '8.8', '8.10', '9.0', '9.2', '9.4', '9.6', '9.8']
+        ghc: ['8.6', '8.8', '8.10', '9.0', '9.2', '9.4', '9.8']
         cabal: ['3.10']
         experimental: [false]
+        release: [false]
+        include:
+          - ghc: '9.6'
+            cabal: '3.10'
+            experimental: false
+            release: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install GHC and Cabal
         uses: haskell-actions/setup@v2
         with:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
-      - name: Install
+      - name: Set tag name
+        uses: olegtarasov/get-tag@v2
+        id: tag
+      - name: Build
         env:
           GHCVER: ${{ matrix.ghc }}
           CABALVER: ${{ matrix.cabal }}
         run: |
-          set -e
           cabal --version
           echo "$(ghc --version) "`
               `"[$(ghc --print-project-git-commit-id 2>/dev/null || echo '?')]"
           cabal update
+          mkdir dist
           cd pandoc/haskell
-          cabal build
+          cabal install exe:vimhl --install-method=copy \
+              --overwrite-policy=always --installdir=../../dist
           cd -
-          set +e
+          cp dist/vimhl dist/vimhl-${{ steps.tag.outputs.tag }}
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: matrix.release && startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            dist/vimhl-${{ steps.tag.outputs.tag }}-ghc-${{ matrix.ghc }}
 

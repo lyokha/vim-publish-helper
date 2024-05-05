@@ -1,4 +1,4 @@
-{-# LANGUAGE CPP #-}
+{-# LANGUAGE OverloadedStrings, LambdaCase #-}
 
 import Text.Pandoc.JSON
 import System.IO (IOMode (WriteMode), openFile, hFlush)
@@ -17,38 +17,18 @@ import Data.Maybe (fromMaybe)
 import Data.Function (on)
 import Control.Arrow
 import Control.Monad
-#if !MIN_VERSION_base(4,8,0)
-import Control.Applicative
-#endif
 import Control.Exception (bracket)
-#if MIN_VERSION_pandoc_types(1,20,0)
-import Prelude hiding (readFile)
-import Data.Text.IO (readFile)
-import qualified Data.Text.IO as P (hPutStr)
-import Data.Text (Text, unpack)
-#else
-import qualified System.IO as P (hPutStr)
-#endif
-#ifdef DEBUG
-import System.IO (hPutStr, hPutStrLn, stderr)
-#endif
-
-#if MIN_VERSION_pandoc_types(1,20,0)
-tOSTRING :: Text -> String
-tOSTRING = unpack
-#else
-tOSTRING :: String -> String
-tOSTRING = id
-#endif
+import qualified Data.Text as T
+import qualified Data.Text.IO as T
 
 vimHl :: Maybe Format -> Block -> IO Block
 vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
-    | lookup "hl" namevals' == Just "vim" && fmt' `elem` ["html", "latex"] = do
-        let vimhlcmd = unwords [cmd fmt', nmb]
-                where cmd "html" = "MakeHtmlCodeHighlight"
-                      cmd "latex" = "MakeTexCodeHighlight"
-                      cmd _ = undefined
-                      nmb | "numberLines" `elem` cls' =
+    | lookup "hl" namevals' == Just "vim" &&
+        fmt `elem` ["html", "latex", "gfm"] = do
+        let vimhlcmd = unwords [cmd fmt, nmb]
+                where cmd "latex" = "MakeTexCodeHighlight"
+                      cmd _ = "MakeHtmlCodeHighlight"
+                      nmb | "numberLines" `elem` cls =
                               fromMaybe "-1" $ lookup "startfrom" namevals'
                           | otherwise = ""
             colorscheme = maybe "" (("-c 'let g:PhColorscheme = \"" ++)
@@ -67,26 +47,24 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
                       strip = dropWhileEnd isSpace . dropWhile isSpace
         vimrccmd <- do
             home <- getHomeDirectory `catchIOError` const (return "")
-            let vimrc = home </> ".vimrc.pandoc"
-                exists = doesFileExist &&> (fmap readable . getPermissions)
+            vimrc <- fromMaybe (home </> ".vimrc.pandoc") <$>
+                lookupEnv "VIMRC_PANDOC"
+            let exists = doesFileExist &&> (fmap readable . getPermissions)
                 (&&>) = liftM2 andM
                 (<<$) = liftM2 (<$>)
             (bool "" . ("--noplugin -u '" ++) . (++ "'")) <<$ exists $ vimrc
         block <- withSystemTempFile "_vimhl_src." $ \src hsrc -> do
-            P.hPutStr hsrc contents >> hFlush hsrc
+            T.hPutStr hsrc contents >> hFlush hsrc
             bracket (emptySystemTempFile "_vimhl_dst.") removeFile $
                 \dst -> do
                     vimexe <- fromMaybe "vim" <$> lookupEnv "VIMHL_BACKEND"
                     let vimcmd =
                             unwords
                                 [vimexe, "-Nen", cmds, vimrccmd, colorscheme
-                                ,"-c 'set ft=" ++ ft', "|"
+                                ,"-c 'set ft=" ++ T.unpack ft, "|"
                                 ,vimhlcmd ++ "' -c 'w!", dst ++ "' -c 'qa!'"
                                 ,src
                                 ]
-#ifdef DEBUG
-                    hPutStr stderr $ vimcmd ++ " ... "
-#endif
                     {- vim must think that it was launched from a terminal,
                      - otherwise it won't load its usual environment and the
                      - syntax engine! Using WriteMode for stdin prevents vim
@@ -99,16 +77,35 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
                     (_, _, _, handle) <- createProcess (shell vimcmd)
                         {std_in = UseHandle hin, std_out = UseHandle hout}
                     r <- waitForProcess handle
-#ifdef DEBUG
-                    hPutStrLn stderr $ show r
-#endif
                     unless (r == ExitSuccess) $ exitWith r
-                    readFile dst
-        return $ RawBlock fm block
-    where fmt' = tOSTRING fmt
-          cls' = map tOSTRING cls
-          ft' = tOSTRING ft
-          namevals' = map (map toLower . tOSTRING *** tOSTRING) namevals
+                    T.readFile dst
+        return $ RawBlock fm' $ wrap fm block
+    where namevals' = map (map toLower . T.unpack *** T.unpack) namevals
+          fm' | fm == Format "latex" = fm
+              | otherwise = Format "html"
+          wrap "gfm" block = T.concat
+              ["<div class=\"highlight notranslate \
+               \position-relative overflow-auto\" dir=\"auto\" \
+               \data-snippet-clipboard-copy-content=\""
+              ,escapeHtml $ stripShellOutputPrompt contents
+              ,"\">"
+              ,block
+              ,"</div>"
+              ]
+          wrap _ block = block
+          escapeHtml = T.concatMap $ \case
+              '<' -> "&lt;"
+              '>' -> "&gt;"
+              '&' -> "&amp;"
+              '"' -> "&quot;"
+              '\'' -> "&apos;"
+              x -> T.singleton x
+          stripShellOutputPrompt t
+              | ft == "shelloutput" =
+                  let prompt = "||| "
+                  in T.replace ("\n" `T.append` prompt) "\n" $
+                      fromMaybe t $ T.stripPrefix prompt t
+              | otherwise = t
 vimHl _ cb = return cb
 
 main :: IO ()
