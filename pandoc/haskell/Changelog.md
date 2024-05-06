@@ -1,7 +1,8 @@
 ### 0.3.1.0
 
 - Do not throw the error if */dev/tty* cannot be open. Note that Neovim loads
-  the syntax engine without *tty* emulation just fine.
+  the syntax engine without *tty* emulation just fine. This allows using Neovim
+  as *VIMHL_BACKEND* in environments where */dev/tty* is unavailable.
 
 ### 0.3.0.0
 

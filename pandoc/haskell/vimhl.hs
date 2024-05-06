@@ -72,17 +72,13 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
                      - still doing well its task (Vim checks that input is a
                      - terminal using isatty(), however it does not check the
                      - mode of the handle). Note that Neovim loads the syntax
-                     - engine just fine. -}
+                     - engine without tty emulation just fine. -}
                     hin <- (Just <$> openFile "/dev/tty" WriteMode)
                         `catchIOError` const (return Nothing)
                     hout <- openFile "/dev/null" WriteMode
                     (_, _, _, handle) <- createProcess $
-                        maybe (shell vimcmd) {std_out = UseHandle hout}
-                            (\hin' -> (shell vimcmd)
-                                {std_in = UseHandle hin'
-                                ,std_out = UseHandle hout
-                                }
-                            ) hin
+                        let cmd = (shell vimcmd) {std_out = UseHandle hout}
+                        in maybe cmd (\h -> cmd {std_in = UseHandle h}) hin
                     r <- waitForProcess handle
                     unless (r == ExitSuccess) $ exitWith r
                     T.readFile dst
@@ -90,6 +86,8 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
     where namevals' = map (map toLower . T.unpack *** T.unpack) namevals
           fm' | fm == Format "latex" = fm
               | otherwise = Format "html"
+          {- Note that Github markdown sanitizer strips CSS styles in HTML
+           - tags. See details at https://github.com/github/markup. -}
           wrap "gfm" block = T.concat
               ["<div class=\"highlight notranslate \
                \position-relative overflow-auto\" dir=\"auto\" \
