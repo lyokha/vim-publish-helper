@@ -43,17 +43,17 @@ jobs:
               --overwrite-policy=always --installdir=../../dist
           cd -
           cp dist/vimhl \
-              dist/vimhl-${{ steps.tag.outputs.tag }}-ghc-${{ matrix.ghc }}
+              dist/vimhl-${{ steps.tag.outputs.tag }}-${{ runner.os }}-ghc-${{ matrix.ghc }}
       - name: Compress binary
         uses: svenstaro/upx-action@2.4.1
         if: ${{ matrix.release && startsWith(github.ref, 'refs/tags/') }}
         with:
           files: |
-            dist/vimhl-${{ steps.tag.outputs.tag }}-ghc-${{ matrix.ghc }}
+            dist/vimhl-${{ steps.tag.outputs.tag }}-${{ runner.os }}-ghc-${{ matrix.ghc }}
       - name: Release
         uses: softprops/action-gh-release@v2
         if: ${{ matrix.release && startsWith(github.ref, 'refs/tags/') }}
         with:
           files: |
-            dist/vimhl-${{ steps.tag.outputs.tag }}-ghc-${{ matrix.ghc }}
+            dist/vimhl-${{ steps.tag.outputs.tag }}-${{ runner.os }}-ghc-${{ matrix.ghc }}
 
