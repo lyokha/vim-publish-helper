@@ -1,3 +1,11 @@
+### 0.3.2.0
+
+- Improvement after the previous release: do not use */dev/tty* if the backend
+  program is Neovim. The backend's flavor gets detected by testing against
+  *has("nvim")* once at the first call.
+- As well, both the vim executable and the effective vim configuration file get
+  detected once at the first call.
+
 ### 0.3.1.0
 
 - Do not throw the error if */dev/tty* cannot be open. Note that Neovim loads

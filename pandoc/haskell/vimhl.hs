@@ -4,6 +4,7 @@ import Text.Pandoc.JSON
 import System.IO (IOMode (WriteMode), openFile, hFlush)
 import System.IO.Temp
 import System.IO.Error
+import System.IO.Unsafe
 import System.Environment (lookupEnv)
 import System.Directory
 import System.Directory.Internal (andM)
@@ -45,43 +46,35 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
                       cmd (x, y) = mkCmd x y
                       mkCmd x y = "--cmd 'let g:" ++ x ++ " = \"" ++ y ++ "\"'"
                       strip = dropWhileEnd isSpace . dropWhile isSpace
-        vimrccmd <- do
-            home <- getHomeDirectory `catchIOError` const (return "")
-            vimrc <- fromMaybe (home </> ".vimrc.pandoc") <$>
-                lookupEnv "VIMRC_PANDOC"
-            let exists = doesFileExist &&> (fmap readable . getPermissions)
-                (&&>) = liftM2 andM
-                (<<$) = liftM2 (<$>)
-            (bool "" . ("--noplugin -u '" ++) . (++ "'")) <<$ exists $ vimrc
         block <- withSystemTempFile "_vimhl_src." $ \src hsrc -> do
             T.hPutStr hsrc contents >> hFlush hsrc
-            bracket (emptySystemTempFile "_vimhl_dst.") removeFile $
-                \dst -> do
-                    vimexe <- fromMaybe "vim" <$> lookupEnv "VIMHL_BACKEND"
-                    let vimcmd =
-                            unwords
-                                [vimexe, "-Nen", cmds, vimrccmd, colorscheme
-                                ,"-c 'set ft=" ++ T.unpack ft, "|"
-                                ,vimhlcmd ++ "' -c 'w!", dst ++ "' -c 'qa!'"
-                                ,src
-                                ]
-                    {- Vim must think that it was launched from a terminal,
-                     - otherwise it won't load its usual environment and the
-                     - syntax engine! Using WriteMode for stdin prevents Vim
-                     - from getting unresponsive on Ctrl-C interrupts while
-                     - still doing well its task (Vim checks that input is a
-                     - terminal using isatty(), however it does not check the
-                     - mode of the handle). Note that Neovim loads the syntax
-                     - engine without tty emulation just fine. -}
-                    hin <- (Just <$> openFile "/dev/tty" WriteMode)
-                        `catchIOError` const (return Nothing)
-                    hout <- openFile "/dev/null" WriteMode
-                    (_, _, _, handle) <- createProcess $
-                        let cmd = (shell vimcmd) {std_out = UseHandle hout}
-                        in maybe cmd (\h -> cmd {std_in = UseHandle h}) hin
-                    r <- waitForProcess handle
-                    unless (r == ExitSuccess) $ exitWith r
-                    T.readFile dst
+            bracket (emptySystemTempFile "_vimhl_dst.") removeFile $ \dst -> do
+                let vimrccmd = maybe "" (("--noplugin -u '" ++) . (++ "'"))
+                        vimrcPandoc
+                    vimcmd = unwords
+                        [vimExe, "-Nen", cmds, vimrccmd, colorscheme
+                        ,"-c 'set ft=" ++ T.unpack ft, "|"
+                        ,vimhlcmd ++ "' -c 'w!", dst ++ "' -c 'qa!'"
+                        ,src
+                        ]
+                {- Vim must think that it has been launched from a terminal,
+                 - otherwise it won't load its usual environment and the syntax
+                 - engine! Using WriteMode for stdin prevents Vim from getting
+                 - unresponsive on Ctrl-C interrupts while it still keeps doing
+                 - well its task (Vim checks that input is a terminal using
+                 - isatty(), however it does not check the mode of the handle).
+                 - Note that Neovim loads the syntax engine without tty
+                 - emulation just fine. -}
+                hin <- if vimExeIsNvim
+                           then return Nothing
+                           else Just <$> openFile "/dev/tty" WriteMode
+                hout <- openFile "/dev/null" WriteMode
+                (_, _, _, handle) <- createProcess $
+                    let cmd = (shell vimcmd) {std_out = UseHandle hout}
+                    in maybe cmd (\h -> cmd {std_in = UseHandle h}) hin
+                r <- waitForProcess handle
+                unless (r == ExitSuccess) $ exitWith r
+                T.readFile dst
         return $ RawBlock fm' $ wrap fm block
     where namevals' = map (map toLower . T.unpack *** T.unpack) namevals
           fm' | fm == Format "latex" = fm
@@ -112,6 +105,39 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
                       fromMaybe t $ T.stripPrefix prompt t
               | otherwise = t
 vimHl _ cb = return cb
+
+vimExe :: String
+vimExe = unsafePerformIO $ fromMaybe "vim" <$> lookupEnv "VIMHL_BACKEND"
+{-# NOINLINE vimExe #-}
+
+vimExeIsNvim :: Bool
+vimExeIsNvim = unsafePerformIO $
+    bracket (emptySystemTempFile "_vimhl_test.") removeFile $ \test -> do
+        let vimcmd = unwords
+                [vimExe
+                ,"-Nens --noplugin -u NONE \
+                 \-c 'if has(\"nvim\") | exe \"normal i1\" | endif' -c wq"
+                ,test
+                ]
+        hout <- openFile "/dev/null" WriteMode
+        (_, _, _, handle) <- createProcess $
+            (shell vimcmd) {std_out = UseHandle hout}
+        r <- waitForProcess handle
+        unless (r == ExitSuccess) $ exitWith r
+        maybe False (('1' ==) . fst) . T.uncons <$> T.readFile test
+{-# NOINLINE vimExeIsNvim #-}
+
+vimrcPandoc :: Maybe String
+vimrcPandoc = unsafePerformIO $ lookupEnv "VIMRC_PANDOC" >>=
+    maybe (do
+               home <- getHomeDirectory `catchIOError` const (return "")
+               let vimrc = home </> ".vimrc.pandoc"
+                   exists = doesFileExist &&> (fmap readable . getPermissions)
+                   (&&>) = liftM2 andM
+                   (<<$) = liftM2 (<$>)
+               (bool Nothing . Just) <<$ exists $ vimrc
+          ) (return . Just)
+{-# NOINLINE vimrcPandoc #-}
 
 main :: IO ()
 main = toJSONFilter vimHl
