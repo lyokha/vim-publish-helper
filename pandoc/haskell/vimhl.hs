@@ -49,8 +49,8 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
         block <- withSystemTempFile "_vimhl_src." $ \src hsrc -> do
             T.hPutStr hsrc contents >> hFlush hsrc
             bracket (emptySystemTempFile "_vimhl_dst.") removeFile $ \dst -> do
-                let vimrccmd = maybe "" (("--noplugin -u '" ++) . (++ "'"))
-                        vimrcPandoc
+                let vimrccmd = maybe ""
+                        (("--noplugin -u '" ++) . (++ "'")) vimrcPandoc
                     vimcmd = unwords
                         [vimExe, "-Nen", cmds, vimrccmd, colorscheme
                         ,"-c 'set ft=" ++ T.unpack ft, "|"
@@ -76,7 +76,7 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
                 unless (r == ExitSuccess) $ exitWith r
                 T.readFile dst
         return $ RawBlock fm' $ wrap fm block
-    where namevals' = map (map toLower . T.unpack *** T.unpack) namevals
+    where namevals' = map (T.map toLower *** T.unpack) namevals
           fm' | fm == Format "latex" = fm
               | otherwise = Format "html"
           {- Note that Github markdown sanitizer strips CSS styles in HTML
