@@ -698,7 +698,7 @@ An example
 - Pandoc template for Latex was produced by command
 
     ```ShellSession
-  $ vimhl_latex_tmpl.sh -s FFFF99 -f FF6699 -d > ~/.pandoc/templates/vimhl.latex
+  $ sh vimhl_latex_tmpl.sh -s FFFF99 -f FF6699 -d > ~/.pandoc/templates/vimhl.latex
     ```
 
 - **HTML document (rendered in Firefox) produced by command**
