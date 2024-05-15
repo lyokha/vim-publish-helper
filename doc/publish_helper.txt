@@ -317,7 +317,7 @@ is preferable as vim will consume less resources and work fastest.
   Normally the output has to be redirected to a file in the standard pandoc
   templates directory.
 >
-    sh vimhl_latex_tmpl.sh > ~/.pandoc/templates/vimhl.latex
+    bash vimhl_latex_tmpl.sh > ~/.pandoc/templates/vimhl.latex
 <
   Now you can use this template for making standalone TeX or PDF documents
   using pandoc's option --template=vimhl. The script accepts a number of

@@ -324,7 +324,7 @@ and work faster.
   templates directory.
 
     ```ShellSession
-  $ sh vimhl_latex_tmpl.sh > ~/.pandoc/templates/vimhl.latex
+  $ bash vimhl_latex_tmpl.sh > ~/.pandoc/templates/vimhl.latex
     ```
 
   Now you can use this template for making standalone TeX or PDF documents
@@ -698,7 +698,7 @@ An example
 - Pandoc template for Latex was produced by command
 
     ```ShellSession
-  $ sh vimhl_latex_tmpl.sh -s FFFF99 -f FF6699 -d > ~/.pandoc/templates/vimhl.latex
+  $ bash vimhl_latex_tmpl.sh -s FFFF99 -f FF6699 -d > ~/.pandoc/templates/vimhl.latex
     ```
 
 - **HTML document (rendered in Firefox) produced by command**
