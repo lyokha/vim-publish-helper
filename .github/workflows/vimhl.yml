@@ -19,6 +19,10 @@ jobs:
             cabal: '3.10'
             experimental: false
             release: true
+          - ghc: '9.10'
+            cabal: '3.10'
+            experimental: true
+            release: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4

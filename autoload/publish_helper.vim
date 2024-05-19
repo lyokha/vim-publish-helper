@@ -58,7 +58,8 @@ fun! s:Xterm2rgb256(color)
 endfun
 
 fun! publish_helper#get_color_under_cursor(bg, ...)
-    let layer = a:bg ? 'bg' : 'fg'
+    let layer = a:bg ? (&termguicolors ? 'bg#' : 'bg') :
+                     \ (&termguicolors ? 'fg#' : 'fg')
     if a:0 > 1
         let trans = a:2
     else
@@ -78,10 +79,7 @@ fun! publish_helper#get_color_under_cursor(bg, ...)
         endif
         let attr = synIDattr(synIDtrans(hlID('Normal')), layer)
     endif
-    if attr =~ '^#'
-        return substitute(attr, '^#', '', '')
-    endif
-    return s:Xterm2rgb256(attr)
+    return attr =~ '^#' ? attr[1:] : s:Xterm2rgb256(attr)
 endfun
 
 fun! s:get_trimmed_range(fst_line, last_line)
@@ -426,8 +424,10 @@ fun! s:make_code_highlight(fst_line, last_line, ft, ts, ...)
         if linenr_html_tbl
             let fg = '#000000'
             if !exists('g:PhLinenrFgColor')
-                let attr = synIDattr(synIDtrans(hlID('SpecialKey')), 'fg')
-                let fg = '#'.toupper(s:Xterm2rgb256(attr))
+                let attr = synIDattr(synIDtrans(hlID('SpecialKey')),
+                            \ (&termguicolors ? 'fg#' : 'fg'))
+                let fg = toupper(attr =~ '^#' ? attr :
+                            \ '#'.s:Xterm2rgb256(attr))
             else
                 let fg = toupper(g:PhLinenrFgColor)
             endif
