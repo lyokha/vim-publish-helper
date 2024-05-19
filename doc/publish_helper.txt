@@ -1,10 +1,10 @@
-*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2023 May 10
+*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2024 May 19
 
                        ------------------------------
                         Publish Helper (HTML and TeX)
                        ------------------------------
 
-                                version 0.14
+                               version 0.15.2
 
 Author: Alexey Radkov
 
@@ -586,6 +586,11 @@ Christian Brabandt for plugin Colorizer and Xterm2rgb translation functions.
 ==============================================================================
                                            *publish_helper-changes*
 A. Change History~
+
+0.15 - 0.15.2
+    - fixed handling colors when 'termguicolors' is set
+    - escape single quotes in command MakeHtmlCodeHighlight
+    - vimhl 0.3.0.0 - 0.3.2.0: many improvements (see release notes at github)
 
 0.14
     - startup optimization: all functions were moved to autoload/ directory

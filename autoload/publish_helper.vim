@@ -1,6 +1,6 @@
 " File: autoload/publish_helper.vim
 " Author: Alexey Radkov
-" Version: 0.14
+" Version: 0.15.2
 " Description: autoload functions for plugin/publish_helper.vim
 
 " next Xterm2rgb... conversion functions are adopted from plugin Colorizer.vim
