@@ -2,12 +2,47 @@ set nocompatible
 
 filetype off    " filetype is set by vimhl
 
-let g:lucius_style = 'light'
-let g:lucius_contrast = 'high'
-let g:lucius_contrast_bg = 'high'
-let g:lucius_no_term_bg = 1
+let g:VimhlUseDotVimSettings = 0
+let g:VimhlLoadPandocPlugin = 1
 
-colorscheme lucius
+let g:VimhlColorschemeWasChosen = 0
+
+if has('termguicolors')
+    set termguicolors
+endif
+
+if has('nvim')
+    if g:VimhlUseDotVimSettings
+        set runtimepath^=~/.vim runtimepath+=~/.vim/after
+        let &packpath=&runtimepath
+    else
+        set runtimepath+=~/.local/share/nvim/plugged/nvim-treesitter
+        set runtimepath+=~/.local/share/nvim/plugged/gruvbox-material
+        set runtimepath+=~/.local/share/nvim/plugged/vim-publish-helper
+        set background=light
+        " let g:gruvbox_material_enable_bold = 0
+        " let g:gruvbox_material_enable_italic = 1
+        colorscheme gruvbox-material
+        lua require'nvim-treesitter.configs'.setup
+                    \ { highlight = { enable = true } }
+        runtime plugin/nvim-treesitter.lua
+        let g:PhHighlightEngine = 'treesitter'
+        let g:VimhlColorschemeWasChosen = 1
+        if g:VimhlLoadPandocPlugin
+            set runtimepath+=~/.local/share/nvim/plugged/vim-pandoc-syntax
+            runtime plugin/pandoc.vim
+        endif
+    endif
+endif
+
+if !g:VimhlColorschemeWasChosen
+    let g:lucius_style = 'light'
+    let g:lucius_contrast = 'high'
+    let g:lucius_contrast_bg = 'high'
+    let g:lucius_no_term_bg = 1
+    colorscheme lucius
+endif
+
 syntax on
 
 if !exists('g:PhLinenrAsTblColumn')
@@ -25,6 +60,13 @@ if exists('g:PhBlockRole') && g:PhBlockRole == 'output'
     let g:PhTexBlockStyle = 'Leftbar'
 endif
 
+if exists('g:PhBlockRole') && g:PhBlockRole == 'repl'
+    let g:PhHtmlPreAttrs = 'style="overflow-x: auto; '.
+            \ 'border-style: none none none solid; border-color: #FDB; '.
+            \ 'border-width: 10px; padding: 5px 10px"'
+    let g:PhTexBlockStyle = 'Leftbar'
+endif
+
 if exists('g:PhBlockRole') && g:PhBlockRole == 'citation'
     let g:PhHtmlPreAttrs = 'style="overflow-x: auto; background: #CFC; '.
             \ 'border-style: none none none solid; border-color: #FC6; '.
@@ -34,7 +76,12 @@ endif
 
 runtime plugin/publish_helper.vim
 
-if exists('g:PhHtmlEngine') && g:PhHtmlEngine == 'tohtml'
+if g:PhHtmlEngine == 'tohtml'
+    if g:PhHighlightEngine == 'treesitter'
+        " TOhtml does not currently support treesitter in Neovim
+        " (see https://github.com/nvim-treesitter/nvim-treesitter/issues/1049)
+        TSDisable highlight
+    endif
     runtime plugin/tohtml.vim
     let g:html_no_progress = 1
     let g:html_ignore_folding = 1

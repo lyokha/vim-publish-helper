@@ -1,3 +1,7 @@
+---
+geometry: left=3cm,right=3cm,top=3cm,bottom=3cm
+...
+
 ### Original example from [*Pandoc User's Guide*](http://johnmacfarlane.net/pandoc/README.html#fenced-code-blocks)
 
 ``` {#mycode .haskell .numberLines hl="vim" startFrom="99"}
