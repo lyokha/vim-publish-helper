@@ -2,8 +2,9 @@ set nocompatible
 
 filetype off    " filetype is set by vimhl
 
-let g:VimhlUseDotVimSettings = 0
-let g:VimhlLoadPandocPlugin = 1
+let g:VimhlNvimUseDotVimSettings = 0
+let g:VimhlNvimUseTreesitter = 1
+let g:VimhlNvimLoadPandocPlugin = 1
 
 let g:VimhlColorschemeWasChosen = 0
 
@@ -12,7 +13,7 @@ if has('termguicolors')
 endif
 
 if has('nvim')
-    if g:VimhlUseDotVimSettings
+    if g:VimhlNvimUseDotVimSettings
         set runtimepath^=~/.vim runtimepath+=~/.vim/after
         let &packpath=&runtimepath
     else
@@ -23,12 +24,14 @@ if has('nvim')
         " let g:gruvbox_material_enable_bold = 0
         " let g:gruvbox_material_enable_italic = 1
         colorscheme gruvbox-material
-        lua require'nvim-treesitter.configs'.setup
-                    \ { highlight = { enable = true } }
-        runtime plugin/nvim-treesitter.lua
-        let g:PhHighlightEngine = 'treesitter'
+        if g:VimhlNvimUseTreesitter
+            lua require'nvim-treesitter.configs'.setup
+                        \ { highlight = { enable = true } }
+            runtime plugin/nvim-treesitter.lua
+            let g:PhHighlightEngine = 'treesitter'
+        endif
         let g:VimhlColorschemeWasChosen = 1
-        if g:VimhlLoadPandocPlugin
+        if g:VimhlNvimLoadPandocPlugin
             set runtimepath+=~/.local/share/nvim/plugged/vim-pandoc-syntax
             runtime plugin/pandoc.vim
         endif

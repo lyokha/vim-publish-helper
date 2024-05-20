@@ -591,6 +591,7 @@ A. Change History~
     - fixed handling colors when 'termguicolors' is set
     - escape single quotes in command MakeHtmlCodeHighlight
     - vimhl 0.3.0.0 - 0.3.2.0: many improvements (see release notes at github)
+    - update the sample .vimrc.pandoc to use with Neovim
 
 0.14
     - startup optimization: all functions were moved to autoload/ directory
