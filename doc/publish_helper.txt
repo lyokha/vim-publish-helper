@@ -590,6 +590,7 @@ A. Change History~
 0.15 - 0.15.2
     - fixed handling colors when 'termguicolors' is set
     - escape single quotes in command MakeHtmlCodeHighlight
+    - set b:current_syntax in syntax/shelloutput.vim
     - vimhl 0.3.0.0 - 0.3.2.0: many improvements (see release notes at github)
     - update the sample .vimrc.pandoc to use with Neovim
 

@@ -1,6 +1,4 @@
-if version < 600
-  syntax clear
-elseif exists("b:current_syntax")
+if exists("b:current_syntax")
   finish
 endif
 
@@ -14,4 +12,6 @@ hi def link soCmdL Statement
 
 " uncomment next line to make output be highlighted with Comment syntax group
 "hi! link Normal Comment
+
+let b:current_syntax = "shelloutput"
 
