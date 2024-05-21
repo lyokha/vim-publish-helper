@@ -5,7 +5,7 @@ filetype off    " filetype is set by vimhl
 let g:VimhlNvimUseDotVimSettings = 0
 let g:VimhlNvimUseTreesitter = 1
 let g:VimhlNvimLoadPandocPlugin = 1
-let g:VimhlPreFontSize = '100%'
+let g:VimhlHtmlPreStyleCommon = 'overflow-x: auto; font-size: 100%; '
 
 let g:VimhlColorschemeWasChosen = 0
 
@@ -56,31 +56,29 @@ if !exists('g:PhLinenrAsTblColumn')
 endif
 
 if !exists('g:PhHtmlPreAttrs')
-    let g:PhHtmlPreAttrs = 'style="overflow-x: auto; '.
-            \ 'font-size: '.g:VimhlPreFontSize.'; background: #FFE"'
+    let g:PhHtmlPreAttrs = 'style="'.g:VimhlHtmlPreStyleCommon.
+            \ 'background: #FFE"'
 endif
 
 if exists('g:PhBlockRole') && g:PhBlockRole == 'output'
-    let g:PhHtmlPreAttrs = 'style="overflow-x: auto; '.
-            \ 'font-size: '.g:VimhlPreFontSize.'; '.
+    let g:PhHtmlPreAttrs = 'style="'.g:VimhlHtmlPreStyleCommon.
             \ 'border-style: none none none solid; border-color: #6DF; '.
             \ 'border-width: 10px; padding: 5px 10px"'
     let g:PhTexBlockStyle = 'Leftbar'
 endif
 
 if exists('g:PhBlockRole') && g:PhBlockRole == 'repl'
-    let g:PhHtmlPreAttrs = 'style="overflow-x: auto; '.
-            \ 'font-size: '.g:VimhlPreFontSize.'; '.
+    let g:PhHtmlPreAttrs = 'style="'.g:VimhlHtmlPreStyleCommon.
             \ 'border-style: none none none solid; border-color: #FDB; '.
             \ 'border-width: 10px; padding: 5px 10px"'
     let g:PhTexBlockStyle = 'Leftbar'
 endif
 
 if exists('g:PhBlockRole') && g:PhBlockRole == 'citation'
-    let g:PhHtmlPreAttrs = 'style="overflow-x: auto; '.
-            \ 'font-size: '.g:VimhlPreFontSize.'; background: #CFC; '.
+    let g:PhHtmlPreAttrs = 'style="'.g:VimhlHtmlPreStyleCommon.
             \ 'border-style: none none none solid; border-color: #FC6; '.
-            \ 'border-width: 6px; padding: 5px 10px"'
+            \ 'border-width: 6px; padding: 5px 10px; '.
+            \ 'background: #CFC"'.
     let g:PhTexBlockStyle = 'Snugshade'
 endif
 
