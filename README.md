@@ -209,6 +209,8 @@ syntax on
 let g:PhCtrlTrans = 0
 
 runtime plugin/publish_helper.vim
+
+" vim: ft=vim
 ```
 
 You may need to source other plugins, for example *TagHighlight* which makes it
@@ -227,7 +229,7 @@ dynamically from the filter only for those code blocks that require it. To
 accomplish this, put attribute *vars="PhCtrlTrans"* in such code blocks.
 
 Global variables are also good for making selection between arbitrary
-conditions. Imagine that script *.vimrc.pandoc* has lines
+conditions. Imagine that script *.vimrc.pandoc* contains lines
 
 ```vim
 if exists('g:load_TagHl')
@@ -331,18 +333,6 @@ and work faster.
   using pandoc's option *--template=vimhl*. The script accepts a number of
   options to customize visual parameters of code blocks. To see them, use
   option *-h*.
-
-* If you have installed vim plugin
-  [*pandoc*](https://github.com/vim-pandoc/vim-pandoc) then you'll probably
-  notice bad syntax highlighting when editing *.vimrc.pandoc* from vim. To make
-  it normal, change contents of file *.vim/ftdetect/pandoc.vim* to
-
-    ```vim
-  au BufNewFile,BufRead *.markdown,*.md,*.mkd,*.pd,*.pdc,*.pdk,*.text
-              \ set filetype=pandoc
-  au BufNewFile,BufRead *.pandoc
-              \ if expand('<afile>:t') != '.vimrc.pandoc' | set filetype=pandoc
-    ```
 
 Miscellaneous commands
 ----------------------
