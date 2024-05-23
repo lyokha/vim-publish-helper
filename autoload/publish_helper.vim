@@ -529,7 +529,7 @@ fun! publish_helper#make_tex_code_highlight(fst_line, last_line, ...)
 endfun
 
 fun! publish_helper#make_html_code_highlight(fst_line, last_line, ...)
-    if g:PhHtmlEngine == 'tohtml'
+    if g:PhHtmlEngine == 'tohtml' && !has('nvim-0.10')
         call call(function('s:make_tohtml_code_highlight'),
                     \ [a:fst_line, a:last_line] + a:000)
     else

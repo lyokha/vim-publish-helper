@@ -84,9 +84,12 @@ Starting from version 0.6 MakeHtmlCodeHighlight uses same highlighting engine
 as MakeTexCodeHighlight by default. To switch back to TOhtml engine set
 variable g:PhHtmlEngine = 'tohtml'.
 
-Output of TOhtml may differ from that of default highlighting engine: it
+Output of TOhtml may differ from that of the default highlighting engine: it
 renders buffers in a very verbose way and may content folds, bold text etc.
 whereas default engine normally ignores view details of the buffer.
+
+Note that in Neovim 0.10 plugin TOhtml was rewritten in a non-compatible
+way and therefore the TOhtml engine was disabled in this version of Neovim.
 
 ------------------------------------------------------------------------------
                                            *publish_helper-cmd-tex*
@@ -584,6 +587,8 @@ A. Change History~
     - escape single quotes in command MakeHtmlCodeHighlight
     - set b:current_syntax in syntax/shelloutput.vim which fixes rendering
       shelloutput in Neovim via the treesitter fallback
+    - disable TOhtml rendering engine in Neovim 0.10 because plugin TOhtml was
+      rewritten in this version of Neovim in a non-compatible way
     - vimhl 0.3.0.0 - 0.3.2.0: many improvements (see release notes at github)
     - update the sample .vimrc.pandoc to use with Neovim
 

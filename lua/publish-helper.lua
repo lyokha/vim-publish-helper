@@ -31,11 +31,12 @@ function M.get_node_hl(bufnr, row, col)
         return
       end
 
-      local iter = query:query():iter_captures(root, buf_highlighter.bufnr,
-                                               row0, row0 + 1)
+      local iter = query:query():iter_captures(root, bufnr, row0, row0 + 1)
 
       for capture, node, _ in iter do
-        local hl = query.hl_cache[capture]
+        local hl = vim.fn.has('nvim-0.10') == 1
+          and query:get_hl_from_capture(capture)
+          or query.hl_cache[capture]
 
         if hl and ts.is_in_node_range(node, row0, col0) then
           local c = query._query.captures[capture]
@@ -45,11 +46,7 @@ function M.get_node_hl(bufnr, row, col)
             if cur_hlid ~= 0 then
               local _, _, end_row, end_col = ts.get_node_range(node)
               hlid = cur_hlid
-              if end_row > row0 then
-                len = 0
-              else
-                len = end_col - col0
-              end
+              len = end_row > row0 and 0 or end_col - col0
             end
           end
         end

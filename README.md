@@ -76,9 +76,12 @@ Starting from **version 0.6**, *MakeHtmlCodeHighlight* uses the same
 highlighting engine as *MakeTexCodeHighlight* by default. To switch back to the
 *TOhtml* engine, set variable *g:PhHtmlEngine = 'tohtml'*.
 
-Output of *TOhtml* may differ from that of default highlighting engine: it
+Output of *TOhtml* may differ from that of the default highlighting engine: it
 renders buffers in a very verbose way and may content folds, bold text etc.,
 whereas default engine normally ignores view details of the buffer.
+
+Note that in *Neovim* *0.10* plugin *TOhtml* was rewritten in a non-compatible
+way and therefore the *TOhtml* engine was disabled in this version of *Neovim*.
 
 ### MakeTexCodeHighlight
 
