@@ -35,6 +35,10 @@ function M.get_node_hl(bufnr, row, col)
 
       for capture, node, _, _ in iter do
         if ts.is_in_node_range(node, row0, col0) then
+          local name = query._query.captures[capture]
+          if name == 'spell' or name == 'nospell' then
+            goto skip
+          end
           hlid = vim.fn.has('nvim-0.10') == 1
             and query:get_hl_from_capture(capture)
             or query.hl_cache[capture]
@@ -42,7 +46,7 @@ function M.get_node_hl(bufnr, row, col)
             local _, _, end_row, end_col = ts.get_node_range(node)
             len = end_row > row0 and 0 or end_col - col0
           end
-        end
+        end ::skip::
       end
     end)
   end
