@@ -1,10 +1,10 @@
-*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2024 May 19
+*publish_helper.txt*   For Vim version 7.3 and above   Last change: 2024 May 24
 
                        ------------------------------
                         Publish Helper (HTML and TeX)
                        ------------------------------
 
-                               version 0.15.2
+                                version 0.16
 
 Author: Alexey Radkov
 
@@ -582,15 +582,19 @@ Christian Brabandt for plugin Colorizer and Xterm2rgb translation functions.
                                            *publish_helper-changes*
 A. Change History~
 
-0.15 - 0.15.2
+0.16
     - fixed handling colors when 'termguicolors' is set
-    - escape single quotes in command MakeHtmlCodeHighlight
+    - fixes in script lua/publish-helper.lua, now it also has support for
+      Neovim 0.10
     - set b:current_syntax in syntax/shelloutput.vim which fixes rendering
       shelloutput in Neovim via the treesitter fallback
-    - disable TOhtml rendering engine in Neovim 0.10 because plugin TOhtml was
-      rewritten in this version of Neovim in a non-compatible way
-    - vimhl 0.3.0.0 - 0.3.2.0: many improvements (see release notes at github)
-    - update the sample .vimrc.pandoc to use with Neovim
+    - disable TOhtml rendering engine in Neovim 0.10 because plugin TOhtml
+      was rewritten in this version of Neovim in a non-compatible way
+    - extend the sample .vimrc.pandoc to use with Neovim
+
+0.15
+    - vimhl 0.3.0.0 - 0.3.2.0: a few improvements and optimizations
+    - escape single quotes in command MakeHtmlCodeHighlight
 
 0.14
     - startup optimization: all functions were moved to autoload/ directory

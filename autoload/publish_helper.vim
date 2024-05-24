@@ -1,9 +1,9 @@
 " File: autoload/publish_helper.vim
 " Author: Alexey Radkov
-" Version: 0.15.2
+" Version: 0.16
 " Description: autoload functions for plugin/publish_helper.vim
 
-" next Xterm2rgb... conversion functions are adopted from plugin Colorizer.vim
+" Xterm2rgb... converters were adopted from plugin Colorizer.vim
 fun! s:Xterm2rgb16(color)
     " 16 basic colors
     let r=0
@@ -220,6 +220,7 @@ fun! s:split_synids(fst_line, last_line, ts, ...)
     let sk_trans = synIDtrans(hlID('SpecialKey'))
     while cursor[1] <= a:last_line
         let old_synId = '^'
+        let old_trans = 0
         let old_start = cursor[2]
         let cols = col('$')
         if linenr >= 0
@@ -248,8 +249,8 @@ fun! s:split_synids(fst_line, last_line, ts, ...)
             else
                 let [synIdNmb, len] = [synID(line('.'), col('.'), 1), 1]
             endif
-            let synId = synIDattr(synIdNmb, 'name')
             let trans = synIDtrans(synIdNmb)
+            let synId = synIDattr(trans, 'name')
             if len == 0
                 let len = line('$') - line('.')
             endif

@@ -25,7 +25,9 @@ if has('nvim')
         colorscheme gruvbox-material
         if g:VimhlNvimUseTreesitter
             lua require'nvim-treesitter.configs'.setup
-                        \ { highlight = { enable = true } }
+                        \ { highlight = {
+                            \ enable = true,
+                            \ additional_vim_regex_highlighting = false } }
             runtime plugin/nvim-treesitter.lua
             let g:PhHighlightEngine = 'treesitter'
         endif
