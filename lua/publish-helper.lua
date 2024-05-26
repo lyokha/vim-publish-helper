@@ -52,9 +52,7 @@ function M.get_node_hl(bufnr, row, col)
   end
 
   if hlid == 0 and vim.b.current_syntax ~= nil then
-    for _, id in ipairs(vim.fn.synstack(row, col)) do
-      hlid = vim.fn.hlID(vim.fn.synIDattr(vim.fn.synIDtrans(id), "name"))
-    end
+    hlid = vim.fn.synID(row, col, 1)
   end
 
   return {hlid, len}
