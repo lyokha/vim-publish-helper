@@ -1,5 +1,15 @@
 #!/bin/bash
 
+verlte() {
+    [ "$1" = "$(echo -e "$1\n$2" | sort -V | head -1)" ]
+}
+
+verlt() {
+    if [ "$1" = "$2" ] ; then return 1 ; else verlte "$1" "$2" ; fi
+}
+
+PANDOCV=$(pandoc -v | sed -n 's/pandoc //; 1p')
+
 HL_M_PTN='^\$highlighting-macros\$$'
 HL_M_IF_PTN='^\$if(highlighting-macros)\$$'
 FANCYVRB_IF_PTN='^\$if(verbatim-in-note)\$$'
@@ -9,6 +19,7 @@ LST_IF_PTN='^SKIP THIS$'
 LST_IF2_PTN='^\$if(listings)\$\n\\usepackage{listings}'
 LST_SWAP='\\usepackage{listings}\n$if(listings)$'
 ENDIF_PTN='^\$endif\$$'
+COMMON_LATEX_PTN='^\$common\.latex()\$$'
 
 BG_COLOR='FFFFEE'
 S_BG_COLOR='FFFFEE'
@@ -142,19 +153,6 @@ IFS= read -r -d '' RPL <<END
 }{\\\\end{leftbar}}\\
 END
 
-verlte() {
-    [ "$1" = "$(echo -e "$1\n$2" | sort -V | head -1)" ]
-}
-
-verlt() {
-    if [ "$1" = "$2" ] ; then return 1 ; else verlte "$1" "$2" ; fi
-}
-
-PANDOCV=$(pandoc -v | sed -n 's/pandoc //; 1p')
-if verlt "$PANDOCV" "2.6" ; then
-    RPL="\\\\usepackage{xcolor}\n"$RPL
-fi
-
 if [ -n "$MDFRAMED" ] ; then
 IFS= read -r -d '' MRPL <<END
 \\\\usepackage[framemethod=tikz]{mdframed}\\
@@ -198,9 +196,25 @@ END
 RPL=$RPL$CRPL
 fi
 
-pandoc -D latex |
-sed "/$LST_IF_PTN/N;/$LST_IF2_PTN/s//$LST_SWAP/
-     /$HL_M_PTN/i \\$RPL
-     /$HL_M_IF_PTN/,/$ENDIF_PTN/d
-     /$FANCYVRB_IF_PTN/N;/$FANCYVRB_IF2_PTN/s//$FANCYVRB_SWAP/"
+TPL=$(pandoc -Dlatex)
+
+if verlt "$PANDOCV" "3.5" ; then
+    SRC=$TPL
+else
+    SRC=$(pandoc --print-default-data-file=templates/common.latex)
+fi
+
+DST=$(echo "$SRC" |
+      sed "/$LST_IF_PTN/N;/$LST_IF2_PTN/s//$LST_SWAP/
+           /$HL_M_PTN/i \\\n$RPL
+           /$HL_M_IF_PTN/,/$ENDIF_PTN/d
+           /$FANCYVRB_IF_PTN/N;/$FANCYVRB_IF2_PTN/s//$FANCYVRB_SWAP/")
+
+if verlt "$PANDOCV" "3.5" ; then
+    echo "$DST"
+else
+    echo "$TPL" | sed "/$COMMON_LATEX_PTN/Q"
+    echo "$DST"
+    echo "$TPL" | sed "1,/$COMMON_LATEX_PTN/d"
+fi
 

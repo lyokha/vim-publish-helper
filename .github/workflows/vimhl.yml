@@ -12,15 +12,15 @@ jobs:
         release: [false]
         include:
           - ghc: '9.6'
-            cabal: '3.10'
+            cabal: '3.12'
             experimental: false
             release: true
           - ghc: '9.8'
-            cabal: '3.10'
+            cabal: '3.12'
             experimental: false
             release: true
           - ghc: '9.10'
-            cabal: '3.10'
+            cabal: '3.12'
             experimental: true
             release: false
     steps:
