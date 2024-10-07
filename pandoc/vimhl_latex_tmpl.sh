@@ -8,16 +8,15 @@ verlt() {
     if [ "$1" = "$2" ] ; then return 1 ; else verlte "$1" "$2" ; fi
 }
 
-PANDOCV=$(pandoc -v | sed -n 's/pandoc //; 1p')
+PANDOCV=$(pandoc -v | sed -n '1s/^pandoc //ip')
 
-HL_M_PTN='^\$highlighting-macros\$$'
-HL_M_IF_PTN='^\$if(highlighting-macros)\$$'
 FANCYVRB_IF_PTN='^\$if(verbatim-in-note)\$$'
 FANCYVRB_IF2_PTN='^\$if(verbatim-in-note)\$\n\\usepackage{fancyvrb}'
 FANCYVRB_SWAP='\\usepackage{fancyvrb}\n$if(verbatim-in-note)$'
-LST_IF_PTN='^SKIP THIS$'
-LST_IF2_PTN='^\$if(listings)\$\n\\usepackage{listings}'
-LST_SWAP='\\usepackage{listings}\n$if(listings)$'
+LISTINGS_IF_PTN='^SKIP THIS$'
+LISTINGS_IF2_PTN='^\$if(listings)\$\n\\usepackage{listings}'
+LISTINGS_SWAP='\\usepackage{listings}\n$if(listings)$'
+HLMACROS_IF_PTN='^\$if(highlighting-macros)\$$'
 ENDIF_PTN='^\$endif\$$'
 COMMON_LATEX_PTN='^\$common\.latex()\$$'
 
@@ -184,7 +183,7 @@ IFS= read -r -d '' DRPL <<END
    moredelim=[il][\\\\color{shellpromptcolor}\\\\upshape]{|||\\\\ }}\\
 END
 RPL=$RPL$DRPL
-LST_IF_PTN='^\$if(listings)\$$'
+LISTINGS_IF_PTN='^\$if(listings)\$$'
 fi
 
 if [ -n "$HLCOMPAT" ] ; then
@@ -204,17 +203,24 @@ else
     SRC=$(pandoc --print-default-data-file=templates/common.latex)
 fi
 
+VIMHLRPLMSG='VIMHL MACRO REPLACEMENT'
 DST=$(echo "$SRC" |
-      sed "/$LST_IF_PTN/N;/$LST_IF2_PTN/s//$LST_SWAP/
-           /$HL_M_PTN/i \\\n$RPL
-           /$HL_M_IF_PTN/,/$ENDIF_PTN/d
-           /$FANCYVRB_IF_PTN/N;/$FANCYVRB_IF2_PTN/s//$FANCYVRB_SWAP/")
+      sed "/$FANCYVRB_IF_PTN/N;/$FANCYVRB_IF2_PTN/s//$FANCYVRB_SWAP/
+           /$LISTINGS_IF_PTN/N;/$LISTINGS_IF2_PTN/s//$LISTINGS_SWAP/
+           /$HLMACROS_IF_PTN/,/$ENDIF_PTN/c \\\n"`
+               `"% $VIMHLRPLMSG BEGIN\n\n"`
+               `"$RPL\n"`
+               `"% $VIMHLRPLMSG END\n")
 
 if verlt "$PANDOCV" "3.5" ; then
     echo "$DST"
 else
-    echo "$TPL" | sed "/$COMMON_LATEX_PTN/Q"
-    echo "$DST"
-    echo "$TPL" | sed "1,/$COMMON_LATEX_PTN/d"
+    COMMONRPLMSG='COMMON.LATEX REPLACEMENT'
+    DSTESC=$(echo "$DST" | sed 's/\\/\\\\/g; $!s/$/\\/')
+    echo "$TPL" |
+    sed "/$COMMON_LATEX_PTN/c \\\n"`
+             `"% $COMMONRPLMSG BEGIN\n\n"`
+             `"$DSTESC\n\n"`
+             `"% $COMMONRPLMSG END\n"
 fi
 
