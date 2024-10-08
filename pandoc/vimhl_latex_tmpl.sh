@@ -11,11 +11,10 @@ verlt() {
 PANDOCV=$(pandoc -v | sed -n '1s/^pandoc //ip')
 
 FANCYVRB_IF_PTN='^\$if(verbatim-in-note)\$$'
-FANCYVRB_IF2_PTN='^\$if(verbatim-in-note)\$\n\\usepackage{fancyvrb}'
-FANCYVRB_SWAP='\\usepackage{fancyvrb}\n$if(verbatim-in-note)$'
+FANCYVRB_IF_NEXT_PTN='\(^.\+\)\n\(\\usepackage{fancyvrb}\)$'
 LISTINGS_IF_PTN='^SKIP THIS$'
-LISTINGS_IF2_PTN='^\$if(listings)\$\n\\usepackage{listings}'
-LISTINGS_SWAP='\\usepackage{listings}\n$if(listings)$'
+LISTINGS_IF_NEXT_PTN='\(^.\+\)\n\(\\usepackage{listings}\)$'
+SWAP_LINES_PTN='\2\n\1'
 HLMACROS_IF_PTN='^\$if(highlighting-macros)\$$'
 ENDIF_PTN='^\$endif\$$'
 COMMON_LATEX_PTN='^\$common\.latex()\$$'
@@ -187,11 +186,10 @@ LISTINGS_IF_PTN='^\$if(listings)\$$'
 fi
 
 if [ -n "$HLCOMPAT" ] ; then
-IFS= read -r -d '' CRPL <<END
-$(echo -e '```c\n```' |
-  pandoc -tlatex -fmarkdown --highlight-style="$HL_STYLE" --standalone |
-  sed -n 's/$/\\/; /^\\newcommand{\\\w\+Tok}/p' | sed 's/\\./\\&/g')
-END
+CRPL=$(echo -e '```c\n```' |
+       pandoc -tlatex -fmarkdown --highlight-style="$HL_STYLE" --standalone |
+       sed -n '/^\\newcommand{\\\w\+Tok}/{s/$/\\/; s/\\./\\&/gp}')
+[ -n "$CRPL" ] && CRPL=$CRPL$'\n'
 RPL=$RPL$CRPL
 fi
 
@@ -205,8 +203,8 @@ fi
 
 VIMHLRPLMSG='VIMHL MACRO REPLACEMENT'
 DST=$(echo "$SRC" |
-      sed "/$FANCYVRB_IF_PTN/N;/$FANCYVRB_IF2_PTN/s//$FANCYVRB_SWAP/
-           /$LISTINGS_IF_PTN/N;/$LISTINGS_IF2_PTN/s//$LISTINGS_SWAP/
+      sed "/$FANCYVRB_IF_PTN/N;/$FANCYVRB_IF_NEXT_PTN/s//$SWAP_LINES_PTN/
+           /$LISTINGS_IF_PTN/N;/$LISTINGS_IF_NEXT_PTN/s//$SWAP_LINES_PTN/
            /$HLMACROS_IF_PTN/,/$ENDIF_PTN/c \\\n"`
                `"% $VIMHLRPLMSG BEGIN\n\n"`
                `"$RPL\n"`
