@@ -188,7 +188,7 @@ fi
 if [ -n "$HLCOMPAT" ] ; then
 CRPL=$(echo -e '```c\n```' |
        pandoc -tlatex -fmarkdown --highlight-style="$HL_STYLE" --standalone |
-       sed -n '/^\\newcommand{\\\w\+Tok}/{s/$/\\/; s/\\./\\&/gp}')
+       sed -n '/^\\newcommand{\\[[:alpha:]]\+Tok}/{s/$/\\/; s/\\./\\&/gp}')
 [ -n "$CRPL" ] && CRPL=$CRPL$'\n'
 RPL=$RPL$CRPL
 fi
