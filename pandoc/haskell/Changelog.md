@@ -1,3 +1,7 @@
+### 0.3.2.1
+
+- Replace use of *liftM2* with *liftA2*. Drop support for GHC older that *9.6*.
+
 ### 0.3.2.0
 
 - Improvement after the previous release: do not use */dev/tty* if the backend
