@@ -133,8 +133,8 @@ vimrcPandoc = unsafePerformIO $ lookupEnv "VIMRC_PANDOC" >>=
                home <- getHomeDirectory `catchIOError` const (return "")
                let vimrc = home </> ".vimrc.pandoc"
                    exists = doesFileExist &&> (fmap readable . getPermissions)
-                   (&&>) = liftM2 andM
-                   (<<$) = liftM2 (<$>)
+                   (&&>) = liftA2 andM
+                   (<<$) = liftA2 fmap
                (bool Nothing . Just) <<$ exists $ vimrc
           ) (return . Just)
 {-# NOINLINE vimrcPandoc #-}

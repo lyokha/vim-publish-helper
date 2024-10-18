@@ -11,7 +11,7 @@ jobs:
         experimental: [false]
         release: [false]
         include:
-          - ghc: '9.6'
+          - ghc: '9.10'
             cabal: '3.12'
             experimental: false
             release: true
@@ -19,9 +19,9 @@ jobs:
             cabal: '3.12'
             experimental: false
             release: true
-          - ghc: '9.10'
+          - ghc: '9.6'
             cabal: '3.12'
-            experimental: true
+            experimental: false
             release: false
     steps:
       - name: Checkout
