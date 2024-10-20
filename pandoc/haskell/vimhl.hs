@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings, LambdaCase #-}
 
+import Prelude hiding (Applicative (..))
+import Control.Applicative (Applicative (..))
 import Text.Pandoc.JSON
 import System.IO (IOMode (WriteMode), openFile, hFlush)
 import System.IO.Temp
