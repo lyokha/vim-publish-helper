@@ -25,9 +25,9 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as T
 
 vimHl :: Maybe Format -> Block -> IO Block
-vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
-    | lookup "hl" namevals' == Just "vim" &&
-        fmt `elem` ["html", "latex", "gfm"] = do
+vimHl (Just fmt) (CodeBlock (_, cls@(ft : _), namevals) contents)
+    | Just "vim" <- lookup "hl" namevals'
+    , fmt `elem` ["html", "latex", "gfm"] = do
         let vimhlcmd = unwords [cmd fmt, nmb]
                 where cmd "latex" = "MakeTexCodeHighlight"
                       cmd _ = "MakeHtmlCodeHighlight"
@@ -77,10 +77,10 @@ vimHl (Just fm@(Format fmt)) (CodeBlock (_, cls@(ft : _), namevals) contents)
                 r <- waitForProcess handle
                 unless (r == ExitSuccess) $ exitWith r
                 T.readFile dst
-        return $ RawBlock fm' $ wrap fm block
+        return $ RawBlock fmt' $ wrap fmt block
     where namevals' = map (T.map toLower *** T.unpack) namevals
-          fm' | fm == Format "latex" = fm
-              | otherwise = Format "html"
+          fmt' | fmt == "gfm" = "html"
+               | otherwise = fmt
           {- Note that Github markdown sanitizer strips CSS styles in HTML
            - tags. See details at https://github.com/github/markup. -}
           wrap "gfm" block = T.concat
