@@ -77,22 +77,22 @@ vimHl (Just fmt) (CodeBlock (_, cls@(ft : _), namevals) contents)
                 r <- waitForProcess handle
                 unless (r == ExitSuccess) $ exitWith r
                 T.readFile dst
-        return $ RawBlock fmt' $ wrap fmt block
+        return $ uncurry RawBlock $ decorate fmt block
     where namevals' = map (T.map toLower *** T.unpack) namevals
-          fmt' | fmt == "gfm" = "html"
-               | otherwise = fmt
           {- Note that Github markdown sanitizer strips CSS styles in HTML
-           - tags. See details at https://github.com/github/markup. -}
-          wrap "gfm" block = T.concat
-              ["<div class=\"highlight notranslate \
-               \position-relative overflow-auto\" dir=\"auto\" \
-               \data-snippet-clipboard-copy-content=\""
-              ,escapeHtml $ stripShellOutputPrompt contents
-              ,"\">"
-              ,block
-              ,"</div>"
-              ]
-          wrap _ block = block
+           - tags. See details at https://github.com/github/markup#readme. -}
+          decorate "gfm" block =
+              ("html"
+              ,T.concat ["<div class=\"highlight notranslate \
+                         \position-relative overflow-auto\" dir=\"auto\" \
+                         \data-snippet-clipboard-copy-content=\""
+                        ,escapeHtml $ stripShellOutputPrompt contents
+                        ,"\">"
+                        ,block
+                        ,"</div>"
+                        ]
+              )
+          decorate fm block = (fm, block)
           escapeHtml = T.concatMap $ \case
               '<' -> "&lt;"
               '>' -> "&gt;"
