@@ -1,7 +1,5 @@
 {-# LANGUAGE OverloadedStrings, LambdaCase #-}
 
-import Prelude hiding (Applicative (..))
-import Control.Applicative (Applicative (..))
 import Text.Pandoc.JSON
 import System.IO (IOMode (WriteMode), openFile, hFlush)
 import System.IO.Temp
@@ -134,9 +132,9 @@ vimrcPandoc = unsafePerformIO $ lookupEnv "VIMRC_PANDOC" >>=
     maybe (do
                home <- getHomeDirectory `catchIOError` const (return "")
                let vimrc = home </> ".vimrc.pandoc"
-                   returnIf = liftA2 fmap $ bool Nothing . Just
-                   exists = doesFileExist &&> (fmap readable . getPermissions)
-                   (&&>) = liftA2 andM
+                   returnIf = (fmap <$> bool Nothing . Just <*>)
+                   exists = andM <$>
+                       doesFileExist <*> fmap readable . getPermissions
                returnIf exists vimrc
           ) (return . Just)
 {-# NOINLINE vimrcPandoc #-}
